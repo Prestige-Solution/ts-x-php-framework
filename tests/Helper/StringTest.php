@@ -97,8 +97,6 @@ class StringTest extends TestCase
             "hello" => false,
             "1.0" => false,
             ".1" => false,
-
-            // From https://goo.gl/C5v9wT
             "0x539" => false,
             "0b10100111001" => false,
             "1337e0" => false,
