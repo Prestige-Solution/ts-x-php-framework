@@ -91,6 +91,7 @@ class StringTest extends TestCase
     {
         $tests = [
             "1" => true,
+            "11" => true,
             "+1" => false,
             "-1" => false,
             "hello" => false,
