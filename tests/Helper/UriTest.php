@@ -2,6 +2,7 @@
 
 namespace PlanetTeamSpeak\TeamSpeak3Framework\Tests\Helper;
 
+use PHPUnit\Framework\Attributes\Depends;
 use PHPUnit\Framework\TestCase;
 use PlanetTeamSpeak\TeamSpeak3Framework\Helper\Uri;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\HelperException;
@@ -96,6 +97,7 @@ class UriTest extends TestCase
     public function testParseURI()
     {
         // @todo: No reachable path results in error. Implement if found.
+        $this->markTestSkipped();
     }
 
     /**
@@ -158,6 +160,9 @@ class UriTest extends TestCase
         $this->assertFalse($uri->checkPass("\xC2\xA2")); // "\u{00A2}" '¢'
     }
 
+    /**
+     * @throws HelperException
+     */
     public function testCheckHost()
     {
         $uri = new Uri($this->mock['test_uri']);
@@ -205,6 +210,9 @@ class UriTest extends TestCase
         }
     }
 
+    /**
+     * @throws HelperException
+     */
     public function testCheckPort()
     {
         $uri = new Uri($this->mock['test_uri']);
@@ -363,9 +371,8 @@ class UriTest extends TestCase
 
     /**
      * @param Uri $uri
-     * @depends testIsValid
      */
-    public function testGetScheme(Uri $uri)
+    #[Depends('testIsValid')] public function testGetScheme(Uri $uri)
     {
         $this->assertEquals('serverquery', $uri->getScheme());
         $this->assertInstanceOf(
@@ -377,9 +384,8 @@ class UriTest extends TestCase
     /**
      * @param Uri $uri
      *
-     * @depends testIsValid
      */
-    public function testGetUser(Uri $uri)
+    #[Depends('testIsValid')] public function testGetUser(Uri $uri)
     {
         $this->assertEquals('username', $uri->getUser());
         $this->assertInstanceOf(
@@ -391,9 +397,8 @@ class UriTest extends TestCase
     /**
      * @param Uri $uri
      *
-     * @depends testIsValid
      */
-    public function testGetPass(Uri $uri)
+    #[Depends('testIsValid')] public function testGetPass(Uri $uri)
     {
         $this->assertEquals('password', $uri->getPass());
         $this->assertInstanceOf(
@@ -405,9 +410,8 @@ class UriTest extends TestCase
     /**
      * @param Uri $uri
      *
-     * @depends testIsValid
      */
-    public function testGetHost(Uri $uri)
+    #[Depends('testIsValid')] public function testGetHost(Uri $uri)
     {
         $this->assertEquals('127.0.0.1', $uri->getHost());
         $this->assertInstanceOf(
@@ -419,9 +423,8 @@ class UriTest extends TestCase
     /**
      * @param Uri $uri
      *
-     * @depends testIsValid
      */
-    public function testGetPort(Uri $uri)
+    #[Depends('testIsValid')] public function testGetPort(Uri $uri)
     {
         $this->assertEquals(10011, $uri->getPort());
         $this->assertIsInt($uri->getPort());
@@ -430,9 +433,8 @@ class UriTest extends TestCase
     /**
      * @param Uri $uri
      *
-     * @depends testIsValid
      */
-    public function testGetPath(Uri $uri)
+    #[Depends('testIsValid')] public function testGetPath(Uri $uri)
     {
         // NOTE: getPath() is never used in framework, add tests for consistency.
         $this->assertEquals('/', $uri->getPath());
@@ -445,9 +447,8 @@ class UriTest extends TestCase
     /**
      * @param Uri $uri
      *
-     * @depends testIsValid
      */
-    public function testGetQuery(Uri $uri)
+    #[Depends('testIsValid')] public function testGetQuery(Uri $uri)
     {
         $this->assertEquals(
             ['server_port' => '9987', 'blocking' => '0'],
@@ -459,9 +460,8 @@ class UriTest extends TestCase
     /**
      * @param Uri $uri
      *
-     * @depends testIsValid
      */
-    public function testGetFragment(Uri $uri)
+    #[Depends('testIsValid')] public function testGetFragment(Uri $uri)
     {
         $this->assertEquals('no_query_clients', $uri->getFragment());
         $this->assertInstanceOf(
