@@ -362,10 +362,10 @@ class Uri
     /**
      * Returns TRUE if the port is valid.
      *
-     * @param integer|null $port
+     * @param float|null $port
      * @return boolean
      */
-    public function checkPort(int $port = null): bool
+    public function checkPort(float $port = null): bool
     {
         if ($port === null) {
             if ($this->port instanceof StringHelper) {
@@ -373,6 +373,8 @@ class Uri
             } else {
                 $port = intval($this->port);
             }
+        } else {
+            $port = intval($port);
         }
 
         switch ($port) {
