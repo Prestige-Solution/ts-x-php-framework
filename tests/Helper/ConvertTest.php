@@ -231,26 +231,31 @@ class ConvertTest extends TestCase
     public function testConvertCodecIDToHumanReadable()
     {
         // @todo: Find logical / comprehensive test for checking codec names
+        $this->markTestSkipped('todo: Find logical / comprehensive test for checking codec names');
     }
 
     public function testConvertGroupTypeIDToHumanReadable()
     {
         // @todo: Find logical / comprehensive test for checking codec names
+        $this->markTestSkipped('todo: Find logical / comprehensive test for checking codec names');
     }
 
     public function testConvertPermTypeIDToHumanReadable()
     {
         // @todo: Find logical / comprehensive test for checking codec names
+        $this->markTestSkipped('todo: Find logical / comprehensive test for checking codec names');
     }
 
     public function testConvertPermCategoryIDToHumanReadable()
     {
         // @todo: Find logical / comprehensive test for checking codec names
+        $this->markTestSkipped('todo: Find logical / comprehensive test for checking codec names');
     }
 
     public function testConvertLogLevelIDToHumanReadable()
     {
         // @todo: Find logical / comprehensive test for checking codec names
+        $this->markTestSkipped('todo: Find logical / comprehensive test for checking codec names');
     }
 
     public function testConvertLogEntryToArray()
