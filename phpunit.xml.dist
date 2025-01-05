@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" backupGlobals="false"
-         backupStaticAttributes="false"
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          colors="true"
-         convertErrorsToExceptions="true"
-         convertNoticesToExceptions="true"
-         convertWarningsToExceptions="true"
-         processIsolation="false"
-         stopOnFailure="false"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
+         displayDetailsOnTestsThatTriggerDeprecations="true"
+         displayDetailsOnTestsThatTriggerErrors="true"
+         displayDetailsOnTestsThatTriggerNotices="true"
+         displayDetailsOnTestsThatTriggerWarnings="true"
+         displayDetailsOnPhpunitDeprecations="true"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
 >
-  <coverage>
+  <source>
     <include>
       <directory>./</directory>
     </include>
@@ -20,10 +19,16 @@
       <directory>./build</directory>
       <directory>./vendor</directory>
     </exclude>
+  </source>
+  <coverage>
     <report>
       <clover outputFile="build/logs/clover.xml"/>
     </report>
   </coverage>
+  <php>
+    <env name="HOST" value="test"/>
+    <env name="PORT" value="123456"/>
+  </php>
   <testsuites>
     <testsuite name="Teamspeak 3 PHP Framework Test Suite">
       <directory>./tests/</directory>
