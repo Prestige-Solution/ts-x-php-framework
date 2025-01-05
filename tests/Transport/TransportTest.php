@@ -4,7 +4,7 @@ namespace PlanetTeamSpeak\TeamSpeak3Framework\Tests\Transport;
 
 use PHPUnit\Framework\TestCase;
 use PlanetTeamSpeak\TeamSpeak3Framework\Adapter\MockServerQuery;
-use PlanetTeamSpeak\TeamSpeak3Framework\Transport\Transport;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
 
 class TransportTest extends TestCase
 {
@@ -17,7 +17,7 @@ class TransportTest extends TestCase
     }
 
     /**
-     * @throws TransportException
+     * @throws AdapterException
      */
     public function testGetAdapterTypeReturnValue()
     {
