@@ -2,6 +2,7 @@
 
 namespace PlanetTeamSpeak\TeamSpeak3Framework\Tests\Transport;
 
+use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 use PlanetTeamSpeak\TeamSpeak3Framework\Adapter\ServerQuery;
 use PlanetTeamSpeak\TeamSpeak3Framework\Transport\UDP;
@@ -9,21 +10,32 @@ use PlanetTeamSpeak\TeamSpeak3Framework\Exception\TransportException;
 
 class UDPTest extends TestCase
 {
+    private string $host;
+    private string $port;
+    public function setUp(): void
+    {
+        if (file_exists('./.env.testing')) {
+            $env = file('./.env.testing');
+
+            $this->host = str_replace('HOST=', '', preg_replace('#\n(?!\n)#', '', $env[0]));
+            $this->port = str_replace('PORT=', '', preg_replace('#\n(?!\n)#', '', $env[1]));
+        }
+    }
     /**
      * @throws TransportException
      */
     public function testConstructorNoException()
     {
         $adapter = new UDP(
-            ['host' => 'test', 'port' => 12345]
+            ['host' => $this->host, 'port' => $this->port]
         );
         $this->assertInstanceOf(UDP::class, $adapter);
 
         $this->assertArrayHasKey('host', $adapter->getConfig());
-        $this->assertEquals('test', $adapter->getConfig('host'));
+        $this->assertEquals($this->host, $adapter->getConfig('host'));
 
         $this->assertArrayHasKey('port', $adapter->getConfig());
-        $this->assertEquals(12345, $adapter->getConfig('port'));
+        $this->assertEquals($this->port, $adapter->getConfig('port'));
 
         $this->assertArrayHasKey('timeout', $adapter->getConfig());
         $this->assertIsInt($adapter->getConfig('timeout'));
@@ -37,7 +49,7 @@ class UDPTest extends TestCase
         $this->expectException(TransportException::class);
         $this->expectExceptionMessage("config must have a key for 'host'");
 
-        new UDP(['port' => 12345]);
+        new UDP(['port' => $this->port]);
     }
 
     public function testConstructorExceptionNoPort()
@@ -45,7 +57,7 @@ class UDPTest extends TestCase
         $this->expectException(TransportException::class);
         $this->expectExceptionMessage("config must have a key for 'port'");
 
-        new UDP(['host' => 'test']);
+        new UDP(['host' => $this->host]);
     }
 
     /**
@@ -54,23 +66,24 @@ class UDPTest extends TestCase
     public function testGetConfig()
     {
         $adapter = new UDP(
-            ['host' => 'test', 'port' => 12345]
+            ['host' => $this->host, 'port' => $this->port]
         );
 
         $this->assertIsArray($adapter->getConfig());
         $this->assertCount(4, $adapter->getConfig());
         $this->assertArrayHasKey('host', $adapter->getConfig());
-        $this->assertEquals('test', $adapter->getConfig()['host']);
-        $this->assertEquals('test', $adapter->getConfig('host'));
+        $this->assertEquals($this->host, $adapter->getConfig()['host']);
+        $this->assertEquals($this->host, $adapter->getConfig('host'));
     }
 
     /**
      * @throws TransportException
+     * @throws Exception
      */
     public function testSetGetAdapter()
     {
         $transport = new UDP(
-            ['host' => 'test', 'port' => 12345]
+            ['host' => $this->host, 'port' => $this->port]
         );
         // Mocking adaptor since `stream_socket_client()` depends on running server
         $adaptor = $this->createMock(ServerQuery::class);
@@ -85,7 +98,7 @@ class UDPTest extends TestCase
     public function testGetStream()
     {
         $transport = new UDP(
-            ['host' => 'test', 'port' => 12345]
+            ['host' => $this->host, 'port' => $this->port]
         );
         $this->assertNull($transport->getStream());
     }
@@ -96,7 +109,7 @@ class UDPTest extends TestCase
     public function testConnect()
     {
         $transport = new UDP(
-            ['host' => '127.0.0.1', 'port' => 12345]
+            ['host' => $this->host, 'port' => $this->port]
         );
         $transport->connect();
         $this->assertIsResource($transport->getStream());
@@ -107,15 +120,14 @@ class UDPTest extends TestCase
      */
     public function testConnectBadHost()
     {
-        $host = 'test';
         $transport = new UDP(
-            ['host' => $host, 'port' => 12345]
+            ['host' => $this->host, 'port' => $this->port]
         );
         $this->expectException(TransportException::class);
         if (PHP_VERSION_ID < 80100) {
             $this->expectExceptionMessage("getaddrinfo failed");
         } else {
-            $this->expectExceptionMessage("getaddrinfo for $host failed");
+            $this->expectExceptionMessage("getaddrinfo for $this->host failed");
         }
         $transport->connect();
     }
@@ -126,7 +138,7 @@ class UDPTest extends TestCase
     public function testDisconnect()
     {
         $transport = new UDP(
-            ['host' => '127.0.0.1', 'port' => 12345]
+            ['host' => $this->host, 'port' => $this->port]
         );
         $transport->connect();
         $this->assertIsResource($transport->getStream());
@@ -140,7 +152,7 @@ class UDPTest extends TestCase
     public function testDisconnectNoConnection()
     {
         $transport = new UDP(
-            ['host' => 'test', 'port' => 12345]
+            ['host' => $this->host, 'port' => $this->port]
         );
         $this->assertNull($transport->getStream());
         $transport->disconnect();
@@ -151,15 +163,14 @@ class UDPTest extends TestCase
      */
     public function testReadNoConnection()
     {
-        $host = 'test';
         $transport = new UDP(
-            ['host' => $host, 'port' => 12345]
+            ['host' => $this->host, 'port' => $this->port]
         );
         $this->expectException(TransportException::class);
         if (PHP_VERSION_ID < 80100) {
             $this->expectExceptionMessage("getaddrinfo failed");
         } else {
-            $this->expectExceptionMessage("getaddrinfo for $host failed");
+            $this->expectExceptionMessage("getaddrinfo for $this->host failed");
         }
         $transport->read();
     }
@@ -169,15 +180,14 @@ class UDPTest extends TestCase
      */
     public function testSendNoConnection()
     {
-        $host = 'test';
         $transport = new UDP(
-            ['host' => $host, 'port' => 12345]
+            ['host' => $this->host, 'port' => $this->port]
         );
         $this->expectException(TransportException::class);
         if (PHP_VERSION_ID < 80100) {
             $this->expectExceptionMessage("getaddrinfo failed");
         } else {
-            $this->expectExceptionMessage("getaddrinfo for $host failed");
+            $this->expectExceptionMessage("getaddrinfo for $this->host failed");
         }
         $transport->send('test.send');
     }

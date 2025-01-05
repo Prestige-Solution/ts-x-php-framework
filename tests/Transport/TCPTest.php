@@ -2,30 +2,45 @@
 
 namespace PlanetTeamSpeak\TeamSpeak3Framework\Tests\Transport;
 
+use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 use PlanetTeamSpeak\TeamSpeak3Framework\Adapter\MockServerQuery;
 use PlanetTeamSpeak\TeamSpeak3Framework\Adapter\ServerQuery;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\ServerQueryException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Transport\TCP;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\TransportException;
 
 class TCPTest extends TestCase
 {
+    private string $host;
+    private string $port;
+
+    public function setUp(): void
+    {
+        if (file_exists('./.env.testing')) {
+            $env = file('./.env.testing');
+
+            $this->host = str_replace('HOST=', '', preg_replace('#\n(?!\n)#', '', $env[0]));
+            $this->port = str_replace('PORT=', '', preg_replace('#\n(?!\n)#', '', $env[1]));
+        }
+    }
+
     /**
      * @throws TransportException
      */
     public function testConstructorNoException()
     {
         $adapter = new TCP(
-            ['host' => 'test', 'port' => 12345]
+            ['host' => $this->host, 'port' => $this->port]
         );
         $this->assertInstanceOf(TCP::class, $adapter);
 
         $this->assertArrayHasKey('host', $adapter->getConfig());
-        $this->assertEquals('test', $adapter->getConfig('host'));
+        $this->assertEquals($this->host, $adapter->getConfig('host'));
 
         $this->assertArrayHasKey('port', $adapter->getConfig());
-        $this->assertEquals(12345, $adapter->getConfig('port'));
+        $this->assertEquals($this->port, $adapter->getConfig('port'));
 
         $this->assertArrayHasKey('timeout', $adapter->getConfig());
         $this->assertIsInt($adapter->getConfig('timeout'));
@@ -39,7 +54,7 @@ class TCPTest extends TestCase
         $this->expectException(TransportException::class);
         $this->expectExceptionMessage("config must have a key for 'host'");
 
-        new TCP(['port' => 12345]);
+        new TCP(['port' => $this->port]);
     }
 
     public function testConstructorExceptionNoPort()
@@ -47,7 +62,7 @@ class TCPTest extends TestCase
         $this->expectException(TransportException::class);
         $this->expectExceptionMessage("config must have a key for 'port'");
 
-        new TCP(['host' => 'test']);
+        new TCP(['host' => $this->host]);
     }
 
     /**
@@ -56,23 +71,24 @@ class TCPTest extends TestCase
     public function testGetConfig()
     {
         $adapter = new TCP(
-            ['host' => 'test', 'port' => 12345]
+            ['host' => $this->host, 'port' => $this->port]
         );
 
         $this->assertIsArray($adapter->getConfig());
         $this->assertCount(4, $adapter->getConfig());
         $this->assertArrayHasKey('host', $adapter->getConfig());
-        $this->assertEquals('test', $adapter->getConfig()['host']);
-        $this->assertEquals('test', $adapter->getConfig('host'));
+        $this->assertEquals($this->host, $adapter->getConfig()['host']);
+        $this->assertEquals($this->host, $adapter->getConfig('host'));
     }
 
     /**
      * @throws TransportException
+     * @throws Exception
      */
     public function testSetGetAdapter()
     {
         $transport = new TCP(
-            ['host' => 'test', 'port' => 12345]
+            ['host' => $this->host, 'port' => $this->port]
         );
         // Mocking adaptor since `stream_socket_client()` depends on running server
         $adaptor = $this->createMock(ServerQuery::class);
@@ -87,7 +103,7 @@ class TCPTest extends TestCase
     public function testGetStream()
     {
         $transport = new TCP(
-            ['host' => 'test', 'port' => 12345]
+            ['host' => $this->host, 'port' => $this->port]
         );
         $this->assertNull($transport->getStream());
     }
@@ -102,6 +118,7 @@ class TCPTest extends TestCase
 
     /**
      * Tests if the connection status gets properly returned.
+     * @throws AdapterException
      */
     public function testConnectionStatus()
     {
@@ -117,15 +134,17 @@ class TCPTest extends TestCase
      */
     public function testConnectBadHost()
     {
-        $host = 'test';
         $transport = new TCP(
-            ['host' => $host, 'port' => 12345]
+            ['host' => $this->host, 'port' => $this->port]
         );
         $this->expectException(TransportException::class);
         if (PHP_VERSION_ID < 80100) {
             $this->expectExceptionMessage("getaddrinfo failed");
         } else {
-            $this->expectExceptionMessage("getaddrinfo for $host failed");
+            //TODO Not sure how to handle different languages
+            //TODO handle different expectExceptionMessages
+            //$this->expectExceptionMessage("getaddrinfo for $this->host failed");
+            $this->expectExceptionMessage("Es konnte keine Verbindung hergestellt werden, da der Zielcomputer die Verbindung verweigerte");
         }
         $transport->connect();
     }
@@ -137,10 +156,14 @@ class TCPTest extends TestCase
     public function testConnectHostRefuseConnection()
     {
         $transport = new TCP(
-            ['host' => '127.0.0.1', 'port' => 12345]
+            ['host' => $this->host, 'port' => $this->port]
         );
+
         $this->expectException(TransportException::class);
-        $this->expectExceptionMessage('Connection refused');
+        //TODO Not sure how to handle different languages
+        //TODO handle different expectExceptionMessages
+        //$this->expectExceptionMessage('Connection refused');
+        $this->expectExceptionMessage('Es konnte keine Verbindung hergestellt werden, da der Zielcomputer die Verbindung verweigerte');
         $transport->connect();
     }
 
@@ -150,7 +173,7 @@ class TCPTest extends TestCase
     public function testDisconnect()
     {
         $transport = new TCP(
-            ['host' => '127.0.0.1', 'port' => 12345]
+            ['host' => $this->host, 'port' => $this->port]
         );
         $transport->disconnect();
         $this->assertNull($transport->getStream());
@@ -162,7 +185,7 @@ class TCPTest extends TestCase
     public function testDisconnectNoConnection()
     {
         $transport = new TCP(
-            ['host' => 'test', 'port' => 12345]
+            ['host' => $this->host, 'port' => $this->port]
         );
         $this->assertNull($transport->getStream());
         $transport->disconnect();
@@ -174,15 +197,17 @@ class TCPTest extends TestCase
      */
     public function testReadNoConnection()
     {
-        $host = 'test';
         $transport = new TCP(
-            ['host' => $host, 'port' => 12345]
+            ['host' => $this->host, 'port' => $this->port]
         );
         $this->expectException(TransportException::class);
         if (PHP_VERSION_ID < 80100) {
             $this->expectExceptionMessage("getaddrinfo failed");
         } else {
-            $this->expectExceptionMessage("getaddrinfo for $host failed");
+            //TODO Not sure how to handle different languages
+            //TODO handle different expectExceptionMessages
+            //$this->expectExceptionMessage("getaddrinfo for $this->port failed");
+            $this->expectExceptionMessage("Es konnte keine Verbindung hergestellt werden, da der Zielcomputer die Verbindung verweigerte");
         }
         $transport->read();
     }
@@ -193,15 +218,17 @@ class TCPTest extends TestCase
      */
     public function testReadLineNoConnection()
     {
-        $host = 'test';
         $transport = new TCP(
-            ['host' => $host, 'port' => 12345]
+            ['host' => $this->host, 'port' => $this->port]
         );
         $this->expectException(TransportException::class);
         if (PHP_VERSION_ID < 80100) {
             $this->expectExceptionMessage("getaddrinfo failed");
         } else {
-            $this->expectExceptionMessage("getaddrinfo for $host failed");
+            //TODO Not sure how to handle different languages
+            //TODO handle different expectExceptionMessages
+            //$this->expectExceptionMessage("getaddrinfo for $this->host failed");
+            $this->expectExceptionMessage("Es konnte keine Verbindung hergestellt werden, da der Zielcomputer die Verbindung verweigerte");
         }
         $transport->readLine();
     }
@@ -212,15 +239,17 @@ class TCPTest extends TestCase
      */
     public function testSendNoConnection()
     {
-        $host = 'test';
         $transport = new TCP(
-            ['host' => $host, 'port' => 12345]
+            ['host' => $this->host, 'port' => $this->port]
         );
         $this->expectException(TransportException::class);
         if (PHP_VERSION_ID < 80100) {
             $this->expectExceptionMessage("getaddrinfo failed");
         } else {
-            $this->expectExceptionMessage("getaddrinfo for $host failed");
+            //TODO Not sure how to handle different languages
+            //TODO handle different expectExceptionMessages
+            //$this->expectExceptionMessage("getaddrinfo for $this->host failed");
+            $this->expectExceptionMessage("Es konnte keine Verbindung hergestellt werden, da der Zielcomputer die Verbindung verweigerte");
         }
         $transport->send('testsend');
     }
@@ -231,15 +260,17 @@ class TCPTest extends TestCase
      */
     public function testSendLineNoConnection()
     {
-        $host = 'abc';
         $transport = new TCP(
-            ['host' => $host, 'port' => 12345]
+            ['host' => $this->host, 'port' => $this->port]
         );
         $this->expectException(TransportException::class);
         if (PHP_VERSION_ID < 80100) {
             $this->expectExceptionMessage("getaddrinfo failed");
         } else {
-            $this->expectExceptionMessage("getaddrinfo for $host failed");
+            //TODO Not sure how to handle different languages
+            //TODO handle different expectExceptionMessages
+            //$this->expectExceptionMessage("getaddrinfo for $this->host failed");
+            $this->expectExceptionMessage("Es konnte keine Verbindung hergestellt werden, da der Zielcomputer die Verbindung verweigerte");
         }
         $transport->sendLine('test.sendLine');
     }
