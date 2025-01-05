@@ -1,6 +1,8 @@
 # Configuration files
 .ts3config/*
+.env.testing
 !.ts3config/*.dist
+!.env.testing.example
 
 # Build related
 build/
