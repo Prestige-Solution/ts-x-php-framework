@@ -231,12 +231,12 @@ class ConvertTest extends TestCase
     public function testConvertCodecIDToHumanReadable()
     {
         $hexArray = [
-            hexdec(0x00),
-            hexdec(0x01),
-            hexdec(0x02),
-            hexdec(0x03),
-            hexdec(0x04),
-            hexdec(0x05),
+            strval(0x00),
+            strval(0x01),
+            strval(0x02),
+            strval(0x03),
+            strval(0x04),
+            strval(0x05),
         ];
 
         $this->assertEquals('Speex Narrowband', Convert::codec($hexArray[0]));
@@ -251,9 +251,9 @@ class ConvertTest extends TestCase
     public function testConvertGroupTypeIDToHumanReadable()
     {
         $hexArray = [
-            hexdec(0x00),
-            hexdec(0x01),
-            hexdec(0x02),
+            strval(0x00),
+            strval(0x01),
+            strval(0x02),
         ];
 
         $this->assertEquals('Template', Convert::groupType($hexArray[0]));
@@ -265,11 +265,11 @@ class ConvertTest extends TestCase
     public function testConvertPermTypeIDToHumanReadable()
     {
         $hexArray = [
-            hexdec(0x00),
-            hexdec(0x01),
-            hexdec(0x02),
-            hexdec(0x03),
-            hexdec(0x04),
+            strval(0x00),
+            strval(0x01),
+            strval(0x02),
+            strval(0x03),
+            strval(0x04),
         ];
 
         $this->assertEquals('Server Group', Convert::permissionType($hexArray[0]));
@@ -282,38 +282,36 @@ class ConvertTest extends TestCase
 
     public function testConvertPermCategoryIDToHumanReadable()
     {
-        //TODO phpcs: The behaviour of hexadecimal numeric strings was inconsistent prior to PHP 7 and support
         $hexArrayIssue = [
-            hexdec('0x10'),
-            hexdec('0x11'),
-            hexdec('0x12'),
-            hexdec('0x13'),
-            hexdec('0x14'),
-            hexdec('0x20'),
-            hexdec('0x21'),
-            hexdec('0x22'),
-            hexdec('0x23'),
-            hexdec('0x30'),
-            hexdec('0x31'),
-            hexdec('0x32'),
-            hexdec('0x33'),
-            hexdec('0x34'),
-            hexdec('0x35'),
-            hexdec('0x40'),
-            hexdec('0x41'),
-            hexdec('0x42'),
-            hexdec('0x43'),
-            hexdec('0x44'),
-            hexdec('0x50'),
-            hexdec('0x51'),
-            hexdec('0x52'),
-            hexdec('0x53'),
-            hexdec('0x54'),
-            hexdec('0x60'),
-            hexdec('0xFF'),
+            strval(0x10),
+            strval(0x11),
+            strval(0x12),
+            strval(0x13),
+            strval(0x14),
+            strval(0x20),
+            strval(0x21),
+            strval(0x22),
+            strval(0x23),
+            strval(0x30),
+            strval(0x31),
+            strval(0x32),
+            strval(0x33),
+            strval(0x34),
+            strval(0x35),
+            strval(0x40),
+            strval(0x41),
+            strval(0x42),
+            strval(0x43),
+            strval(0x44),
+            strval(0x50),
+            strval(0x51),
+            strval(0x52),
+            strval(0x53),
+            strval(0x54),
+            strval(0x60),
+            strval(0xFF),
         ];
 
-        $this->assertSame($hexArrayIssue[0], TeamSpeak3::PERM_CAT_GLOBAL);
         $this->assertEquals('Global', Convert::permissionCategory($hexArrayIssue[0]));
         $this->assertEquals('Global / Information', Convert::permissionCategory($hexArrayIssue[1]));
         $this->assertEquals('Global / Virtual Server Management', Convert::permissionCategory($hexArrayIssue[2]));
@@ -348,12 +346,12 @@ class ConvertTest extends TestCase
     public function testConvertLogLevelIDToHumanReadable()
     {
         $hexArray = [
-            hexdec(0x00),
-            hexdec(0x01),
-            hexdec(0x02),
-            hexdec(0x03),
-            hexdec(0x04),
-            hexdec(0x05),
+            strval(0x00),
+            strval(0x01),
+            strval(0x02),
+            strval(0x03),
+            strval(0x04),
+            strval(0x05),
         ];
 
         $this->assertEquals('CRITICAL', Convert::logLevel($hexArray[0]));
