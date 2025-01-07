@@ -347,8 +347,36 @@ class ConvertTest extends TestCase
 
     public function testConvertLogLevelIDToHumanReadable()
     {
-        // @todo: Find logical / comprehensive test for checking codec names
-        $this->markTestSkipped('todo: Find logical / comprehensive test for checking codec names');
+        $hexArray = [
+            hexdec(0x00),
+            hexdec(0x01),
+            hexdec(0x02),
+            hexdec(0x03),
+            hexdec(0x04),
+            hexdec(0x05),
+        ];
+
+        $this->assertEquals('CRITICAL', Convert::logLevel($hexArray[0]));
+        $this->assertEquals('ERROR', Convert::logLevel($hexArray[1]));
+        $this->assertEquals('WARNING', Convert::logLevel($hexArray[2]));
+        $this->assertEquals('DEBUG', Convert::logLevel($hexArray[3]));
+        $this->assertEquals('INFO', Convert::logLevel($hexArray[4]));
+        $this->assertEquals('DEVELOP', Convert::logLevel($hexArray[5]));
+
+        $stringArray = [
+            'critical',
+            'error',
+            'warning',
+            'debug',
+            'info',
+        ];
+
+        $this->assertEquals(0x00, Convert::logLevel($stringArray[0]));
+        $this->assertEquals(0x01, Convert::logLevel($stringArray[1]));
+        $this->assertEquals(0x02, Convert::logLevel($stringArray[2]));
+        $this->assertEquals(0x03, Convert::logLevel($stringArray[3]));
+        $this->assertEquals(0x04, Convert::logLevel($stringArray[4]));
+        $this->assertEquals(0x05, Convert::logLevel('Unknown'));
     }
 
     public function testConvertLogEntryToArray()
