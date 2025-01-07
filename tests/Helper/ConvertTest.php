@@ -230,26 +230,119 @@ class ConvertTest extends TestCase
 
     public function testConvertCodecIDToHumanReadable()
     {
-        // @todo: Find logical / comprehensive test for checking codec names
-        $this->markTestSkipped('todo: Find logical / comprehensive test for checking codec names');
+        $hexArray = [
+            hexdec(0x00),
+            hexdec(0x01),
+            hexdec(0x02),
+            hexdec(0x03),
+            hexdec(0x04),
+            hexdec(0x05),
+        ];
+
+        $this->assertEquals('Speex Narrowband', Convert::codec($hexArray[0]));
+        $this->assertEquals('Speex Wideband', Convert::codec($hexArray[1]));
+        $this->assertEquals('Speex Ultra-Wideband', Convert::codec($hexArray[2]));
+        $this->assertEquals('CELT Mono', Convert::codec($hexArray[3]));
+        $this->assertEquals('Opus Voice', Convert::codec($hexArray[4]));
+        $this->assertEquals('Opus Music', Convert::codec($hexArray[5]));
+        $this->assertEquals('Unknown', Convert::codec(hexdec(0x99)));
     }
 
     public function testConvertGroupTypeIDToHumanReadable()
     {
-        // @todo: Find logical / comprehensive test for checking codec names
-        $this->markTestSkipped('todo: Find logical / comprehensive test for checking codec names');
+        $hexArray = [
+            hexdec(0x00),
+            hexdec(0x01),
+            hexdec(0x02),
+        ];
+
+        $this->assertEquals('Template', Convert::groupType($hexArray[0]));
+        $this->assertEquals('Regular', Convert::groupType($hexArray[1]));
+        $this->assertEquals('ServerQuery', Convert::groupType($hexArray[2]));
+        $this->assertEquals('Unknown', Convert::groupType(hexdec(0x99)));
     }
 
     public function testConvertPermTypeIDToHumanReadable()
     {
-        // @todo: Find logical / comprehensive test for checking codec names
-        $this->markTestSkipped('todo: Find logical / comprehensive test for checking codec names');
+        $hexArray = [
+            hexdec(0x00),
+            hexdec(0x01),
+            hexdec(0x02),
+            hexdec(0x03),
+            hexdec(0x04),
+        ];
+
+        $this->assertEquals('Server Group', Convert::permissionType($hexArray[0]));
+        $this->assertEquals('Client', Convert::permissionType($hexArray[1]));
+        $this->assertEquals('Channel', Convert::permissionType($hexArray[2]));
+        $this->assertEquals('Channel Group', Convert::permissionType($hexArray[3]));
+        $this->assertEquals('Channel Client', Convert::permissionType($hexArray[4]));
+        $this->assertEquals('Unknown', Convert::permissionType(hexdec(0x99)));
     }
 
     public function testConvertPermCategoryIDToHumanReadable()
     {
-        // @todo: Find logical / comprehensive test for checking codec names
-        $this->markTestSkipped('todo: Find logical / comprehensive test for checking codec names');
+        //TODO phpcs: The behaviour of hexadecimal numeric strings was inconsistent prior to PHP 7 and support
+        $hexArrayIssue = [
+            hexdec('0x10'),
+            hexdec('0x11'),
+            hexdec('0x12'),
+            hexdec('0x13'),
+            hexdec('0x14'),
+            hexdec('0x20'),
+            hexdec('0x21'),
+            hexdec('0x22'),
+            hexdec('0x23'),
+            hexdec('0x30'),
+            hexdec('0x31'),
+            hexdec('0x32'),
+            hexdec('0x33'),
+            hexdec('0x34'),
+            hexdec('0x35'),
+            hexdec('0x40'),
+            hexdec('0x41'),
+            hexdec('0x42'),
+            hexdec('0x43'),
+            hexdec('0x44'),
+            hexdec('0x50'),
+            hexdec('0x51'),
+            hexdec('0x52'),
+            hexdec('0x53'),
+            hexdec('0x54'),
+            hexdec('0x60'),
+            hexdec('0xFF'),
+        ];
+
+        $this->assertSame($hexArrayIssue[0], TeamSpeak3::PERM_CAT_GLOBAL);
+        $this->assertEquals('Global', Convert::permissionCategory($hexArrayIssue[0]));
+        $this->assertEquals('Global / Information', Convert::permissionCategory($hexArrayIssue[1]));
+        $this->assertEquals('Global / Virtual Server Management', Convert::permissionCategory($hexArrayIssue[2]));
+        $this->assertEquals('Global / Administration', Convert::permissionCategory($hexArrayIssue[3]));
+        $this->assertEquals('Global / Settings', Convert::permissionCategory($hexArrayIssue[4]));
+        $this->assertEquals('Virtual Server', Convert::permissionCategory($hexArrayIssue[5]));
+        $this->assertEquals('Virtual Server / Information', Convert::permissionCategory($hexArrayIssue[6]));
+        $this->assertEquals('Virtual Server / Administration', Convert::permissionCategory($hexArrayIssue[7]));
+        $this->assertEquals('Virtual Server / Settings', Convert::permissionCategory($hexArrayIssue[8]));
+        $this->assertEquals('Channel', Convert::permissionCategory($hexArrayIssue[9]));
+        $this->assertEquals('Channel / Information', Convert::permissionCategory($hexArrayIssue[10]));
+        $this->assertEquals('Channel / Create', Convert::permissionCategory($hexArrayIssue[11]));
+        $this->assertEquals('Channel / Modify', Convert::permissionCategory($hexArrayIssue[12]));
+        $this->assertEquals('Channel / Delete', Convert::permissionCategory($hexArrayIssue[13]));
+        $this->assertEquals('Channel / Access', Convert::permissionCategory($hexArrayIssue[14]));
+        $this->assertEquals('Group', Convert::permissionCategory($hexArrayIssue[15]));
+        $this->assertEquals('Group / Information', Convert::permissionCategory($hexArrayIssue[16]));
+        $this->assertEquals('Group / Create', Convert::permissionCategory($hexArrayIssue[17]));
+        $this->assertEquals('Group / Modify', Convert::permissionCategory($hexArrayIssue[18]));
+        $this->assertEquals('Group / Delete', Convert::permissionCategory($hexArrayIssue[19]));
+        $this->assertEquals('Client', Convert::permissionCategory($hexArrayIssue[20]));
+        $this->assertEquals('Client / Information', Convert::permissionCategory($hexArrayIssue[21]));
+        $this->assertEquals('Client / Admin', Convert::permissionCategory($hexArrayIssue[22]));
+        $this->assertEquals('Client / Basics', Convert::permissionCategory($hexArrayIssue[23]));
+        $this->assertEquals('Client / Modify', Convert::permissionCategory($hexArrayIssue[24]));
+        $this->assertEquals('File Transfer', Convert::permissionCategory($hexArrayIssue[25]));
+        $this->assertEquals('Grant', Convert::permissionCategory($hexArrayIssue[26]));
+        $this->assertEquals('Unknown', Convert::permissionCategory(hexdec(0x99)));
+
     }
 
     public function testConvertLogLevelIDToHumanReadable()
