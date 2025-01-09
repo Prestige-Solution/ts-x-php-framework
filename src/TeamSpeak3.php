@@ -25,7 +25,6 @@
 namespace PlanetTeamSpeak\TeamSpeak3Framework;
 
 use Exception;
-use PlanetTeamSpeak\TeamSpeak3Framework\Adapter\Adapter;
 use PlanetTeamSpeak\TeamSpeak3Framework\Adapter\FileTransfer;
 use PlanetTeamSpeak\TeamSpeak3Framework\Adapter\MockServerQuery;
 use PlanetTeamSpeak\TeamSpeak3Framework\Adapter\ServerQuery;
@@ -506,7 +505,7 @@ class TeamSpeak3
      */
     public static function init(): void
     {
-        if (version_compare(phpversion(), "5.2.1") == -1) {
+        if (version_compare(phpversion(), "8.0.0", ">=") == false) {
             throw new Exception("this particular software cannot be used with the installed version of PHP");
         }
 

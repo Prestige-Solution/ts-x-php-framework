@@ -58,7 +58,7 @@ class Reply
      *
      * @var Host
      */
-    protected ?Host $con;
+    protected Host $con;
 
     /**
      * Stores an assoc array containing the error info for this reply.
@@ -84,10 +84,10 @@ class Reply
     /**
      * Creates a new PlanetTeamSpeak\TeamSpeak3Framework\Adapter\ServerQuery\Reply object.
      *
-     * @param array $rpl
-     * @param null $cmd
-     * @param Host|null $con
-     * @param boolean $exp
+     * @param  array  $rpl
+     * @param  string  $cmd
+     * @param  Host|null  $con
+     * @param  boolean  $exp
      * @throws AdapterException
      * @throws ServerQueryException
      */
@@ -104,7 +104,7 @@ class Reply
     /**
      * Returns the reply as an PlanetTeamSpeak\TeamSpeak3Framework\Helper\StringHelper object.
      *
-     * @return StringHelper
+     * @return StringHelper|null
      */
     public function toString(): ?StringHelper
     {
@@ -322,7 +322,7 @@ class Reply
     protected function fetchReply(array $rpl): void
     {
         foreach ($rpl as $key => $val) {
-            if ($val->startsWith(TeamSpeak3::TS3_MOTD_PREFIX) || $val->startsWith(TeamSpeak3::TEA_MOTD_PREFIX) || (defined("CUSTOM_MOTD_PREFIX") && $val->startsWith(CUSTOM_MOTD_PREFIX))) {
+            if ($val->startsWith(TeamSpeak3::TS3_MOTD_PREFIX) || $val->startsWith(TeamSpeak3::TEA_MOTD_PREFIX)) {
                 unset($rpl[$key]);
             } elseif ($val->startsWith(TeamSpeak3::EVENT)) {
                 $this->evt[] = new Event($val, $this->con);

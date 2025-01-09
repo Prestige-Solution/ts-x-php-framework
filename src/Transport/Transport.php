@@ -174,9 +174,9 @@ abstract class Transport
     /**
      * Returns the configuration variables in this adapter.
      *
-     * @param string|null $key
-     * @param mixed|null $default
-     * @return array|string
+     * @param  string|null  $key
+     * @param  mixed|null  $default
+     * @return array|string|int
      */
     public function getConfig(string $key = null, mixed $default = null): array|string|int
     {
@@ -246,7 +246,7 @@ abstract class Transport
      */
     public function isConnected(): bool
     {
-        return ($this->getStream() === null) ? false : true;
+        return !(($this->getStream() === null));
     }
 
     /**

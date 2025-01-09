@@ -59,7 +59,7 @@ class TCP extends Transport
             $address = "tcp://" . (str_contains($host, ":") ? "[" . $host . "]" : $host) . ":" . $port;
             $options = empty($this->config["tls"]) ? [] : ["ssl" => ["allow_self_signed" => true, "verify_peer" => false, "verify_peer_name" => false]];
 
-            $this->stream = @stream_socket_client($address, $errno, $errstr, $this->config["timeout"], STREAM_CLIENT_CONNECT, stream_context_create($options));
+            $this->stream = stream_socket_client($address, $errno, $errstr, $this->config["timeout"], STREAM_CLIENT_CONNECT, stream_context_create($options));
 
             if ($this->stream === false) {
                 throw new TransportException(StringHelper::factory($errstr)->toUtf8()->toString(), $errno);
@@ -69,25 +69,25 @@ class TCP extends Transport
                 stream_socket_enable_crypto($this->stream, true, STREAM_CRYPTO_METHOD_SSLv23_CLIENT);
             }
         } else {
-            $this->session = @ssh2_connect($host, $port);
+            $this->session = ssh2_connect($host, $port);
 
             if ($this->session === false) {
                 throw new TransportException("failed to establish secure shell connection to server '" . $this->config["host"] . ":" . $this->config["port"] . "'");
             }
 
-            if (!@ssh2_auth_password($this->session, $this->config["username"], $this->config["password"])) {
+            if (!ssh2_auth_password($this->session, $this->config["username"], $this->config["password"])) {
                 throw new ServerQueryException("invalid loginname or password", 0x208);
             }
 
-            $this->stream = @ssh2_shell($this->session, "raw");
+            $this->stream = ssh2_shell($this->session, "raw");
 
             if ($this->stream === false) {
                 throw new TransportException("failed to open a secure shell on server '" . $this->config["host"] . ":" . $this->config["port"] . "'");
             }
         }
 
-        @stream_set_timeout($this->stream, $timeout);
-        @stream_set_blocking($this->stream, $blocking ? 1 : 0);
+        stream_set_timeout($this->stream, $timeout);
+        stream_set_blocking($this->stream, $blocking ? 1 : 0);
     }
 
     /**
@@ -104,7 +104,7 @@ class TCP extends Transport
         $this->stream = null;
 
         if (is_resource($this->session)) {
-            @ssh2_disconnect($this->session);
+            ssh2_disconnect($this->session);
         }
 
         Signal::getInstance()->emit(strtolower($this->getAdapterType()) . "Disconnected");
@@ -151,7 +151,7 @@ class TCP extends Transport
         while (!$line->endsWith($token)) {
             $this->waitForReadyRead();
 
-            $data = @fgets($this->stream, 4096);
+            $data = fgets($this->stream, 4096);
 
             Signal::getInstance()->emit(strtolower($this->getAdapterType()) . "DataRead", $data);
 

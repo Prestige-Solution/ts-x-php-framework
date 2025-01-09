@@ -37,14 +37,14 @@ class Convert
 {
     /**
      * Converts bytes to a human-readable value.
-     *
-     * @param integer $bytes
+     * @param  integer  $bytes
+     * @param  int  $precision
      * @return string
      */
     public static function bytes(int $bytes, int $precision = 10): string
     {
         // Identify if its a negative or positive number
-        $negative = (str_starts_with($bytes, '-')) ? true : false;
+        $negative = str_starts_with($bytes, '-');
 
         // force calculation with positive numbers only
         $bytes = floatval(abs($bytes));
@@ -67,7 +67,7 @@ class Convert
         foreach ($unit_conversions as $conversion) {
             if ($bytes >= $conversion["VALUE"]) {
                 $result = $bytes / $conversion["VALUE"];
-                $result = strval(round($result, $precision)) . " " . $conversion["UNIT"];
+                $result = round($result, $precision). " " . $conversion["UNIT"];
                 return ($negative) ? '-' . $result : $result;
             }
         }
@@ -83,7 +83,6 @@ class Convert
      * @param boolean $is_ms
      * @param string $format
      * @return string
-     * @todo: Handle negative integer $seconds, or invalidate
      *
      */
     public static function seconds(float $seconds, bool $is_ms = false, string $format = "%r%aD %H:%I:%S"): string
