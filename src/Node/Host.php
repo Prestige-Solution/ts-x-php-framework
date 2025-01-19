@@ -1014,7 +1014,7 @@ class Host extends Node
      * @throws AdapterException
      * @throws ServerQueryException
      */
-    public function queryLoginDelete(int $cldbid)
+    public function queryLoginDelete(int $cldbid): void
     {
         $this->execute('querylogindel', ['cldbid' => $cldbid]);
     }
@@ -1061,7 +1061,7 @@ class Host extends Node
      * @throws AdapterException
      * @throws ServerQueryException
      */
-    public function whoamiSet(string $ident, mixed $value = null)
+    public function whoamiSet(string $ident, mixed $value = null): void
     {
         $this->whoami();
 
@@ -1071,7 +1071,7 @@ class Host extends Node
     /**
      * Resets the current ServerQuery connection info.
      */
-    public function whoamiReset()
+    public function whoamiReset(): void
     {
         $this->whoami = null;
     }
@@ -1101,7 +1101,7 @@ class Host extends Node
      * @throws ServerQueryException
      * @ignore
      */
-    protected function fetchNodeList()
+    protected function fetchNodeList(): void
     {
         $servers = $this->serverList();
 
@@ -1115,7 +1115,7 @@ class Host extends Node
      * @throws ServerQueryException
      * @ignore
      */
-    protected function fetchNodeInfo()
+    protected function fetchNodeInfo(): void
     {
         $info1 = $this->request('hostinfo')->toList();
         $info2 = $this->request('instanceinfo')->toList();
@@ -1128,7 +1128,7 @@ class Host extends Node
      * @throws ServerQueryException
      * @ignore
      */
-    protected function fetchPermissionList()
+    protected function fetchPermissionList(): void
     {
         $reply = $this->request('permissionlist -new')->toArray();
         $start = 1;
@@ -1148,7 +1148,7 @@ class Host extends Node
     /**
      * @ignore
      */
-    protected function fetchPermissionCats()
+    protected function fetchPermissionCats(): void
     {
         $permcats = [];
         $reflects = new ReflectionClass('TeamSpeak3');
@@ -1170,7 +1170,7 @@ class Host extends Node
      *
      * @param string|null $name
      */
-    public function setPredefinedQueryName(string $name = null)
+    public function setPredefinedQueryName(string $name = null): void
     {
         $this->setStorage('_query_nick', $name);
 
@@ -1244,7 +1244,7 @@ class Host extends Node
      *
      * @param bool $first
      */
-    public function setLoadClientlistFirst(bool $first = false)
+    public function setLoadClientlistFirst(bool $first = false): void
     {
         $this->setStorage('_client_top', $first);
 
