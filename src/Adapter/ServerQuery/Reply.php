@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- * @package   TeamSpeak3
  * @author    Sven 'ScP' Paulsen
  * @copyright Copyright (c) Planet TeamSpeak. All rights reserved.
  */
@@ -33,7 +32,6 @@ use PlanetTeamSpeak\TeamSpeak3Framework\TeamSpeak3;
 
 /**
  * Class Reply
- * @package PlanetTeamSpeak\TeamSpeak3Framework\Adapter\ServerQuery
  * @class Reply
  * @brief Provides methods to analyze and format a ServerQuery reply.
  */
@@ -77,7 +75,7 @@ class Reply
     /**
      * Indicates whether exceptions should be thrown or not.
      *
-     * @var boolean
+     * @var bool
      */
     protected bool $exp = true;
 
@@ -87,11 +85,11 @@ class Reply
      * @param  array  $rpl
      * @param  string  $cmd
      * @param  Host|null  $con
-     * @param  boolean  $exp
+     * @param  bool  $exp
      * @throws AdapterException
      * @throws ServerQueryException
      */
-    public function __construct(array $rpl, string $cmd = "", Host $con = null, bool $exp = true)
+    public function __construct(array $rpl, string $cmd = '', Host $con = null, bool $exp = true)
     {
         $this->cmd = new StringHelper($cmd);
         $this->con = $con;
@@ -108,7 +106,7 @@ class Reply
      */
     public function toString(): ?StringHelper
     {
-        return (!func_num_args()) ? $this->rpl->unescape() : $this->rpl;
+        return (! func_num_args()) ? $this->rpl->unescape() : $this->rpl;
     }
 
     /**
@@ -118,13 +116,13 @@ class Reply
      */
     public function toLines(): array
     {
-        if (!count($this->rpl)) {
+        if (! count($this->rpl)) {
             return [];
         }
 
         $list = $this->toString(0)->split(TeamSpeak3::SEPARATOR_LIST);
 
-        if (!func_num_args()) {
+        if (! func_num_args()) {
             for ($i = 0; $i < count($list); $i++) {
                 $list[$i]->unescape();
             }
@@ -145,7 +143,7 @@ class Reply
         foreach ($this->toLines(0) as $cells) {
             $pairs = $cells->split(TeamSpeak3::SEPARATOR_CELL);
 
-            if (!func_num_args()) {
+            if (! func_num_args()) {
                 for ($i = 0; $i < count($pairs); $i++) {
                     $pairs[$i]->unescape();
                 }
@@ -169,16 +167,16 @@ class Reply
 
         for ($i = 0; $i < count($table); $i++) {
             foreach ($table[$i] as $pair) {
-                if (!count($pair)) {
+                if (! count($pair)) {
                     continue;
                 }
 
-                if (!$pair->contains(TeamSpeak3::SEPARATOR_PAIR)) {
+                if (! $pair->contains(TeamSpeak3::SEPARATOR_PAIR)) {
                     $array[$i][$pair->toString()] = null;
                 } else {
                     list($ident, $value) = $pair->split(TeamSpeak3::SEPARATOR_PAIR, 2);
 
-                    $array[$i][$ident->toString()] = $value->isInt() ? $value->toInt() : (!func_num_args() ? $value->unescape() : $value);
+                    $array[$i][$ident->toString()] = $value->isInt() ? $value->toInt() : (! func_num_args() ? $value->unescape() : $value);
                 }
             }
         }
@@ -236,7 +234,7 @@ class Reply
         $array = (func_num_args() > 1) ? $this->toArray(1) : $this->toArray();
 
         for ($i = 0; $i < count($array); $i++) {
-            $array[$i] = (object)$array[$i];
+            $array[$i] = (object) $array[$i];
         }
 
         return $array;
@@ -293,22 +291,22 @@ class Reply
             $this->err[$ident->toString()] = $value->isInt() ? $value->toInt() : $value->unescape();
         }
 
-        Signal::getInstance()->emit("notifyError", $this);
+        Signal::getInstance()->emit('notifyError', $this);
 
-        if ($this->getErrorProperty("id", 0x00) != 0x00 && $this->exp) {
-            if ($permid = $this->getErrorProperty("failed_permid")) {
-                if ($permsid = key($this->con->request("permget permid=" . $permid, false)->toAssocArray("permsid"))) {
-                    $suffix = " (failed on " . $permsid . ")";
+        if ($this->getErrorProperty('id', 0x00) != 0x00 && $this->exp) {
+            if ($permid = $this->getErrorProperty('failed_permid')) {
+                if ($permsid = key($this->con->request('permget permid='.$permid, false)->toAssocArray('permsid'))) {
+                    $suffix = ' (failed on '.$permsid.')';
                 } else {
-                    $suffix = " (failed on " . $this->cmd->section(TeamSpeak3::SEPARATOR_CELL) . " " . $permid . "/0x" . strtoupper(dechex($permid)) . ")";
+                    $suffix = ' (failed on '.$this->cmd->section(TeamSpeak3::SEPARATOR_CELL).' '.$permid.'/0x'.strtoupper(dechex($permid)).')';
                 }
-            } elseif ($details = $this->getErrorProperty("extra_msg")) {
-                $suffix = " (" . trim($details) . ")";
+            } elseif ($details = $this->getErrorProperty('extra_msg')) {
+                $suffix = ' ('.trim($details).')';
             } else {
-                $suffix = "";
+                $suffix = '';
             }
 
-            throw new ServerQueryException($this->getErrorProperty("msg") . $suffix, $this->getErrorProperty("id"), $this->getErrorProperty("return_code"));
+            throw new ServerQueryException($this->getErrorProperty('msg').$suffix, $this->getErrorProperty('id'), $this->getErrorProperty('return_code'));
         }
     }
 

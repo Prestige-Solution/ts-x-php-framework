@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- * @package   TeamSpeak3
  * @author    Sven 'ScP' Paulsen
  * @copyright Copyright (c) Planet TeamSpeak. All rights reserved.
  */
@@ -31,7 +30,6 @@ use PlanetTeamSpeak\TeamSpeak3Framework\Helper\StringHelper;
 
 /**
  * Class Transport
- * @package PlanetTeamSpeak\TeamSpeak3Framework\Transport
  * @class Transport
  * @brief Abstract class for connecting to a TeamSpeak 3 Server through different ways of transport.
  */
@@ -74,23 +72,24 @@ abstract class Transport
      */
     public function __construct(array $config)
     {
-        if (!array_key_exists("host", $config)) {
+        if (! array_key_exists('host', $config)) {
             throw new TransportException("config must have a key for 'host' which specifies the server host name");
         }
 
-        if (!array_key_exists("port", $config)) {
+        if (! array_key_exists('port', $config)) {
             throw new TransportException("config must have a key for 'port' which specifies the server port number");
         }
 
-        if (!array_key_exists("timeout", $config)) {
-            $config["timeout"] = 10;
+        if (! array_key_exists('timeout', $config)) {
+            $config['timeout'] = 10;
         }
 
-        if (!array_key_exists("blocking", $config)) {
-            $config["blocking"] = 1;
+        if (! array_key_exists('blocking', $config)) {
+            $config['blocking'] = 1;
         }
 
         $this->config = $config;
+
         return $this;
     }
 
@@ -101,7 +100,7 @@ abstract class Transport
      */
     public function __sleep()
     {
-        return ["config"];
+        return ['config'];
     }
 
     /**
@@ -147,7 +146,7 @@ abstract class Transport
     /**
      * Reads data from the stream.
      *
-     * @param integer $length
+     * @param int $length
      * @return StringHelper
      * @throws TransportException
      */
@@ -218,10 +217,10 @@ abstract class Transport
         if ($this->adapter instanceof Adapter) {
             $string = StringHelper::factory(get_class($this->adapter));
 
-            return $string->substr($string->findLast("\\"))->replace(["\\", " "], "")->toString();
+            return $string->substr($string->findLast('\\'))->replace(['\\', ' '], '')->toString();
         }
 
-        return "Unknown";
+        return 'Unknown';
     }
 
     /**
@@ -233,7 +232,7 @@ abstract class Transport
     public function getMetaData(): array
     {
         if ($this->stream === null) {
-            throw new TransportException("unable to retrieve header/meta data from stream pointer");
+            throw new TransportException('unable to retrieve header/meta data from stream pointer');
         }
 
         return stream_get_meta_data($this->stream);
@@ -242,23 +241,23 @@ abstract class Transport
     /**
      * Returns TRUE if the transport is connected.
      *
-     * @return boolean
+     * @return bool
      */
     public function isConnected(): bool
     {
-        return !(($this->getStream() === null));
+        return ! (($this->getStream() === null));
     }
 
     /**
      * Blocks a stream until data is available for reading if the stream is connected
      * in non-blocking mode.
      *
-     * @param integer $time
+     * @param int $time
      * @return void
      */
     protected function waitForReadyRead(int $time = 0): void
     {
-        if (!$this->isConnected() || $this->config["blocking"]) {
+        if (! $this->isConnected() || $this->config['blocking']) {
             return;
         }
 
@@ -268,10 +267,10 @@ abstract class Transport
 
             if ($time) {
                 Signal::getInstance()
-                    ->emit(strtolower($this->getAdapterType()) . "WaitTimeout", $time, $this->getAdapter());
+                    ->emit(strtolower($this->getAdapterType()).'WaitTimeout', $time, $this->getAdapter());
             }
 
-            $time = $time + $this->config["timeout"];
-        } while (@stream_select($read, $null, $null, $this->config["timeout"]) == 0);
+            $time = $time + $this->config['timeout'];
+        } while (@stream_select($read, $null, $null, $this->config['timeout']) == 0);
     }
 }

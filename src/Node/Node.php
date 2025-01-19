@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- * @package   TeamSpeak3
  * @author    Sven 'ScP' Paulsen
  * @copyright Copyright (c) Planet TeamSpeak. All rights reserved.
  */
@@ -39,7 +38,6 @@ use RecursiveIteratorIterator;
 
 /**
  * Class Node
- * @package PlanetTeamSpeak\TeamSpeak3Framework\Node
  * @class Abstract
  * @brief Abstract class describing a TeamSpeak 3 node and all it's parameters.
  */
@@ -79,7 +77,7 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
      * Sends a prepared command to the server and returns the result.
      *
      * @param string $cmd
-     * @param boolean $throw
+     * @param bool $throw
      * @return Reply
      * @throws AdapterException|ServerQueryException
      */
@@ -119,7 +117,7 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
      *
      * @return ServerQuery|Node|null
      */
-    public function getParent(): ServerQuery|Node|null
+    public function getParent(): ServerQuery|self|null
     {
         return $this->parent;
     }
@@ -127,7 +125,7 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
     /**
      * Returns the primary ID of the current node.
      *
-     * @return integer
+     * @return int
      */
     public function getId(): int
     {
@@ -138,12 +136,12 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
      * Returns TRUE if the node icon has a local source.
      *
      * @param string $key
-     * @return boolean
+     * @return bool
      */
     public function iconIsLocal(string $key): bool
     {
         $iconid = $this[$key];
-        if (!is_int($iconid)) {
+        if (! is_int($iconid)) {
             $iconid = $iconid->toInt();
         }
 
@@ -159,13 +157,13 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
     public function iconGetName(string $key): StringHelper
     {
         $iconid = $this[$key];
-        if (!is_int($iconid)) {
+        if (! is_int($iconid)) {
             $iconid = $iconid->toInt();
         }
 
         $iconid = ($iconid < 0) ? (pow(2, 32)) - ($iconid * -1) : $iconid;
 
-        return new StringHelper("/icon_" . $iconid);
+        return new StringHelper('/icon_'.$iconid);
     }
 
     /**
@@ -174,15 +172,15 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
      * @param string $prefix
      * @return string
      */
-    public function getClass(string $prefix = "ts3_"): string
+    public function getClass(string $prefix = 'ts3_'): string
     {
         if ($this instanceof Channel && $this->isSpacer()) {
-            return $prefix . "spacer";
-        } elseif ($this instanceof Client && $this["client_type"]) {
-            return $prefix . "query";
+            return $prefix.'spacer';
+        } elseif ($this instanceof Client && $this['client_type']) {
+            return $prefix.'query';
         }
 
-        return $prefix . StringHelper::factory(get_class($this))->section("_", 2)->toLower();
+        return $prefix.StringHelper::factory(get_class($this))->section('_', 2)->toLower();
     }
 
     /**
@@ -225,12 +223,12 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
                 $siblings[] = ($iterator->getSubIterator($level)->hasNext()) ? 1 : 0;
             }
 
-            $siblings[] = (!$iterator->getSubIterator($level)->hasNext()) ? 1 : 0;
+            $siblings[] = (! $iterator->getSubIterator($level)->hasNext()) ? 1 : 0;
 
             $html .= $viewer->fetchObject($node, $siblings);
         }
 
-        if (empty($html) && method_exists($viewer, "toString")) {
+        if (empty($html) && method_exists($viewer, 'toString')) {
             return $viewer->toString();
         }
 
@@ -246,9 +244,9 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
      */
     protected function filterList(array $nodes = [], array $rules = []): array
     {
-        if (!empty($rules)) {
+        if (! empty($rules)) {
             foreach ($nodes as $node) {
-                if (!$node instanceof Node) {
+                if (! $node instanceof self) {
                     continue;
                 }
 
@@ -276,8 +274,8 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
      * Returns all information available on this node. If $convert is enabled, some property
      * values will be converted to human-readable values.
      *
-     * @param boolean $extend
-     * @param boolean $convert
+     * @param bool $extend
+     * @param bool $convert
      * @return array
      */
     public function getInfo(bool $extend = true, bool $convert = false): array
@@ -292,19 +290,19 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
             foreach ($info as $key => $val) {
                 $key = StringHelper::factory($key);
 
-                if ($key->contains("_bytes_")) {
+                if ($key->contains('_bytes_')) {
                     $info[$key->toString()] = Convert::bytes($val);
-                } elseif ($key->contains("_bandwidth_")) {
-                    $info[$key->toString()] = Convert::bytes($val) . "/s";
-                } elseif ($key->contains("_packets_")) {
-                    $info[$key->toString()] = number_format($val, 0, null, ".");
-                } elseif ($key->contains("_packetloss_")) {
-                    $info[$key->toString()] = sprintf("%01.2f", floatval($val instanceof StringHelper ? $val->toString() : strval($val)) * 100) . "%";
-                } elseif ($key->endsWith("_uptime")) {
+                } elseif ($key->contains('_bandwidth_')) {
+                    $info[$key->toString()] = Convert::bytes($val).'/s';
+                } elseif ($key->contains('_packets_')) {
+                    $info[$key->toString()] = number_format($val, 0, null, '.');
+                } elseif ($key->contains('_packetloss_')) {
+                    $info[$key->toString()] = sprintf('%01.2f', floatval($val instanceof StringHelper ? $val->toString() : strval($val)) * 100).'%';
+                } elseif ($key->endsWith('_uptime')) {
                     $info[$key->toString()] = Convert::seconds($val);
-                } elseif ($key->endsWith("_version")) {
+                } elseif ($key->endsWith('_version')) {
                     $info[$key->toString()] = Convert::version($val);
-                } elseif ($key->endsWith("_icon_id")) {
+                } elseif ($key->endsWith('_icon_id')) {
                     $info[$key->toString()] = $this->iconGetName($key)->filterDigits();
                 }
             }
@@ -324,11 +322,11 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
      */
     public function getProperty(string $property, mixed $default = null): mixed
     {
-        if (!$this->offsetExists($property)) {
+        if (! $this->offsetExists($property)) {
             $this->fetchNodeInfo();
         }
 
-        if (!$this->offsetExists($property)) {
+        if (! $this->offsetExists($property)) {
             return $default;
         }
 
@@ -375,11 +373,11 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
      */
     public function __call(string $name, array $args)
     {
-        if ($this->getParent() instanceof Node) {
+        if ($this->getParent() instanceof self) {
             return call_user_func_array([$this->getParent(), $name], $args);
         }
 
-        throw new NodeException("node method '" . $name . "()' does not exist");
+        throw new NodeException("node method '".$name."()' does not exist");
     }
 
     /**
@@ -403,7 +401,7 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
      */
     protected function getStorage(string $key, mixed $default = null): mixed
     {
-        return !empty($this->storage[$key]) ? $this->storage[$key] : $default;
+        return ! empty($this->storage[$key]) ? $this->storage[$key] : $default;
     }
 
     /**
@@ -424,7 +422,7 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
      */
     public function __sleep()
     {
-        return ["parent", "storage", "nodeId"];
+        return ['parent', 'storage', 'nodeId'];
     }
 
     /**
@@ -563,7 +561,7 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
      */
     public function offsetExists($offset): bool
     {
-        return array_key_exists((string)$offset, $this->nodeInfo);
+        return array_key_exists((string) $offset, $this->nodeInfo);
     }
 
     /**
@@ -572,15 +570,15 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
      */
     public function offsetGet($offset): mixed
     {
-        if (!$this->offsetExists($offset)) {
+        if (! $this->offsetExists($offset)) {
             $this->fetchNodeInfo();
         }
 
-        if (!$this->offsetExists($offset)) {
-            throw new NodeException("node '" . get_class($this) . "' has no property named '" . $offset . "'");
+        if (! $this->offsetExists($offset)) {
+            throw new NodeException("node '".get_class($this)."' has no property named '".$offset."'");
         }
 
-        return $this->nodeInfo[(string)$offset];
+        return $this->nodeInfo[(string) $offset];
     }
 
     /**
@@ -589,12 +587,13 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
      */
     public function offsetSet($offset, $value): void
     {
-        if (method_exists($this, "modify")) {
-            $this->modify([(string)$offset => $value]);
+        if (method_exists($this, 'modify')) {
+            $this->modify([(string) $offset => $value]);
+
             return;
         }
 
-        throw new NodeException("node '" . get_class($this) . "' is read only");
+        throw new NodeException("node '".get_class($this)."' is read only");
     }
 
     /**
@@ -602,7 +601,7 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
      */
     public function offsetUnset($offset): void
     {
-        unset($this->nodeInfo[(string)$offset]);
+        unset($this->nodeInfo[(string) $offset]);
     }
 
     /**

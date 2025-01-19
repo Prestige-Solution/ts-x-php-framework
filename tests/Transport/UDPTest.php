@@ -5,13 +5,15 @@ namespace PlanetTeamSpeak\TeamSpeak3Framework\Tests\Transport;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 use PlanetTeamSpeak\TeamSpeak3Framework\Adapter\ServerQuery;
-use PlanetTeamSpeak\TeamSpeak3Framework\Transport\UDP;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\TransportException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Transport\UDP;
 
 class UDPTest extends TestCase
 {
     private string $host;
+
     private string $port;
+
     public function setUp(): void
     {
         if (file_exists('./.env.testing')) {
@@ -21,6 +23,7 @@ class UDPTest extends TestCase
             $this->port = str_replace('PORT=', '', preg_replace('#\n(?!\n)#', '', $env[1]));
         }
     }
+
     /**
      * @throws TransportException
      */
@@ -125,7 +128,7 @@ class UDPTest extends TestCase
         );
         $this->expectException(TransportException::class);
         if (PHP_VERSION_ID < 80100) {
-            $this->expectExceptionMessage("getaddrinfo failed");
+            $this->expectExceptionMessage('getaddrinfo failed');
         } else {
             $this->expectExceptionMessage("getaddrinfo for $this->host failed");
         }
@@ -168,7 +171,7 @@ class UDPTest extends TestCase
         );
         $this->expectException(TransportException::class);
         if (PHP_VERSION_ID < 80100) {
-            $this->expectExceptionMessage("getaddrinfo failed");
+            $this->expectExceptionMessage('getaddrinfo failed');
         } else {
             $this->expectExceptionMessage("getaddrinfo for $this->host failed");
         }
@@ -185,7 +188,7 @@ class UDPTest extends TestCase
         );
         $this->expectException(TransportException::class);
         if (PHP_VERSION_ID < 80100) {
-            $this->expectExceptionMessage("getaddrinfo failed");
+            $this->expectExceptionMessage('getaddrinfo failed');
         } else {
             $this->expectExceptionMessage("getaddrinfo for $this->host failed");
         }

@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- * @package   TeamSpeak3
  * @author    Sven 'ScP' Paulsen
  * @copyright Copyright (c) Planet TeamSpeak. All rights reserved.
  */
@@ -36,7 +35,6 @@ use stdClass;
 
 /**
  * Class Json
- * @package PlanetTeamSpeak\TeamSpeak3Framework\Viewer
  * @class PlanetTeamSpeak\TeamSpeak3Framework\Viewer\Json
  * @brief Generates a JSON struct used in JS-based TeamSpeak 3 viewers.
  */
@@ -68,7 +66,7 @@ class Json implements ViewerInterface
      * An internal counter indicating the depth of the PlanetTeamSpeak\TeamSpeak3Framework\Node\Node object previously
      * processed.
      *
-     * @var integer
+     * @var int
      */
     protected int $lastLvl = 0;
 
@@ -81,6 +79,7 @@ class Json implements ViewerInterface
     public function __construct(array &$data = [])
     {
         $this->data = &$data;
+
         return $this;
     }
 
@@ -103,8 +102,8 @@ class Json implements ViewerInterface
         $obj->children = $node->count();
         $obj->level = $this->getLevel();
         $obj->first = $obj->level != $this->lastLvl;
-        $obj->last = (bool)array_pop($siblings);
-        $obj->siblings = array_map("boolval", $siblings);
+        $obj->last = (bool) array_pop($siblings);
+        $obj->siblings = array_map('boolval', $siblings);
         $obj->class = $this->getType();
         $obj->name = $this->getName();
         $obj->image = $this->getImage();
@@ -113,7 +112,7 @@ class Json implements ViewerInterface
         $this->data[] = $obj;
         $this->lastLvl = $obj->level;
 
-        return "";
+        return '';
     }
 
     /**
@@ -124,11 +123,11 @@ class Json implements ViewerInterface
     protected function getId(): bool|string
     {
         if ($this->currObj instanceof Server) {
-            return "ts3_s" . $this->currObj->virtualserver_id;
+            return 'ts3_s'.$this->currObj->virtualserver_id;
         } elseif ($this->currObj instanceof Channel) {
-            return "ts3_c" . $this->currObj->cid;
+            return 'ts3_c'.$this->currObj->cid;
         } elseif ($this->currObj instanceof Client) {
-            return "ts3_u" . $this->currObj->clid;
+            return 'ts3_u'.$this->currObj->clid;
         }
 
         return false;
@@ -142,18 +141,18 @@ class Json implements ViewerInterface
     protected function getParent(): string
     {
         if ($this->currObj instanceof Channel) {
-            return $this->currObj->pid ? "ts3_c" . $this->currObj->pid : "ts3_s" . $this->currObj->getParent()->getId();
+            return $this->currObj->pid ? 'ts3_c'.$this->currObj->pid : 'ts3_s'.$this->currObj->getParent()->getId();
         } elseif ($this->currObj instanceof Client) {
-            return $this->currObj->cid ? "ts3_c" . $this->currObj->cid : "ts3_s" . $this->currObj->getParent()->getId();
+            return $this->currObj->cid ? 'ts3_c'.$this->currObj->cid : 'ts3_s'.$this->currObj->getParent()->getId();
         }
 
-        return "ts3";
+        return 'ts3';
     }
 
     /**
      * Returns the level of the current element.
      *
-     * @return integer
+     * @return int
      */
     protected function getLevel(): int
     {
@@ -174,16 +173,16 @@ class Json implements ViewerInterface
     protected function getType(): string
     {
         if ($this->currObj instanceof Server) {
-            return "server";
+            return 'server';
         } elseif ($this->currObj instanceof Channel) {
-            return "channel";
+            return 'channel';
         } elseif ($this->currObj instanceof Client) {
-            return "client";
+            return 'client';
         } elseif ($this->currObj instanceof ServerGroup || $this->currObj instanceof ChannelGroup) {
-            return "group";
+            return 'group';
         }
 
-        return "host";
+        return 'host';
     }
 
     /**
@@ -195,51 +194,51 @@ class Json implements ViewerInterface
      */
     protected function getClass(): string
     {
-        $extras = "";
+        $extras = '';
 
         if ($this->currObj instanceof Channel && $this->currObj->isSpacer()) {
             switch ($this->currObj->spacerGetType()) {
-                case (string)TeamSpeak3::SPACER_SOLIDLINE:
-                    $extras .= " solidline";
+                case (string) TeamSpeak3::SPACER_SOLIDLINE:
+                    $extras .= ' solidline';
                     break;
 
-                case (string)TeamSpeak3::SPACER_DASHLINE:
-                    $extras .= " dashline";
+                case (string) TeamSpeak3::SPACER_DASHLINE:
+                    $extras .= ' dashline';
                     break;
 
-                case (string)TeamSpeak3::SPACER_DASHDOTLINE:
-                    $extras .= " dashdotline";
+                case (string) TeamSpeak3::SPACER_DASHDOTLINE:
+                    $extras .= ' dashdotline';
                     break;
 
-                case (string)TeamSpeak3::SPACER_DASHDOTDOTLINE:
-                    $extras .= " dashdotdotline";
+                case (string) TeamSpeak3::SPACER_DASHDOTDOTLINE:
+                    $extras .= ' dashdotdotline';
                     break;
 
-                case (string)TeamSpeak3::SPACER_DOTLINE:
-                    $extras .= " dotline";
+                case (string) TeamSpeak3::SPACER_DOTLINE:
+                    $extras .= ' dotline';
                     break;
             }
 
             switch ($this->currObj->spacerGetAlign()) {
                 case TeamSpeak3::SPACER_ALIGN_REPEAT:
-                    $extras .= " repeat";
+                    $extras .= ' repeat';
                     break;
 
                 case TeamSpeak3::SPACER_ALIGN_CENTER:
-                    $extras .= " center";
+                    $extras .= ' center';
                     break;
 
                 case TeamSpeak3::SPACER_ALIGN_RIGHT:
-                    $extras .= " right";
+                    $extras .= ' right';
                     break;
 
                 case TeamSpeak3::SPACER_ALIGN_LEFT:
-                    $extras .= " left";
+                    $extras .= ' left';
                     break;
             }
         }
 
-        return $this->currObj->getClass(null) . $extras;
+        return $this->currObj->getClass(null).$extras;
     }
 
     /**
@@ -249,27 +248,27 @@ class Json implements ViewerInterface
      */
     protected function getSpacerType(): string
     {
-        $type = "";
+        $type = '';
 
-        if (!$this->currObj instanceof Channel || !$this->currObj->isSpacer()) {
-            return "none";
+        if (! $this->currObj instanceof Channel || ! $this->currObj->isSpacer()) {
+            return 'none';
         }
 
         $type .= match ($this->currObj->spacerGetType()) {
-            (string)TeamSpeak3::SPACER_SOLIDLINE => "solidline",
-            (string)TeamSpeak3::SPACER_DASHLINE => "dashline",
-            (string)TeamSpeak3::SPACER_DASHDOTLINE => "dashdotline",
-            (string)TeamSpeak3::SPACER_DASHDOTDOTLINE => "dashdotdotline",
-            (string)TeamSpeak3::SPACER_DOTLINE => "dotline",
-            default => "custom",
+            (string) TeamSpeak3::SPACER_SOLIDLINE => 'solidline',
+            (string) TeamSpeak3::SPACER_DASHLINE => 'dashline',
+            (string) TeamSpeak3::SPACER_DASHDOTLINE => 'dashdotline',
+            (string) TeamSpeak3::SPACER_DASHDOTDOTLINE => 'dashdotdotline',
+            (string) TeamSpeak3::SPACER_DOTLINE => 'dotline',
+            default => 'custom',
         };
 
-        if ($type == "custom") {
+        if ($type == 'custom') {
             $type .= match ($this->currObj->spacerGetAlign()) {
-                TeamSpeak3::SPACER_ALIGN_REPEAT => "repeat",
-                TeamSpeak3::SPACER_ALIGN_CENTER => "center",
-                TeamSpeak3::SPACER_ALIGN_RIGHT => "right",
-                default => "left",
+                TeamSpeak3::SPACER_ALIGN_REPEAT => 'repeat',
+                TeamSpeak3::SPACER_ALIGN_CENTER => 'center',
+                TeamSpeak3::SPACER_ALIGN_RIGHT => 'right',
+                default => 'left',
             };
         }
 
@@ -285,20 +284,20 @@ class Json implements ViewerInterface
     protected function getName(): string
     {
         if ($this->currObj instanceof Channel && $this->currObj->isSpacer()) {
-            return $this->currObj["channel_name"]->section("]", 1, 99)->toString();
+            return $this->currObj['channel_name']->section(']', 1, 99)->toString();
         } elseif ($this->currObj instanceof Client) {
             $before = [];
             $behind = [];
 
             foreach ($this->currObj->memberOf() as $group) {
-                if ($group->getProperty("namemode") == TeamSpeak3::GROUP_NAMEMODE_BEFORE) {
-                    $before[] = "[" . $group["name"] . "]";
-                } elseif ($group->getProperty("namemode") == TeamSpeak3::GROUP_NAMEMODE_BEHIND) {
-                    $behind[] = "[" . $group["name"] . "]";
+                if ($group->getProperty('namemode') == TeamSpeak3::GROUP_NAMEMODE_BEFORE) {
+                    $before[] = '['.$group['name'].']';
+                } elseif ($group->getProperty('namemode') == TeamSpeak3::GROUP_NAMEMODE_BEHIND) {
+                    $behind[] = '['.$group['name'].']';
                 }
             }
 
-            return trim(implode("", $before) . " " . $this->currObj . " " . implode("", $behind));
+            return trim(implode('', $before).' '.$this->currObj.' '.implode('', $behind));
         }
 
         return $this->currObj->toString();
@@ -316,8 +315,8 @@ class Json implements ViewerInterface
         if (is_a($this->currObj, Node::class)) {
             $this->id = 0;
             $this->icon = 0;
-            $props->version = $this->currObj->version("version")->toString();
-            $props->platform = $this->currObj->version("platform")->toString();
+            $props->version = $this->currObj->version('version')->toString();
+            $props->platform = $this->currObj->version('platform')->toString();
             $props->users = $this->currObj->virtualservers_total_clients_online;
             $props->slots = $this->currObj->virtualservers_total_maxclients;
             $props->flags = 0;
@@ -333,7 +332,7 @@ class Json implements ViewerInterface
             $props->slots = $this->currObj->virtualserver_maxclients;
             $props->flags = 0;
 
-            $props->flags += $this->currObj->virtualserver_status === "online" ? 1 : 0;
+            $props->flags += $this->currObj->virtualserver_status === 'online' ? 1 : 0;
             $props->flags += $this->currObj->virtualserver_flag_password ? 2 : 0;
             $props->flags += $this->currObj->virtualserver_autostart ? 4 : 0;
             $props->flags += $this->currObj->virtualserver_weblist_enabled ? 8 : 0;
@@ -341,7 +340,7 @@ class Json implements ViewerInterface
         } elseif (is_a($this->currObj, Channel::class)) {
             $props->id = $this->currObj->getId();
             $props->icon = 0;
-            if (!$this->currObj->isSpacer()) {
+            if (! $this->currObj->isSpacer()) {
                 $props->icon = $this->currObj->channel_icon_id < 0 ? (2 ** 32) - ($this->currObj->channel_icon_id * -1) : $this->currObj->channel_icon_id;
             }
 
@@ -394,9 +393,9 @@ class Json implements ViewerInterface
             $props->flags += $this->currObj->client_is_channel_commander ? 4 : 0;
             $props->flags += $this->currObj->client_is_priority_speaker ? 8 : 0;
             $props->flags += $this->currObj->client_is_talker ? 16 : 0;
-            $props->flags += $this->currObj->channelGetById($this->currObj->cid)->channel_needed_talk_power > $this->currObj->client_talk_power && !$this->currObj->client_is_talker ? 32 : 0;
-            $props->flags += $this->currObj->client_input_muted || !$this->currObj->client_input_hardware ? 64 : 0;
-            $props->flags += $this->currObj->client_output_muted || !$this->currObj->client_output_hardware ? 128 : 0;
+            $props->flags += $this->currObj->channelGetById($this->currObj->cid)->channel_needed_talk_power > $this->currObj->client_talk_power && ! $this->currObj->client_is_talker ? 32 : 0;
+            $props->flags += $this->currObj->client_input_muted || ! $this->currObj->client_input_hardware ? 64 : 0;
+            $props->flags += $this->currObj->client_output_muted || ! $this->currObj->client_output_hardware ? 128 : 0;
         } elseif (is_a($this->currObj, ServerGroup::class) || is_a($this->currObj, ChannelGroup::class)) {
             $props->id = $this->currObj->getId();
             $props->icon = $this->currObj->iconid < 0 ? pow(2, 32) - ($this->currObj->iconid * -1) : $this->currObj->iconid;
@@ -422,7 +421,7 @@ class Json implements ViewerInterface
      */
     protected function getImage(): string
     {
-        return str_replace("_", "-", $this->currObj->getIcon());
+        return str_replace('_', '-', $this->currObj->getIcon());
     }
 
     /**

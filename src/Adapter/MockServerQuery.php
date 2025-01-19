@@ -26,10 +26,10 @@ class MockServerQuery extends ServerQuery
 
         $rdy = $this->getTransport()->readLine();
 
-        if (!$rdy->startsWith(TeamSpeak3::TS3_PROTO_IDENT) && !$rdy->startsWith(TeamSpeak3::TEA_PROTO_IDENT)) {
-            throw new AdapterException("invalid reply from the server (" . $rdy . ")");
+        if (! $rdy->startsWith(TeamSpeak3::TS3_PROTO_IDENT) && ! $rdy->startsWith(TeamSpeak3::TEA_PROTO_IDENT)) {
+            throw new AdapterException('invalid reply from the server ('.$rdy.')');
         }
 
-        Signal::getInstance()->emit("serverqueryConnected", $this);
+        Signal::getInstance()->emit('serverqueryConnected', $this);
     }
 }

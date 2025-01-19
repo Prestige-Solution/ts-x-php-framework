@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- * @package   TeamSpeak3
  * @author    Sven 'ScP' Paulsen
  * @copyright Copyright (c) Planet TeamSpeak. All rights reserved.
  */
@@ -30,7 +29,6 @@ use PlanetTeamSpeak\TeamSpeak3Framework\TeamSpeak3;
 
 /**
  * Class ChannelGroup
- * @package PlanetTeamSpeak\TeamSpeak3Framework\Node
  * @class ChannelGroup
  * @brief Class describing a TeamSpeak 3 channel group and all it's parameters.
  */
@@ -44,13 +42,13 @@ class ChannelGroup extends Group
      * @param string $index
      * @throws ServerQueryException
      */
-    public function __construct(Server $server, array $info, string $index = "cgid")
+    public function __construct(Server $server, array $info, string $index = 'cgid')
     {
         $this->parent = $server;
         $this->nodeInfo = $info;
 
-        if (!array_key_exists($index, $this->nodeInfo)) {
-            throw new ServerQueryException("invalid groupID", 0xA00);
+        if (! array_key_exists($index, $this->nodeInfo)) {
+            throw new ServerQueryException('invalid groupID', 0xA00);
         }
 
         $this->nodeId = $this->nodeInfo[$index];
@@ -71,7 +69,7 @@ class ChannelGroup extends Group
      * Deletes the channel group. If $force is set to TRUE, the channel group will be
      * deleted even if there are clients within.
      *
-     * @param boolean $force
+     * @param bool $force
      * @return void
      */
     public function delete(bool $force = false): void
@@ -83,9 +81,9 @@ class ChannelGroup extends Group
      * Creates a copy of the channel group and returns the new groups ID.
      *
      * @param string|null $name
-     * @param integer $tcgid
-     * @param integer $type
-     * @return integer
+     * @param int $tcgid
+     * @param int $type
+     * @return int
      */
     public function copy(string $name = null, int $tcgid = 0, int $type = TeamSpeak3::GROUP_DBTYPE_REGULAR): int
     {
@@ -95,7 +93,7 @@ class ChannelGroup extends Group
     /**
      * Returns a list of permissions assigned to the channel group.
      *
-     * @param boolean $permsid
+     * @param bool $permsid
      * @return array
      */
     public function permList(bool $permsid = false): array
@@ -107,8 +105,8 @@ class ChannelGroup extends Group
      * Adds a set of specified permissions to the channel group. Multiple permissions
      * can be added by providing the two parameters of each permission in separate arrays.
      *
-     * @param integer $permid
-     * @param integer $permvalue
+     * @param int $permid
+     * @param int $permvalue
      * @return void
      */
     public function permAssign(int $permid, int $permvalue): void
@@ -130,7 +128,7 @@ class ChannelGroup extends Group
      * Removes a set of specified permissions from the channel group. Multiple
      * permissions can be removed at once.
      *
-     * @param integer $permid
+     * @param int $permid
      * @return void
      */
     public function permRemove(int $permid): void
@@ -151,9 +149,9 @@ class ChannelGroup extends Group
     /**
      * Returns a list of clients assigned to the channel group specified.
      *
-     * @param integer|null $cid
-     * @param integer|null $cldbid
-     * @param boolean $resolve
+     * @param int|null $cid
+     * @param int|null $cldbid
+     * @param bool $resolve
      * @return array
      */
     public function clientList(int $cid = null, int $cldbid = null, bool $resolve = false): array
@@ -174,7 +172,7 @@ class ChannelGroup extends Group
     /**
      * Creates a new privilege key (token) for the channel group and returns the key.
      *
-     * @param integer $cid
+     * @param int $cid
      * @param string|null $description
      * @param string|null $customset
      * @return StringHelper
@@ -192,7 +190,7 @@ class ChannelGroup extends Group
         $this->nodeList = [];
 
         foreach ($this->getParent()->clientList() as $client) {
-            if ($client["client_channel_group_id"] == $this->getId()) {
+            if ($client['client_channel_group_id'] == $this->getId()) {
                 $this->nodeList[] = $client;
             }
         }
@@ -205,7 +203,7 @@ class ChannelGroup extends Group
      */
     public function getUniqueId(): string
     {
-        return $this->getParent()->getUniqueId() . "_cg" . $this->getId();
+        return $this->getParent()->getUniqueId().'_cg'.$this->getId();
     }
 
     /**
@@ -215,6 +213,6 @@ class ChannelGroup extends Group
      */
     public function getIcon(): string
     {
-        return "group_channel";
+        return 'group_channel';
     }
 }

@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- * @package   TeamSpeak3
  * @author    Sven 'ScP' Paulsen
  * @copyright Copyright (c) Planet TeamSpeak. All rights reserved.
  */
@@ -26,7 +25,6 @@ namespace PlanetTeamSpeak\TeamSpeak3Framework\Helper\Profiler;
 
 /**
  * Class Timer
- * @package PlanetTeamSpeak\TeamSpeak3Framework\Helper\Profiler
  * @class Timer
  * @brief Helper class providing profiler timers.
  */
@@ -35,7 +33,7 @@ class Timer
     /**
      * Indicates wether the timer is running or not.
      *
-     * @var boolean
+     * @var bool
      */
     protected bool $running = false;
 
@@ -69,9 +67,9 @@ class Timer
     {
         $this->name = $name;
 
-        $this->data["runtime"] = 0;
-        $this->data["realmem"] = 0;
-        $this->data["emalloc"] = 0;
+        $this->data['runtime'] = 0;
+        $this->data['realmem'] = 0;
+        $this->data['emalloc'] = 0;
 
         $this->start();
     }
@@ -87,8 +85,8 @@ class Timer
             return;
         }
 
-        $this->data["realmem_start"] = memory_get_usage(true);
-        $this->data["emalloc_start"] = memory_get_usage();
+        $this->data['realmem_start'] = memory_get_usage(true);
+        $this->data['emalloc_start'] = memory_get_usage();
 
         $this->started = microtime(true);
         $this->running = true;
@@ -101,13 +99,13 @@ class Timer
      */
     public function stop(): void
     {
-        if (!$this->isRunning()) {
+        if (! $this->isRunning()) {
             return;
         }
 
-        $this->data["runtime"] += microtime(true) - $this->started;
-        $this->data["realmem"] += memory_get_usage(true) - $this->data["realmem_start"];
-        $this->data["emalloc"] += memory_get_usage() - $this->data["emalloc_start"];
+        $this->data['runtime'] += microtime(true) - $this->started;
+        $this->data['realmem'] += memory_get_usage(true) - $this->data['realmem_start'];
+        $this->data['emalloc'] += memory_get_usage() - $this->data['emalloc_start'];
 
         $this->started = 0;
         $this->running = false;
@@ -125,14 +123,14 @@ class Timer
             $this->start();
         }
 
-        return $this->data["runtime"];
+        return $this->data['runtime'];
     }
 
     /**
      * Returns the amount of memory allocated to PHP in bytes.
      *
-     * @param boolean $realmem
-     * @return integer
+     * @param bool $realmem
+     * @return int
      */
     public function getMemUsage(bool $realmem = false): int
     {
@@ -141,13 +139,13 @@ class Timer
             $this->start();
         }
 
-        return ($realmem !== false) ? $this->data["realmem"] : $this->data["emalloc"];
+        return ($realmem !== false) ? $this->data['realmem'] : $this->data['emalloc'];
     }
 
     /**
      * Returns TRUE if the timer is running.
      *
-     * @return boolean
+     * @return bool
      */
     public function isRunning(): bool
     {

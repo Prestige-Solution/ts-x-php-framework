@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- * @package   TeamSpeak3
  * @author    Sven 'ScP' Paulsen
  * @copyright Copyright (c) Planet TeamSpeak. All rights reserved.
  */
@@ -26,7 +25,6 @@ namespace PlanetTeamSpeak\TeamSpeak3Framework\Exception;
 
 /**
  * Class FileTransferException
- * @package PlanetTeamSpeak\TeamSpeak3Framework\Exception
  * @class FileTransferException
  * @brief Enhanced exception class for PlanetTeamSpeak\TeamSpeak3Framework\Adapter\FileTransfer objects.
  */

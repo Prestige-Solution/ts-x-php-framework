@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- * @package   TeamSpeak3
  * @author    Sven 'ScP' Paulsen
  * @copyright Copyright (c) Planet TeamSpeak. All rights reserved.
  */
@@ -35,7 +34,6 @@ use PlanetTeamSpeak\TeamSpeak3Framework\TeamSpeak3;
 
 /**
  * Class Event
- * @package PlanetTeamSpeak\TeamSpeak3Framework\Adapter\ServerQuery
  * @class Event
  * @brief Provides methods to analyze and format a ServerQuery event.
  */
@@ -72,25 +70,25 @@ class Event implements ArrayAccess
      */
     public function __construct(StringHelper $evt, Host $con = null)
     {
-        if (!$evt->startsWith(TeamSpeak3::EVENT)) {
-            throw new AdapterException("invalid notification event format");
+        if (! $evt->startsWith(TeamSpeak3::EVENT)) {
+            throw new AdapterException('invalid notification event format');
         }
 
         list($type, $data) = $evt->split(TeamSpeak3::SEPARATOR_CELL, 2);
 
         if (empty($data)) {
-            throw new AdapterException("invalid notification event data");
+            throw new AdapterException('invalid notification event data');
         }
 
-        $fake = new StringHelper(TeamSpeak3::ERROR . TeamSpeak3::SEPARATOR_CELL . "id" . TeamSpeak3::SEPARATOR_PAIR . 0 . TeamSpeak3::SEPARATOR_CELL . "msg" . TeamSpeak3::SEPARATOR_PAIR . "ok");
+        $fake = new StringHelper(TeamSpeak3::ERROR.TeamSpeak3::SEPARATOR_CELL.'id'.TeamSpeak3::SEPARATOR_PAIR. 0 .TeamSpeak3::SEPARATOR_CELL.'msg'.TeamSpeak3::SEPARATOR_PAIR.'ok');
         $repl = new Reply([$data, $fake], $type);
 
         $this->type = $type->substr(strlen(TeamSpeak3::EVENT));
         $this->data = $repl->toList();
         $this->mesg = $data;
 
-        Signal::getInstance()->emit("notifyEvent", $this, $con);
-        Signal::getInstance()->emit("notify" . ucfirst($this->type), $this, $con);
+        Signal::getInstance()->emit('notifyEvent', $this, $con);
+        Signal::getInstance()->emit('notify'.ucfirst($this->type), $this, $con);
     }
 
     /**
@@ -137,8 +135,8 @@ class Event implements ArrayAccess
      */
     public function offsetGet($offset): mixed
     {
-        if (!$this->offsetExists($offset)) {
-            throw new ServerQueryException("invalid parameter", 0x602);
+        if (! $this->offsetExists($offset)) {
+            throw new ServerQueryException('invalid parameter', 0x602);
         }
 
         return $this->data[$offset];
@@ -150,7 +148,7 @@ class Event implements ArrayAccess
      */
     public function offsetSet($offset, $value): void
     {
-        throw new NodeException("event '" . $this->getType() . "' is read only");
+        throw new NodeException("event '".$this->getType()."' is read only");
     }
 
     /**

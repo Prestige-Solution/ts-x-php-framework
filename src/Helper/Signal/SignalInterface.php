@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- * @package   TeamSpeak3
  * @author    Sven 'ScP' Paulsen
  * @copyright Copyright (c) Planet TeamSpeak. All rights reserved.
  */
@@ -34,7 +33,6 @@ use PlanetTeamSpeak\TeamSpeak3Framework\Node\Server;
 
 /**
  * Interface SignalInterface
- * @package PlanetTeamSpeak\TeamSpeak3Framework\Helper\Signal
  * @class SignalInterface
  * @brief Interface class describing the layout for PlanetTeamSpeak\TeamSpeak3Framework\Helper\Signal callbacks.
  */
@@ -127,7 +125,7 @@ interface SignalInterface
      *   - PlanetTeamSpeak\TeamSpeak3Framework\Helper\Signal::getInstance()->subscribe("notifyServercreated", array($object, "onServercreated"));
      *
      * @param Host $host
-     * @param integer $sid
+     * @param int $sid
      * @return void
      */
     public function onServercreated(Host $host, int $sid): void;
@@ -139,7 +137,7 @@ interface SignalInterface
      *   - PlanetTeamSpeak\TeamSpeak3Framework\Helper\Signal::getInstance()->subscribe("notifyServerdeleted", array($object, "onServerdeleted"));
      *
      * @param Host $host
-     * @param integer $sid
+     * @param int $sid
      * @return void
      */
     public function onServerdeleted(Host $host, int $sid): void;
@@ -151,7 +149,7 @@ interface SignalInterface
      *   - PlanetTeamSpeak\TeamSpeak3Framework\Helper\Signal::getInstance()->subscribe("notifyServerstarted", array($object, "onServerstarted"));
      *
      * @param Host $host
-     * @param integer $sid
+     * @param int $sid
      * @return void
      */
     public function onServerstarted(Host $host, int $sid): void;
@@ -163,7 +161,7 @@ interface SignalInterface
      *   - PlanetTeamSpeak\TeamSpeak3Framework\Helper\Signal::getInstance()->subscribe("notifyServerstopped", array($object, "onServerstopped"));
      *
      * @param Host $host
-     * @param integer $sid
+     * @param int $sid
      * @return void
      */
     public function onServerstopped(Host $host, int $sid): void;
@@ -231,8 +229,8 @@ interface SignalInterface
      *   - PlanetTeamSpeak\TeamSpeak3Framework\Helper\Signal::getInstance()->subscribe("filetransferUploadStarted", array($object, "onFtUploadStarted"));
      *
      * @param string $ftkey
-     * @param integer $seek
-     * @param integer $size
+     * @param int $seek
+     * @param int $size
      * @return void
      */
     public function onFtUploadStarted(string $ftkey, int $seek, int $size): void;
@@ -244,8 +242,8 @@ interface SignalInterface
      *   - PlanetTeamSpeak\TeamSpeak3Framework\Helper\Signal::getInstance()->subscribe("filetransferUploadProgress", array($object, "onFtUploadProgress"));
      *
      * @param string $ftkey
-     * @param integer $seek
-     * @param integer $size
+     * @param int $seek
+     * @param int $size
      * @return void
      */
     public function onFtUploadProgress(string $ftkey, int $seek, int $size): void;
@@ -257,8 +255,8 @@ interface SignalInterface
      *   - PlanetTeamSpeak\TeamSpeak3Framework\Helper\Signal::getInstance()->subscribe("filetransferUploadFinished", array($object, "onFtUploadFinished"));
      *
      * @param string $ftkey
-     * @param integer $seek
-     * @param integer $size
+     * @param int $seek
+     * @param int $size
      * @return void
      */
     public function onFtUploadFinished(string $ftkey, int $seek, int $size): void;
@@ -270,8 +268,8 @@ interface SignalInterface
      *   - PlanetTeamSpeak\TeamSpeak3Framework\Helper\Signal::getInstance()->subscribe("filetransferDownloadStarted", array($object, "onFtDownloadStarted"));
      *
      * @param string $ftkey
-     * @param integer $buff
-     * @param integer $size
+     * @param int $buff
+     * @param int $size
      * @return void
      */
     public function onFtDownloadStarted(string $ftkey, int $buff, int $size): void;
@@ -283,8 +281,8 @@ interface SignalInterface
      *   - PlanetTeamSpeak\TeamSpeak3Framework\Helper\Signal::getInstance()->subscribe("filetransferDownloadProgress", array($object, "onFtDownloadProgress"));
      *
      * @param string $ftkey
-     * @param integer $buff
-     * @param integer $size
+     * @param int $buff
+     * @param int $size
      * @return void
      */
     public function onFtDownloadProgress(string $ftkey, int $buff, int $size): void;
@@ -296,8 +294,8 @@ interface SignalInterface
      *   - PlanetTeamSpeak\TeamSpeak3Framework\Helper\Signal::getInstance()->subscribe("filetransferDownloadFinished", array($object, "onFtDownloadFinished"));
      *
      * @param string $ftkey
-     * @param integer $buff
-     * @param integer $size
+     * @param int $buff
+     * @param int $size
      * @return void
      */
     public function onFtDownloadFinished(string $ftkey, int $buff, int $size): void;
@@ -333,7 +331,7 @@ interface SignalInterface
      *   - PlanetTeamSpeak\TeamSpeak3Framework\Helper\Signal::getInstance()->subscribe("serverqueryWaitTimeout", array($object, "onWaitTimeout"));
      *   - PlanetTeamSpeak\TeamSpeak3Framework\Helper\Signal::getInstance()->subscribe("filetransferWaitTimeout", array($object, "onWaitTimeout"));
      *
-     * @param integer $time
+     * @param int $time
      * @param Adapter $adapter
      * @return void
      */

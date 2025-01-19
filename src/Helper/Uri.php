@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- * @package   TeamSpeak3
  * @author    Sven 'ScP' Paulsen
  * @copyright Copyright (c) Planet TeamSpeak. All rights reserved.
  */
@@ -28,7 +27,6 @@ use PlanetTeamSpeak\TeamSpeak3Framework\Exception\HelperException;
 
 /**
  * Class Uri
- * @package PlanetTeamSpeak\TeamSpeak3Framework\Helper
  * @class Uri
  * @brief Helper class for URI handling.
  */
@@ -105,24 +103,24 @@ class Uri
      */
     public function __construct(string $uri)
     {
-        if (!strlen($uri)) {
-            throw new HelperException("no URI supplied");
+        if (! strlen($uri)) {
+            throw new HelperException('no URI supplied');
         }
 
         /* grammar rules for validation */
-        $this->regex["alphanum"] = "[^\W_]";
-        $this->regex["escaped"] = "(?:%[\da-fA-F]{2})";
-        $this->regex["mark"] = "[-_.!~*'()\[\]]";
-        $this->regex["reserved"] = "[;\/?:@&=+$,]";
-        $this->regex["unreserved"] = "(?:" . $this->regex["alphanum"] . "|" . $this->regex["mark"] . ")";
-        $this->regex["segment"] = "(?:(?:" . $this->regex["unreserved"] . "|" . $this->regex["escaped"] . "|[:@&=+$,;])*)";
-        $this->regex["path"] = "(?:\/" . $this->regex["segment"] . "?)+";
-        $this->regex["uric"] = "(?:" . $this->regex["reserved"] . "|" . $this->regex["unreserved"] . "|" . $this->regex["escaped"] . ")";
+        $this->regex['alphanum'] = "[^\W_]";
+        $this->regex['escaped'] = "(?:%[\da-fA-F]{2})";
+        $this->regex['mark'] = "[-_.!~*'()\[\]]";
+        $this->regex['reserved'] = "[;\/?:@&=+$,]";
+        $this->regex['unreserved'] = '(?:'.$this->regex['alphanum'].'|'.$this->regex['mark'].')';
+        $this->regex['segment'] = '(?:(?:'.$this->regex['unreserved'].'|'.$this->regex['escaped'].'|[:@&=+$,;])*)';
+        $this->regex['path'] = "(?:\/".$this->regex['segment'].'?)+';
+        $this->regex['uric'] = '(?:'.$this->regex['reserved'].'|'.$this->regex['unreserved'].'|'.$this->regex['escaped'].')';
 
         $this->parseUri($uri);
 
-        if (!$this->isValid()) {
-            throw new HelperException("invalid URI supplied");
+        if (! $this->isValid()) {
+            throw new HelperException('invalid URI supplied');
         }
     }
 
@@ -138,46 +136,46 @@ class Uri
         $components = parse_url($uriString, -1);
 
         if ($components === false) {
-            throw new HelperException("URI scheme-specific decomposition failed");
+            throw new HelperException('URI scheme-specific decomposition failed');
         }
 
-        $this->scheme = StringHelper::factory(isset($components["scheme"]) ? $components["scheme"] : "");
+        $this->scheme = StringHelper::factory(isset($components['scheme']) ? $components['scheme'] : '');
 
-        if (empty(trim($this->scheme)) or !ctype_alnum($this->scheme->toString())) {
-            throw new HelperException("invalid URI scheme '" . $this->scheme . "' supplied");
+        if (empty(trim($this->scheme)) or ! ctype_alnum($this->scheme->toString())) {
+            throw new HelperException("invalid URI scheme '".$this->scheme."' supplied");
         }
 
-        $this->host = StringHelper::factory(isset($components["host"]) ? $components["host"] : "");
-        $this->port = StringHelper::factory(isset($components["port"]) ? $components["port"] : "");
+        $this->host = StringHelper::factory(isset($components['host']) ? $components['host'] : '');
+        $this->port = StringHelper::factory(isset($components['port']) ? $components['port'] : '');
 
-        $this->user = StringHelper::factory(isset($components["user"]) ? $components["user"] : "");
-        $this->pass = StringHelper::factory(isset($components["pass"]) ? $components["pass"] : "");
+        $this->user = StringHelper::factory(isset($components['user']) ? $components['user'] : '');
+        $this->pass = StringHelper::factory(isset($components['pass']) ? $components['pass'] : '');
 
-        $this->path = StringHelper::factory((isset($components["path"])) ? $components["path"] : "");
-        $this->query = StringHelper::factory((isset($components["query"])) ? $components["query"] : "");
-        $this->fragment = StringHelper::factory((isset($components["fragment"])) ? $components["fragment"] : "");
+        $this->path = StringHelper::factory((isset($components['path'])) ? $components['path'] : '');
+        $this->query = StringHelper::factory((isset($components['query'])) ? $components['query'] : '');
+        $this->fragment = StringHelper::factory((isset($components['fragment'])) ? $components['fragment'] : '');
 
-        if (str_contains($this->fragment, "?")) {
-            throw new HelperException("invalid URI fragment '" . $this->fragment . "' supplied (fragment must be after query)");
+        if (str_contains($this->fragment, '?')) {
+            throw new HelperException("invalid URI fragment '".$this->fragment."' supplied (fragment must be after query)");
         }
     }
 
     /**
      * Validate the current URI from the instance variables.
      *
-     * @return boolean
+     * @return bool
      * @throws HelperException
      */
     public function isValid(): bool
     {
-        return ($this->checkUser() && $this->checkPass() && $this->checkHost() && $this->checkPort() && $this->checkPath() && $this->checkQuery() && $this->checkFragment());
+        return $this->checkUser() && $this->checkPass() && $this->checkHost() && $this->checkPort() && $this->checkPath() && $this->checkQuery() && $this->checkFragment();
     }
 
     /**
      * Returns TRUE if a given URI is valid.
      *
      * @param StringHelper $uri
-     * @return boolean
+     * @return bool
      * @throws HelperException
      */
     public static function check(StringHelper $uri): bool
@@ -194,11 +192,11 @@ class Uri
     /**
      * Returns TRUE if the URI has a scheme.
      *
-     * @return boolean
+     * @return bool
      */
     public function hasScheme(): bool
     {
-        return (bool)strlen($this->scheme);
+        return (bool) strlen($this->scheme);
     }
 
     /**
@@ -216,7 +214,7 @@ class Uri
      * Returns TRUE if the username is valid.
      *
      * @param string|null $username
-     * @return boolean
+     * @return bool
      * @throws HelperException
      */
     public function checkUser(string $username = null): bool
@@ -229,24 +227,24 @@ class Uri
             return true;
         }
 
-        $pattern = "/^(" . $this->regex["alphanum"] . "|" . $this->regex["mark"] . "|" . $this->regex["escaped"] . "|" . "[;:&=+$,])+$/";
+        $pattern = '/^('.$this->regex['alphanum'].'|'.$this->regex['mark'].'|'.$this->regex['escaped'].'|'.'[;:&=+$,])+$/';
         $status = @preg_match($pattern, $username);
 
         if ($status === false) {
-            throw new HelperException("URI username validation failed");
+            throw new HelperException('URI username validation failed');
         }
 
-        return ($status == 1);
+        return $status == 1;
     }
 
     /**
      * Returns TRUE if the URI has a username.
      *
-     * @return boolean
+     * @return bool
      */
     public function hasUser(): bool
     {
-        return (bool)strlen($this->user);
+        return (bool) strlen($this->user);
     }
 
     /**
@@ -264,7 +262,7 @@ class Uri
      * Returns TRUE if the password is valid.
      *
      * @param StringHelper|string|null $password
-     * @return boolean
+     * @return bool
      * @throws HelperException
      */
     public function checkPass(StringHelper|string $password = null): bool
@@ -277,24 +275,24 @@ class Uri
             return true;
         }
 
-        $pattern = "/^(" . $this->regex["alphanum"] . "|" . $this->regex["mark"] . "|" . $this->regex["escaped"] . "|" . "[;:&=+$,])+$/";
+        $pattern = '/^('.$this->regex['alphanum'].'|'.$this->regex['mark'].'|'.$this->regex['escaped'].'|'.'[;:&=+$,])+$/';
         $status = @preg_match($pattern, $password);
 
         if ($status === false) {
-            throw new HelperException("URI password validation failed");
+            throw new HelperException('URI password validation failed');
         }
 
-        return ($status == 1);
+        return $status == 1;
     }
 
     /**
      * Returns TRUE if the URI has a password.
      *
-     * @return boolean
+     * @return bool
      */
     public function hasPass(): bool
     {
-        return (bool)strlen($this->pass);
+        return (bool) strlen($this->pass);
     }
 
     /**
@@ -312,7 +310,7 @@ class Uri
      * Returns TRUE if the host is valid.
      *
      * @param string|null $host
-     * @return boolean
+     * @return bool
      */
     public function checkHost(string $host = null): bool
     {
@@ -324,7 +322,7 @@ class Uri
             case filter_var($host, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 | FILTER_FLAG_IPV6):
                 // Valid IPv4 or IPv6 address
                 break;
-            case !preg_match("/^(([0-9]{1,3})\.){3}([0-9]{1,3})$/", $host) and preg_match("/^(([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])\.)*([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])$/i", $host):
+            case ! preg_match("/^(([0-9]{1,3})\.){3}([0-9]{1,3})$/", $host) and preg_match("/^(([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])\.)*([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])$/i", $host):
                 // Valid hostname as specified in RFC 1123 (IPv4 like strings are excluded)
                 // `filter_var($host, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME)` unfortunately also reports invalid IP
                 // addresses (e.g. `127.0.0.300`) as valid, so we can not use this filter here.
@@ -341,11 +339,11 @@ class Uri
     /**
      * Returns TRUE if the URI has a host.
      *
-     * @return boolean
+     * @return bool
      */
     public function hasHost(): bool
     {
-        return (bool)strlen($this->host);
+        return (bool) strlen($this->host);
     }
 
     /**
@@ -363,7 +361,7 @@ class Uri
      * Returns TRUE if the port is valid.
      *
      * @param float|null $port
-     * @return boolean
+     * @return bool
      */
     public function checkPort(float $port = null): bool
     {
@@ -380,8 +378,8 @@ class Uri
         switch ($port) {
             case str_starts_with($port, '-'):
             case $port < 0:
-            case !is_int($port):
-            case !filter_var($port, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 65535]]):
+            case ! is_int($port):
+            case ! filter_var($port, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 65535]]):
                 return false;
         }
 
@@ -391,18 +389,18 @@ class Uri
     /**
      * Returns TRUE if the URI has a port.
      *
-     * @return boolean
+     * @return bool
      */
     public function hasPort(): bool
     {
-        return (bool)strlen($this->port->toString());
+        return (bool) strlen($this->port->toString());
     }
 
     /**
      * Returns the port.
      *
      * @param mixed|null $default
-     * @return integer
+     * @return int
      */
     public function getPort(mixed $default = null): int
     {
@@ -413,7 +411,7 @@ class Uri
      * Returns TRUE if the path is valid.
      *
      * @param string|null $path
-     * @return boolean
+     * @return bool
      * @throws HelperException
      */
     public function checkPath(string $path = null): bool
@@ -426,24 +424,24 @@ class Uri
             return true;
         }
 
-        $pattern = "/^" . $this->regex["path"] . "$/";
+        $pattern = '/^'.$this->regex['path'].'$/';
         $status = @preg_match($pattern, $path);
 
         if ($status === false) {
-            throw new HelperException("URI path validation failed");
+            throw new HelperException('URI path validation failed');
         }
 
-        return ($status == 1);
+        return $status == 1;
     }
 
     /**
      * Returns TRUE if the URI has a path.
      *
-     * @return boolean
+     * @return bool
      */
     public function hasPath(): bool
     {
-        return (bool)strlen($this->path);
+        return (bool) strlen($this->path);
     }
 
     /**
@@ -452,7 +450,7 @@ class Uri
      * @param mixed|null $default
      * @return StringHelper
      */
-    public function getPath(string $default = "/"): StringHelper
+    public function getPath(string $default = '/'): StringHelper
     {
         return ($this->hasPath()) ? new StringHelper(rawurldecode($this->path)) : new StringHelper($default);
     }
@@ -461,7 +459,7 @@ class Uri
      * Returns TRUE if the query string is valid.
      *
      * @param string|null $query
-     * @return boolean
+     * @return bool
      * @throws HelperException
      */
     public function checkQuery(string $query = null): bool
@@ -474,24 +472,24 @@ class Uri
             return true;
         }
 
-        $pattern = "/^" . $this->regex["uric"] . "*$/";
+        $pattern = '/^'.$this->regex['uric'].'*$/';
         $status = @preg_match($pattern, $query);
 
         if ($status === false) {
-            throw new HelperException("URI query string validation failed");
+            throw new HelperException('URI query string validation failed');
         }
 
-        return ($status == 1);
+        return $status == 1;
     }
 
     /**
      * Returns TRUE if the URI has a query string.
      *
-     * @return boolean
+     * @return bool
      */
     public function hasQuery(): bool
     {
-        return (bool)strlen($this->query);
+        return (bool) strlen($this->query);
     }
 
     /**
@@ -502,7 +500,7 @@ class Uri
      */
     public function getQuery(array $default = []): array
     {
-        if (!$this->hasQuery()) {
+        if (! $this->hasQuery()) {
             return $default;
         }
 
@@ -515,11 +513,11 @@ class Uri
      * Returns TRUE if the URI has a query variable.
      *
      * @param $key
-     * @return boolean
+     * @return bool
      */
     public function hasQueryVar($key): bool
     {
-        if (!$this->hasQuery()) {
+        if (! $this->hasQuery()) {
             return false;
         }
 
@@ -537,7 +535,7 @@ class Uri
      */
     public function getQueryVar(string $key, mixed $default = null): mixed
     {
-        if (!$this->hasQuery()) {
+        if (! $this->hasQuery()) {
             return $default;
         }
 
@@ -562,7 +560,7 @@ class Uri
      * Returns TRUE if the fragment string is valid.
      *
      * @param string|null $fragment
-     * @return boolean
+     * @return bool
      * @throws HelperException
      */
     public function checkFragment(string $fragment = null): bool
@@ -575,24 +573,24 @@ class Uri
             return true;
         }
 
-        $pattern = "/^" . $this->regex["uric"] . "*$/";
+        $pattern = '/^'.$this->regex['uric'].'*$/';
         $status = @preg_match($pattern, $fragment);
 
         if ($status === false) {
-            throw new HelperException("URI fragment validation failed");
+            throw new HelperException('URI fragment validation failed');
         }
 
-        return ($status == 1);
+        return $status == 1;
     }
 
     /**
      * Returns TRUE if the URI has a fragment string.
      *
-     * @return boolean
+     * @return bool
      */
     public function hasFragment(): bool
     {
-        return (bool)strlen($this->fragment);
+        return (bool) strlen($this->fragment);
     }
 
     /**
@@ -615,7 +613,7 @@ class Uri
      */
     public static function getUserParam(string $key, mixed $default = null): mixed
     {
-        return (array_key_exists($key, $_REQUEST) && !empty($_REQUEST[$key])) ? self::stripslashesRecursive($_REQUEST[$key]) : $default;
+        return (array_key_exists($key, $_REQUEST) && ! empty($_REQUEST[$key])) ? self::stripslashesRecursive($_REQUEST[$key]) : $default;
     }
 
     /**
@@ -627,7 +625,7 @@ class Uri
      */
     public static function getHostParam(string $key, mixed $default = null): mixed
     {
-        return (array_key_exists($key, $_SERVER) && !empty($_SERVER[$key])) ? $_SERVER[$key] : $default;
+        return (array_key_exists($key, $_SERVER) && ! empty($_SERVER[$key])) ? $_SERVER[$key] : $default;
     }
 
     /**
@@ -639,7 +637,7 @@ class Uri
      */
     public static function getSessParam(string $key, mixed $default = null): mixed
     {
-        return (array_key_exists($key, $_SESSION) && !empty($_SESSION[$key])) ? $_SESSION[$key] : $default;
+        return (array_key_exists($key, $_SESSION) && ! empty($_SESSION[$key])) ? $_SESSION[$key] : $default;
     }
 
     /**
@@ -651,13 +649,13 @@ class Uri
      */
     public static function getFQDNParts(string $hostname): array
     {
-        if (!preg_match("/^([a-z0-9][a-z0-9-]{0,62}\.)*([a-z0-9][a-z0-9-]{0,62}\.)+([a-z]{2,6})$/i", $hostname, $matches)) {
+        if (! preg_match("/^([a-z0-9][a-z0-9-]{0,62}\.)*([a-z0-9][a-z0-9-]{0,62}\.)+([a-z]{2,6})$/i", $hostname, $matches)) {
             return [];
         }
 
-        $parts["tld"] = $matches[3];
-        $parts["2nd"] = $matches[2];
-        $parts["3rd"] = $matches[1];
+        $parts['tld'] = $matches[3];
+        $parts['2nd'] = $matches[2];
+        $parts['3rd'] = $matches[1];
 
         return $parts;
     }
@@ -669,17 +667,17 @@ class Uri
      */
     public static function getHostUri(): StringHelper
     {
-        $sheme = (self::getHostParam("HTTPS") == "on") ? "https" : "http";
+        $sheme = (self::getHostParam('HTTPS') == 'on') ? 'https' : 'http';
 
-        $serverName = new StringHelper(self::getHostParam("HTTP_HOST"));
-        $serverPort = self::getHostParam("SERVER_PORT");
-        $serverPort = ($serverPort != 80 && $serverPort != 443) ? ":" . $serverPort : "";
+        $serverName = new StringHelper(self::getHostParam('HTTP_HOST'));
+        $serverPort = self::getHostParam('SERVER_PORT');
+        $serverPort = ($serverPort != 80 && $serverPort != 443) ? ':'.$serverPort : '';
 
         if ($serverName->endsWith($serverPort)) {
-            $serverName = $serverName->replace($serverPort, "");
+            $serverName = $serverName->replace($serverPort, '');
         }
 
-        return new StringHelper($sheme . "://" . $serverName . $serverPort);
+        return new StringHelper($sheme.'://'.$serverName.$serverPort);
     }
 
     /**
@@ -689,9 +687,9 @@ class Uri
      */
     public static function getBaseUri(): StringHelper
     {
-        $scriptPath = new StringHelper(dirname(self::getHostParam("SCRIPT_NAME")));
+        $scriptPath = new StringHelper(dirname(self::getHostParam('SCRIPT_NAME')));
 
-        return self::getHostUri()->append(($scriptPath == DIRECTORY_SEPARATOR ? "" : $scriptPath) . "/");
+        return self::getHostUri()->append(($scriptPath == DIRECTORY_SEPARATOR ? '' : $scriptPath).'/');
     }
 
     /**
@@ -702,7 +700,7 @@ class Uri
      */
     protected static function stripslashesRecursive(mixed $var): string|array
     {
-        if (!is_array($var)) {
+        if (! is_array($var)) {
             return stripslashes(strval($var));
         }
 

@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- * @package   TeamSpeak3
  * @author    Sven 'ScP' Paulsen
  * @copyright Copyright (c) Planet TeamSpeak. All rights reserved.
  */
@@ -29,7 +28,6 @@ use PlanetTeamSpeak\TeamSpeak3Framework\Node\Node;
 
 /**
  * @class Text
- * @package PlanetTeamSpeak\TeamSpeak3Framework\Viewer
  * @brief Renders nodes used in ASCII-based TeamSpeak 3 viewers.
  */
 class Text implements ViewerInterface
@@ -69,16 +67,16 @@ class Text implements ViewerInterface
      */
     protected function getPrefix(): string
     {
-        $prefix = "";
+        $prefix = '';
 
         if (count($this->currSib)) {
             $last = array_pop($this->currSib);
 
             foreach ($this->currSib as $sibling) {
-                $prefix .= ($sibling) ? "| " : "  ";
+                $prefix .= ($sibling) ? '| ' : '  ';
             }
 
-            $prefix .= ($last) ? "\\-" : "|-";
+            $prefix .= ($last) ? '\\-' : '|-';
         }
 
         return $prefix;

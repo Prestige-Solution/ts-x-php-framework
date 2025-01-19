@@ -12,75 +12,74 @@ class StringTest extends TestCase
 {
     public function testReplace()
     {
-        $string = new StringHelper("Hello world!");
-        $string->replace("world", "word");
+        $string = new StringHelper('Hello world!');
+        $string->replace('world', 'word');
 
-        $this->assertEquals("Hello word!", (string)$string);
+        $this->assertEquals('Hello word!', (string) $string);
 
+        $string = new StringHelper('Hello world!');
+        $string->replace('hello', 'Hey', false);
 
-        $string = new StringHelper("Hello world!");
-        $string->replace("hello", "Hey", false);
-
-        $this->assertEquals("Hey world!", (string)$string);
+        $this->assertEquals('Hey world!', (string) $string);
     }
 
     public function testStartsWith()
     {
-        $string = new StringHelper("Hello world!");
-        $this->assertTrue($string->startsWith("Hello"));
-        $this->assertFalse($string->startsWith("world"));
+        $string = new StringHelper('Hello world!');
+        $this->assertTrue($string->startsWith('Hello'));
+        $this->assertFalse($string->startsWith('world'));
     }
 
     public function testEndsWith()
     {
-        $string = new StringHelper("Hello world!");
-        $this->assertTrue($string->endsWith("!"));
-        $this->assertFalse($string->endsWith("."));
+        $string = new StringHelper('Hello world!');
+        $this->assertTrue($string->endsWith('!'));
+        $this->assertFalse($string->endsWith('.'));
     }
 
     public function testFindFirst()
     {
-        $string = new StringHelper("Hello world!");
-        $this->assertEquals(2, $string->findFirst("l"));
+        $string = new StringHelper('Hello world!');
+        $this->assertEquals(2, $string->findFirst('l'));
     }
 
     public function testFindLast()
     {
-        $string = new StringHelper("Hello world!");
-        $this->assertEquals(9, $string->findLast("l"));
+        $string = new StringHelper('Hello world!');
+        $this->assertEquals(9, $string->findLast('l'));
     }
 
     public function testToLower()
     {
-        $string = new StringHelper("Hello world!");
-        $this->assertEquals("hello world!", $string->toLower());
+        $string = new StringHelper('Hello world!');
+        $this->assertEquals('hello world!', $string->toLower());
     }
 
     public function testToUpper()
     {
-        $string = new StringHelper("Hello world!");
-        $this->assertEquals("HELLO WORLD!", $string->toUpper());
+        $string = new StringHelper('Hello world!');
+        $this->assertEquals('HELLO WORLD!', $string->toUpper());
     }
 
     public function testContains()
     {
-        $string = new StringHelper("Hello world!");
-        $this->assertTrue($string->contains(""));
-        $this->assertTrue($string->contains("[a-z]{5}", true));
-        $this->assertTrue($string->contains("world"));
-        $this->assertFalse($string->contains("word"));
+        $string = new StringHelper('Hello world!');
+        $this->assertTrue($string->contains(''));
+        $this->assertTrue($string->contains('[a-z]{5}', true));
+        $this->assertTrue($string->contains('world'));
+        $this->assertFalse($string->contains('word'));
     }
 
     public function testSubstr()
     {
-        $string = new StringHelper("Hello world!");
-        $this->assertEquals("ello", $string->substr(1, 4));
-        $this->assertEquals("world", $string->substr(-6, 5));
+        $string = new StringHelper('Hello world!');
+        $this->assertEquals('ello', $string->substr(1, 4));
+        $this->assertEquals('world', $string->substr(-6, 5));
     }
 
     public function testSplit()
     {
-        $string = new StringHelper("Hello world!");
+        $string = new StringHelper('Hello world!');
         $array = $string->split('l', 3);
         $this->assertCount(3, $array);
         $this->assertEquals('He', $array[0]);
@@ -90,17 +89,17 @@ class StringTest extends TestCase
     public function testIsInt()
     {
         $tests = [
-            "1" => true,
-            "11" => true,
-            "+1" => false,
-            "-1" => false,
-            "hello" => false,
-            "1.0" => false,
-            ".1" => false,
-            "0x539" => false,
-            "0b10100111001" => false,
-            "1337e0" => false,
-            "9.1" => false,
+            '1' => true,
+            '11' => true,
+            '+1' => false,
+            '-1' => false,
+            'hello' => false,
+            '1.0' => false,
+            '.1' => false,
+            '0x539' => false,
+            '0b10100111001' => false,
+            '1337e0' => false,
+            '9.1' => false,
         ];
 
         foreach ($tests as $test => $expected) {
@@ -111,49 +110,49 @@ class StringTest extends TestCase
 
     public function testFactory()
     {
-        $string = StringHelper::factory("hello world");
+        $string = StringHelper::factory('hello world');
 
-        $this->assertEquals("hello world", $string->toString());
+        $this->assertEquals('hello world', $string->toString());
     }
 
     public function testArg()
     {
-        $string = new StringHelper("%h %w");
+        $string = new StringHelper('%h %w');
 
-        $string->arg(["w" => "world", "h" => "Hello"]);
+        $string->arg(['w' => 'world', 'h' => 'Hello']);
 
         $this->assertEquals(
-            "Hello world",
+            'Hello world',
             $string->toString()
         );
     }
 
     public function testAppend()
     {
-        $string = new StringHelper("Hello world");
+        $string = new StringHelper('Hello world');
         $string->append('!');
-        $this->assertEquals("Hello world!", $string->toString());
+        $this->assertEquals('Hello world!', $string->toString());
     }
 
     public function testPrepend()
     {
-        $string = new StringHelper("world!");
-        $string->prepend("Hello ");
-        $this->assertEquals("Hello world!", $string->toString());
+        $string = new StringHelper('world!');
+        $string->prepend('Hello ');
+        $this->assertEquals('Hello world!', $string->toString());
     }
 
     public function testSection()
     {
-        $string = new StringHelper("Hello world!");
+        $string = new StringHelper('Hello world!');
 
         $section = $string->section(' ');
-        $this->assertEquals("Hello", $section->toString());
+        $this->assertEquals('Hello', $section->toString());
 
         $section = $string->section(' ', 1, 1);
-        $this->assertEquals("world!", $section->toString());
+        $this->assertEquals('world!', $section->toString());
 
         $section = $string->section(' ', 0, 1);
-        $this->assertEquals("Hello world!", $section->toString());
+        $this->assertEquals('Hello world!', $section->toString());
 
         $section = $string->section(' ', 3, 3);
         $this->assertNull($section);
@@ -161,25 +160,25 @@ class StringTest extends TestCase
 
     public function testToCrc32()
     {
-        $string = new StringHelper("Hello world!");
-        $this->assertEquals(crc32("Hello world!"), $string->toCrc32());
+        $string = new StringHelper('Hello world!');
+        $this->assertEquals(crc32('Hello world!'), $string->toCrc32());
     }
 
     public function testToMd5()
     {
-        $string = new StringHelper("Hello world!");
-        $this->assertEquals(md5("Hello world!"), $string->toMd5());
+        $string = new StringHelper('Hello world!');
+        $this->assertEquals(md5('Hello world!'), $string->toMd5());
     }
 
     public function testToSha1()
     {
-        $string = new StringHelper("Hello world!");
-        $this->assertEquals(sha1("Hello world!"), $string->toSha1());
+        $string = new StringHelper('Hello world!');
+        $this->assertEquals(sha1('Hello world!'), $string->toSha1());
     }
 
     public function testIsUtf8()
     {
-        $string = new StringHelper(mb_convert_encoding("Äpfel", 'UTF-8', mb_list_encodings()));
+        $string = new StringHelper(mb_convert_encoding('Äpfel', 'UTF-8', mb_list_encodings()));
         $this->assertTrue($string->isUtf8());
 
         // Well-formed UTF-8 Byte Sequences
@@ -195,7 +194,7 @@ class StringTest extends TestCase
             [[0xEE, 0x80, 0x80], [0xEF, 0xBF, 0xBF]],           // U+E000..U+FFFF
             [[0xF0, 0x90, 0x80, 0x80], [0xF0, 0xEF, 0xBF, 0xBF]], // U+10000..U+3FFFF
             [[0xF1, 0x80, 0x80, 0x80], [0xF3, 0xBF, 0xBF, 0xBF]], // U+40000..U+FFFFF
-            [[0xF4, 0x80, 0x80, 0x80], [0xF4, 0x8F, 0xBF, 0xBF]]  // U+100000..U+10FFFF
+            [[0xF4, 0x80, 0x80, 0x80], [0xF4, 0x8F, 0xBF, 0xBF]],  // U+100000..U+10FFFF
         ];
 
         // Lower character precedes lower unicode boundary.
@@ -209,7 +208,7 @@ class StringTest extends TestCase
             [[0xEE, 0x80, 0x7F], [0xEF, 0xBF, 0xC0]],
             [[0xF0, 0x90, 0x80, 0x7F], [0xF0, 0xEF, 0xBF, 0xC0]],
             [[0xF1, 0x80, 0x80, 0x7F], [0xF3, 0xBF, 0xBF, 0xC0]],
-            [[0xF4, 0x80, 0x80, 0x7F], [0xF4, 0x8F, 0xBF, 0xC0]]
+            [[0xF4, 0x80, 0x80, 0x7F], [0xF4, 0x8F, 0xBF, 0xC0]],
         ];
 
         foreach ($unicodeBoundaries as $boundary) {
@@ -217,6 +216,7 @@ class StringTest extends TestCase
                 $boundary[0],
                 function ($mb_string, $item) {
                     $mb_string .= chr($item);
+
                     return $mb_string;
                 }
             ));
@@ -226,6 +226,7 @@ class StringTest extends TestCase
                 function ($mb_string, $item) {
                     //var_dump($item);
                     $mb_string .= chr($item);
+
                     return $mb_string;
                 }
             ));
@@ -237,6 +238,7 @@ class StringTest extends TestCase
                 $boundary[0],
                 function ($mb_string, $item) {
                     $mb_string .= chr($item);
+
                     return $mb_string;
                 }
             ));
@@ -246,6 +248,7 @@ class StringTest extends TestCase
                 function ($mb_string, $item) {
                     //var_dump($item);
                     $mb_string .= chr($item);
+
                     return $mb_string;
                 }
             ));
@@ -255,11 +258,11 @@ class StringTest extends TestCase
 
     public function testToUft8()
     {
-        $notUtf8 = mb_convert_encoding("Äpfel", 'ISO-8859-1', 'UTF-8');
+        $notUtf8 = mb_convert_encoding('Äpfel', 'ISO-8859-1', 'UTF-8');
         $stringNotUtf8 = new StringHelper($notUtf8);
         $this->assertEquals(mb_convert_encoding($notUtf8, 'UTF-8', mb_list_encodings()), $stringNotUtf8->toUtf8()->toString());
 
-        $notUtf8 = mb_convert_encoding("¶", 'ISO-8859-1', 'UTF-8');
+        $notUtf8 = mb_convert_encoding('¶', 'ISO-8859-1', 'UTF-8');
         $stringNotUtf8 = new StringHelper($notUtf8);
         $this->assertEquals(mb_convert_encoding($notUtf8, 'UTF-8', mb_list_encodings()), $stringNotUtf8->toUtf8()->toString());
     }
@@ -283,14 +286,14 @@ class StringTest extends TestCase
 
     public function testToBase64()
     {
-        $string = new StringHelper("Hello world!");
-        $this->assertEquals(base64_encode("Hello world!"), $string->toBase64());
+        $string = new StringHelper('Hello world!');
+        $this->assertEquals(base64_encode('Hello world!'), $string->toBase64());
     }
 
     public function testFromBase64()
     {
-        $string = StringHelper::fromBase64(base64_encode("Hello world!"));
-        $this->assertEquals("Hello world!", $string->toString());
+        $string = StringHelper::fromBase64(base64_encode('Hello world!'));
+        $this->assertEquals('Hello world!', $string->toString());
     }
 
     /**
@@ -299,8 +302,8 @@ class StringTest extends TestCase
     public function testToHex()
     {
         TeamSpeak3::init();
-        $string = new StringHelper("Hello");
-        $this->assertEquals("48656C6C6F", $string->toHex());
+        $string = new StringHelper('Hello');
+        $this->assertEquals('48656C6C6F', $string->toHex());
     }
 
     /**
@@ -308,225 +311,225 @@ class StringTest extends TestCase
      */
     public function testFromHex()
     {
-        $string = StringHelper::fromHex("48656C6C6F");
-        $this->assertEquals("Hello", $string->toString());
+        $string = StringHelper::fromHex('48656C6C6F');
+        $this->assertEquals('Hello', $string->toString());
     }
 
     public function testTransliterate()
     {
         $utf8_accents = [
-            "à" => "a",
-            "ô" => "o",
-            "ď" => "d",
-            "ḟ" => "f",
-            "ë" => "e",
-            "š" => "s",
-            "ơ" => "o",
-            "ß" => "ss",
-            "ă" => "a",
-            "ř" => "r",
-            "ț" => "t",
-            "ň" => "n",
-            "ā" => "a",
-            "ķ" => "k",
-            "ŝ" => "s",
-            "ỳ" => "y",
-            "ņ" => "n",
-            "ĺ" => "l",
-            "ħ" => "h",
-            "ṗ" => "p",
-            "ó" => "o",
-            "ú" => "u",
-            "ě" => "e",
-            "é" => "e",
-            "ç" => "c",
-            "ẁ" => "w",
-            "ċ" => "c",
-            "õ" => "o",
-            "ṡ" => "s",
-            "ø" => "o",
-            "ģ" => "g",
-            "ŧ" => "t",
-            "ș" => "s",
-            "ė" => "e",
-            "ĉ" => "c",
-            "ś" => "s",
-            "î" => "i",
-            "ű" => "u",
-            "ć" => "c",
-            "ę" => "e",
-            "ŵ" => "w",
-            "ṫ" => "t",
-            "ū" => "u",
-            "č" => "c",
-            "ö" => "oe",
-            "è" => "e",
-            "ŷ" => "y",
-            "ą" => "a",
-            "ł" => "l",
-            "ų" => "u",
-            "ů" => "u",
-            "ş" => "s",
-            "ğ" => "g",
-            "ļ" => "l",
-            "ƒ" => "f",
-            "ž" => "z",
-            "ẃ" => "w",
-            "ḃ" => "b",
-            "å" => "a",
-            "ì" => "i",
-            "ï" => "i",
-            "ḋ" => "d",
-            "ť" => "t",
-            "ŗ" => "r",
-            "ä" => "ae",
-            "í" => "i",
-            "ŕ" => "r",
-            "ê" => "e",
-            "ü" => "ue",
-            "ò" => "o",
-            "ē" => "e",
-            "ñ" => "n",
-            "ń" => "n",
-            "ĥ" => "h",
-            "ĝ" => "g",
-            "đ" => "d",
-            "ĵ" => "j",
-            "ÿ" => "y",
-            "ũ" => "u",
-            "ŭ" => "u",
-            "ư" => "u",
-            "ţ" => "t",
-            "ý" => "y",
-            "ő" => "o",
-            "â" => "a",
-            "ľ" => "l",
-            "ẅ" => "w",
-            "ż" => "z",
-            "ī" => "i",
-            "ã" => "a",
-            "ġ" => "g",
-            "ṁ" => "m",
-            "ō" => "o",
-            "ĩ" => "i",
-            "ù" => "u",
-            "į" => "i",
-            "ź" => "z",
-            "á" => "a",
-            "û" => "u",
-            "þ" => "th",
-            "ð" => "dh",
-            "æ" => "ae",
-            "µ" => "u",
-            "ĕ" => "e",
-            "œ" => "oe",
-            "À" => "A",
-            "Ô" => "O",
-            "Ď" => "D",
-            "Ḟ" => "F",
-            "Ë" => "E",
-            "Š" => "S",
-            "Ơ" => "O",
-            "Ă" => "A",
-            "Ř" => "R",
-            "Ț" => "T",
-            "Ň" => "N",
-            "Ā" => "A",
-            "Ķ" => "K",
-            "Ŝ" => "S",
-            "Ỳ" => "Y",
-            "Ņ" => "N",
-            "Ĺ" => "L",
-            "Ħ" => "H",
-            "Ṗ" => "P",
-            "Ó" => "O",
-            "Ú" => "U",
-            "Ě" => "E",
-            "É" => "E",
-            "Ç" => "C",
-            "Ẁ" => "W",
-            "Ċ" => "C",
-            "Õ" => "O",
-            "Ṡ" => "S",
-            "Ø" => "O",
-            "Ģ" => "G",
-            "Ŧ" => "T",
-            "Ș" => "S",
-            "Ė" => "E",
-            "Ĉ" => "C",
-            "Ś" => "S",
-            "Î" => "I",
-            "Ű" => "U",
-            "Ć" => "C",
-            "Ę" => "E",
-            "Ŵ" => "W",
-            "Ṫ" => "T",
-            "Ū" => "U",
-            "Č" => "C",
-            "Ö" => "Oe",
-            "È" => "E",
-            "Ŷ" => "Y",
-            "Ą" => "A",
-            "Ł" => "L",
-            "Ų" => "U",
-            "Ů" => "U",
-            "Ş" => "S",
-            "Ğ" => "G",
-            "Ļ" => "L",
-            "Ƒ" => "F",
-            "Ž" => "Z",
-            "Ẃ" => "W",
-            "Ḃ" => "B",
-            "Å" => "A",
-            "Ì" => "I",
-            "Ï" => "I",
-            "Ḋ" => "D",
-            "Ť" => "T",
-            "Ŗ" => "R",
-            "Ä" => "Ae",
-            "Í" => "I",
-            "Ŕ" => "R",
-            "Ê" => "E",
-            "Ü" => "Ue",
-            "Ò" => "O",
-            "Ē" => "E",
-            "Ñ" => "N",
-            "Ń" => "N",
-            "Ĥ" => "H",
-            "Ĝ" => "G",
-            "Đ" => "D",
-            "Ĵ" => "J",
-            "Ÿ" => "Y",
-            "Ũ" => "U",
-            "Ŭ" => "U",
-            "Ư" => "U",
-            "Ţ" => "T",
-            "Ý" => "Y",
-            "Ő" => "O",
-            "Â" => "A",
-            "Ľ" => "L",
-            "Ẅ" => "W",
-            "Ż" => "Z",
-            "Ī" => "I",
-            "Ã" => "A",
-            "Ġ" => "G",
-            "Ṁ" => "M",
-            "Ō" => "O",
-            "Ĩ" => "I",
-            "Ù" => "U",
-            "Į" => "I",
-            "Ź" => "Z",
-            "Á" => "A",
-            "Û" => "U",
-            "Þ" => "Th",
-            "Ð" => "Dh",
-            "Æ" => "Ae",
-            "Ĕ" => "E",
-            "Œ" => "Oe",
+            'à' => 'a',
+            'ô' => 'o',
+            'ď' => 'd',
+            'ḟ' => 'f',
+            'ë' => 'e',
+            'š' => 's',
+            'ơ' => 'o',
+            'ß' => 'ss',
+            'ă' => 'a',
+            'ř' => 'r',
+            'ț' => 't',
+            'ň' => 'n',
+            'ā' => 'a',
+            'ķ' => 'k',
+            'ŝ' => 's',
+            'ỳ' => 'y',
+            'ņ' => 'n',
+            'ĺ' => 'l',
+            'ħ' => 'h',
+            'ṗ' => 'p',
+            'ó' => 'o',
+            'ú' => 'u',
+            'ě' => 'e',
+            'é' => 'e',
+            'ç' => 'c',
+            'ẁ' => 'w',
+            'ċ' => 'c',
+            'õ' => 'o',
+            'ṡ' => 's',
+            'ø' => 'o',
+            'ģ' => 'g',
+            'ŧ' => 't',
+            'ș' => 's',
+            'ė' => 'e',
+            'ĉ' => 'c',
+            'ś' => 's',
+            'î' => 'i',
+            'ű' => 'u',
+            'ć' => 'c',
+            'ę' => 'e',
+            'ŵ' => 'w',
+            'ṫ' => 't',
+            'ū' => 'u',
+            'č' => 'c',
+            'ö' => 'oe',
+            'è' => 'e',
+            'ŷ' => 'y',
+            'ą' => 'a',
+            'ł' => 'l',
+            'ų' => 'u',
+            'ů' => 'u',
+            'ş' => 's',
+            'ğ' => 'g',
+            'ļ' => 'l',
+            'ƒ' => 'f',
+            'ž' => 'z',
+            'ẃ' => 'w',
+            'ḃ' => 'b',
+            'å' => 'a',
+            'ì' => 'i',
+            'ï' => 'i',
+            'ḋ' => 'd',
+            'ť' => 't',
+            'ŗ' => 'r',
+            'ä' => 'ae',
+            'í' => 'i',
+            'ŕ' => 'r',
+            'ê' => 'e',
+            'ü' => 'ue',
+            'ò' => 'o',
+            'ē' => 'e',
+            'ñ' => 'n',
+            'ń' => 'n',
+            'ĥ' => 'h',
+            'ĝ' => 'g',
+            'đ' => 'd',
+            'ĵ' => 'j',
+            'ÿ' => 'y',
+            'ũ' => 'u',
+            'ŭ' => 'u',
+            'ư' => 'u',
+            'ţ' => 't',
+            'ý' => 'y',
+            'ő' => 'o',
+            'â' => 'a',
+            'ľ' => 'l',
+            'ẅ' => 'w',
+            'ż' => 'z',
+            'ī' => 'i',
+            'ã' => 'a',
+            'ġ' => 'g',
+            'ṁ' => 'm',
+            'ō' => 'o',
+            'ĩ' => 'i',
+            'ù' => 'u',
+            'į' => 'i',
+            'ź' => 'z',
+            'á' => 'a',
+            'û' => 'u',
+            'þ' => 'th',
+            'ð' => 'dh',
+            'æ' => 'ae',
+            'µ' => 'u',
+            'ĕ' => 'e',
+            'œ' => 'oe',
+            'À' => 'A',
+            'Ô' => 'O',
+            'Ď' => 'D',
+            'Ḟ' => 'F',
+            'Ë' => 'E',
+            'Š' => 'S',
+            'Ơ' => 'O',
+            'Ă' => 'A',
+            'Ř' => 'R',
+            'Ț' => 'T',
+            'Ň' => 'N',
+            'Ā' => 'A',
+            'Ķ' => 'K',
+            'Ŝ' => 'S',
+            'Ỳ' => 'Y',
+            'Ņ' => 'N',
+            'Ĺ' => 'L',
+            'Ħ' => 'H',
+            'Ṗ' => 'P',
+            'Ó' => 'O',
+            'Ú' => 'U',
+            'Ě' => 'E',
+            'É' => 'E',
+            'Ç' => 'C',
+            'Ẁ' => 'W',
+            'Ċ' => 'C',
+            'Õ' => 'O',
+            'Ṡ' => 'S',
+            'Ø' => 'O',
+            'Ģ' => 'G',
+            'Ŧ' => 'T',
+            'Ș' => 'S',
+            'Ė' => 'E',
+            'Ĉ' => 'C',
+            'Ś' => 'S',
+            'Î' => 'I',
+            'Ű' => 'U',
+            'Ć' => 'C',
+            'Ę' => 'E',
+            'Ŵ' => 'W',
+            'Ṫ' => 'T',
+            'Ū' => 'U',
+            'Č' => 'C',
+            'Ö' => 'Oe',
+            'È' => 'E',
+            'Ŷ' => 'Y',
+            'Ą' => 'A',
+            'Ł' => 'L',
+            'Ų' => 'U',
+            'Ů' => 'U',
+            'Ş' => 'S',
+            'Ğ' => 'G',
+            'Ļ' => 'L',
+            'Ƒ' => 'F',
+            'Ž' => 'Z',
+            'Ẃ' => 'W',
+            'Ḃ' => 'B',
+            'Å' => 'A',
+            'Ì' => 'I',
+            'Ï' => 'I',
+            'Ḋ' => 'D',
+            'Ť' => 'T',
+            'Ŗ' => 'R',
+            'Ä' => 'Ae',
+            'Í' => 'I',
+            'Ŕ' => 'R',
+            'Ê' => 'E',
+            'Ü' => 'Ue',
+            'Ò' => 'O',
+            'Ē' => 'E',
+            'Ñ' => 'N',
+            'Ń' => 'N',
+            'Ĥ' => 'H',
+            'Ĝ' => 'G',
+            'Đ' => 'D',
+            'Ĵ' => 'J',
+            'Ÿ' => 'Y',
+            'Ũ' => 'U',
+            'Ŭ' => 'U',
+            'Ư' => 'U',
+            'Ţ' => 'T',
+            'Ý' => 'Y',
+            'Ő' => 'O',
+            'Â' => 'A',
+            'Ľ' => 'L',
+            'Ẅ' => 'W',
+            'Ż' => 'Z',
+            'Ī' => 'I',
+            'Ã' => 'A',
+            'Ġ' => 'G',
+            'Ṁ' => 'M',
+            'Ō' => 'O',
+            'Ĩ' => 'I',
+            'Ù' => 'U',
+            'Į' => 'I',
+            'Ź' => 'Z',
+            'Á' => 'A',
+            'Û' => 'U',
+            'Þ' => 'Th',
+            'Ð' => 'Dh',
+            'Æ' => 'Ae',
+            'Ĕ' => 'E',
+            'Œ' => 'Oe',
         ];
 
-        $string = "";
-        $result = "";
+        $string = '';
+        $result = '';
 
         foreach ($utf8_accents as $k => $v) {
             $string .= $k;
@@ -539,17 +542,17 @@ class StringTest extends TestCase
 
     public function testSpaceToPercent()
     {
-        $string = new StringHelper("Hello world!");
-        $this->assertEquals("Hello%20world!", $string->spaceToPercent());
+        $string = new StringHelper('Hello world!');
+        $this->assertEquals('Hello%20world!', $string->spaceToPercent());
     }
 
     public function testJsonSerialize()
     {
-        $string = new StringHelper("Hello world!");
+        $string = new StringHelper('Hello world!');
 
         $this->assertJsonStringEqualsJsonString(
-            json_encode(["a" => $string]),
-            json_encode(["a" => "Hello world!"])
+            json_encode(['a' => $string]),
+            json_encode(['a' => 'Hello world!'])
         );
     }
 }

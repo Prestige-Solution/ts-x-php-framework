@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- * @package   TeamSpeak3
  * @author    Sven 'ScP' Paulsen
  * @copyright Copyright (c) Planet TeamSpeak. All rights reserved.
  */
@@ -39,7 +38,6 @@ use PlanetTeamSpeak\TeamSpeak3Framework\TeamSpeak3;
 
 /**
  * Class Html
- * @package PlanetTeamSpeak\TeamSpeak3Framework\Viewer
  * @class Html
  * @brief Renders nodes used in HTML-based TeamSpeak 3 viewers.
  */
@@ -70,7 +68,7 @@ class Html implements ViewerInterface
     /**
      * An internal counter indicating the number of fetched PlanetTeamSpeak\TeamSpeak3Framework\Node\Node objects.
      *
-     * @var integer
+     * @var int
      */
     protected int $currNum = 0;
 
@@ -118,7 +116,7 @@ class Html implements ViewerInterface
      * @param string|null $pattern
      * @return void
      */
-    public function __construct(string $iconpath = "images/viewer/", string $flagpath = null, string $ftclient = null, string $pattern = null)
+    public function __construct(string $iconpath = 'images/viewer/', string $flagpath = null, string $ftclient = null, string $pattern = null)
     {
         $this->iconpath = $iconpath;
         $this->flagpath = $flagpath;
@@ -182,14 +180,14 @@ class Html implements ViewerInterface
      */
     protected function getContainerClass(): string
     {
-        return "ts3_viewer " . $this->currObj->getClass(null);
+        return 'ts3_viewer '.$this->currObj->getClass(null);
     }
 
     /**
      * Returns the ID of the current node which will be used as a summary element for
      * the container element.
      *
-     * @return integer
+     * @return int
      */
     protected function getContainerSummary(): int
     {
@@ -204,7 +202,7 @@ class Html implements ViewerInterface
      */
     protected function getRowClass(): string
     {
-        return ++$this->currNum % 2 ? "row1" : "row2";
+        return ++$this->currNum % 2 ? 'row1' : 'row2';
     }
 
     /**
@@ -215,7 +213,7 @@ class Html implements ViewerInterface
      */
     protected function getPrefixClass(): string
     {
-        return "prefix " . $this->currObj->getClass(null);
+        return 'prefix '.$this->currObj->getClass(null);
     }
 
     /**
@@ -225,16 +223,16 @@ class Html implements ViewerInterface
      */
     protected function getPrefix(): string
     {
-        $prefix = "";
+        $prefix = '';
 
         if (count($this->currSib)) {
             $last = array_pop($this->currSib);
 
             foreach ($this->currSib as $sibling) {
-                $prefix .= ($sibling) ? $this->getImage("tree_line.gif") : $this->getImage("tree_blank.png");
+                $prefix .= ($sibling) ? $this->getImage('tree_line.gif') : $this->getImage('tree_blank.png');
             }
 
-            $prefix .= ($last) ? $this->getImage("tree_end.gif") : $this->getImage("tree_mid.gif");
+            $prefix .= ($last) ? $this->getImage('tree_end.gif') : $this->getImage('tree_mid.gif');
         }
 
         return $prefix;
@@ -249,49 +247,49 @@ class Html implements ViewerInterface
      */
     protected function getCorpusClass(): string
     {
-        $extras = "";
+        $extras = '';
 
         if ($this->currObj instanceof Channel && $this->currObj->isSpacer()) {
             switch ($this->currObj->spacerGetType()) {
-                case (string)TeamSpeak3::SPACER_SOLIDLINE:
-                    $extras .= " solidline";
+                case (string) TeamSpeak3::SPACER_SOLIDLINE:
+                    $extras .= ' solidline';
                     break;
 
-                case (string)TeamSpeak3::SPACER_DASHLINE:
-                    $extras .= " dashline";
+                case (string) TeamSpeak3::SPACER_DASHLINE:
+                    $extras .= ' dashline';
                     break;
 
-                case (string)TeamSpeak3::SPACER_DASHDOTLINE:
-                    $extras .= " dashdotline";
+                case (string) TeamSpeak3::SPACER_DASHDOTLINE:
+                    $extras .= ' dashdotline';
                     break;
 
-                case (string)TeamSpeak3::SPACER_DASHDOTDOTLINE:
-                    $extras .= " dashdotdotline";
+                case (string) TeamSpeak3::SPACER_DASHDOTDOTLINE:
+                    $extras .= ' dashdotdotline';
                     break;
 
-                case (string)TeamSpeak3::SPACER_DOTLINE:
-                    $extras .= " dotline";
+                case (string) TeamSpeak3::SPACER_DOTLINE:
+                    $extras .= ' dotline';
                     break;
             }
 
             switch ($this->currObj->spacerGetAlign()) {
                 case TeamSpeak3::SPACER_ALIGN_CENTER:
-                    $extras .= " center";
+                    $extras .= ' center';
                     break;
 
                 case TeamSpeak3::SPACER_ALIGN_RIGHT:
-                    $extras .= " right";
+                    $extras .= ' right';
                     break;
 
                 case TeamSpeak3::SPACER_ALIGN_LEFT:
-                    $extras .= " left";
+                    $extras .= ' left';
                     break;
             }
         } elseif ($this->currObj instanceof Client && $this->currObj->client_is_recording) {
-            $extras .= " recording";
+            $extras .= ' recording';
         }
 
-        return "corpus " . $this->currObj->getClass(null) . $extras;
+        return 'corpus '.$this->currObj->getClass(null).$extras;
     }
 
     /**
@@ -303,14 +301,15 @@ class Html implements ViewerInterface
     protected function getCorpusTitle(): ?string
     {
         if ($this->currObj instanceof Server) {
-            return "ID: " . $this->currObj->getId() . " | Clients: " . $this->currObj->clientCount() . "/" . $this->currObj["virtualserver_maxclients"] . " | Uptime: " . Convert::seconds($this->currObj["virtualserver_uptime"]);
-        } elseif ($this->currObj instanceof Channel && !$this->currObj->isSpacer()) {
-            return "ID: " . $this->currObj->getId() . " | Codec: " . Convert::codec($this->currObj["channel_codec"]) . " | Quality: " . $this->currObj["channel_codec_quality"];
+            return 'ID: '.$this->currObj->getId().' | Clients: '.$this->currObj->clientCount().'/'.$this->currObj['virtualserver_maxclients'].' | Uptime: '.Convert::seconds($this->currObj['virtualserver_uptime']);
+        } elseif ($this->currObj instanceof Channel && ! $this->currObj->isSpacer()) {
+            return 'ID: '.$this->currObj->getId().' | Codec: '.Convert::codec($this->currObj['channel_codec']).' | Quality: '.$this->currObj['channel_codec_quality'];
         } elseif ($this->currObj instanceof Client) {
-            return "ID: " . $this->currObj->getId() . " | Version: " . Convert::versionShort($this->currObj["client_version"]) . " | Platform: " . $this->currObj["client_platform"];
+            return 'ID: '.$this->currObj->getId().' | Version: '.Convert::versionShort($this->currObj['client_version']).' | Platform: '.$this->currObj['client_platform'];
         } elseif ($this->currObj instanceof ServerGroup || $this->currObj instanceof ChannelGroup) {
-            return "ID: " . $this->currObj->getId() . " | Type: " . Convert::groupType($this->currObj["type"]) . " (" . ($this->currObj["savedb"] ? "Permanent" : "Temporary") . ")";
+            return 'ID: '.$this->currObj->getId().' | Type: '.Convert::groupType($this->currObj['type']).' ('.($this->currObj['savedb'] ? 'Permanent' : 'Temporary').')';
         }
+
         return null;
     }
 
@@ -323,10 +322,10 @@ class Html implements ViewerInterface
     protected function getCorpusIcon(): string
     {
         if ($this->currObj instanceof Channel && $this->currObj->isSpacer()) {
-            return "";
+            return '';
         }
 
-        return $this->getImage($this->currObj->getIcon() . ".png");
+        return $this->getImage($this->currObj->getIcon().'.png');
     }
 
     /**
@@ -339,10 +338,10 @@ class Html implements ViewerInterface
     {
         if ($this->currObj instanceof Channel && $this->currObj->isSpacer()) {
             if ($this->currObj->spacerGetType() != TeamSpeak3::SPACER_CUSTOM) {
-                return "";
+                return '';
             }
 
-            $string = $this->currObj["channel_name"]->section("]", 1, 99);
+            $string = $this->currObj['channel_name']->section(']', 1, 99);
 
             if ($this->currObj->spacerGetAlign() == TeamSpeak3::SPACER_ALIGN_REPEAT) {
                 $string->resize(30, $string);
@@ -355,20 +354,20 @@ class Html implements ViewerInterface
             $before = [];
             $behind = [];
 
-            if (!$this->currObj->client_is_recording) {
+            if (! $this->currObj->client_is_recording) {
                 foreach ($this->currObj->memberOf() as $group) {
-                    if ($group->getProperty("namemode") == TeamSpeak3::GROUP_NAMEMODE_BEFORE) {
-                        $before[] = "[" . htmlspecialchars($group["name"]) . "]";
-                    } elseif ($group->getProperty("namemode") == TeamSpeak3::GROUP_NAMEMODE_BEHIND) {
-                        $behind[] = "[" . htmlspecialchars($group["name"]) . "]";
+                    if ($group->getProperty('namemode') == TeamSpeak3::GROUP_NAMEMODE_BEFORE) {
+                        $before[] = '['.htmlspecialchars($group['name']).']';
+                    } elseif ($group->getProperty('namemode') == TeamSpeak3::GROUP_NAMEMODE_BEHIND) {
+                        $behind[] = '['.htmlspecialchars($group['name']).']';
                     }
                 }
             } else {
-                $before[] = "***";
-                $behind[] = "*** [RECORDING]";
+                $before[] = '***';
+                $behind[] = '*** [RECORDING]';
             }
 
-            return implode("", $before) . " " . htmlspecialchars($this->currObj) . " " . implode("", $behind);
+            return implode('', $before).' '.htmlspecialchars($this->currObj).' '.implode('', $behind);
         }
 
         return htmlspecialchars($this->currObj);
@@ -382,7 +381,7 @@ class Html implements ViewerInterface
      */
     protected function getSuffixClass(): string
     {
-        return "suffix " . $this->currObj->getClass(null);
+        return 'suffix '.$this->currObj->getClass(null);
     }
 
     /**
@@ -403,7 +402,8 @@ class Html implements ViewerInterface
         } elseif ($this->currObj instanceof Client) {
             return $this->getSuffixIconClient();
         }
-        return "";
+
+        return '';
     }
 
     /**
@@ -417,29 +417,29 @@ class Html implements ViewerInterface
      */
     protected function getSuffixIconServer(): string
     {
-        $html = "";
+        $html = '';
 
-        if ($this->currObj["virtualserver_icon_id"]) {
-            if (!$this->currObj->iconIsLocal("virtualserver_icon_id") && $this->ftclient) {
-                if (!isset($this->cacheIcon[$this->currObj["virtualserver_icon_id"]])) {
-                    $download = $this->currObj->transferInitDownload(rand(0x0000, 0xFFFF), 0, $this->currObj->iconGetName("virtualserver_icon_id"));
+        if ($this->currObj['virtualserver_icon_id']) {
+            if (! $this->currObj->iconIsLocal('virtualserver_icon_id') && $this->ftclient) {
+                if (! isset($this->cacheIcon[$this->currObj['virtualserver_icon_id']])) {
+                    $download = $this->currObj->transferInitDownload(rand(0x0000, 0xFFFF), 0, $this->currObj->iconGetName('virtualserver_icon_id'));
 
-                    if ($this->ftclient == "data:image") {
-                        $download = TeamSpeak3::factory("filetransfer://" . (str_contains($download["host"], ":") ? "[" . $download["host"] . "]" : $download["host"]) . ":" . $download["port"])->download($download["ftkey"], $download["size"]);
+                    if ($this->ftclient == 'data:image') {
+                        $download = TeamSpeak3::factory('filetransfer://'.(str_contains($download['host'], ':') ? '['.$download['host'].']' : $download['host']).':'.$download['port'])->download($download['ftkey'], $download['size']);
                     }
 
-                    $this->cacheIcon[$this->currObj["virtualserver_icon_id"]] = $download;
+                    $this->cacheIcon[$this->currObj['virtualserver_icon_id']] = $download;
                 } else {
-                    $download = $this->cacheIcon[$this->currObj["virtualserver_icon_id"]];
+                    $download = $this->cacheIcon[$this->currObj['virtualserver_icon_id']];
                 }
 
-                if ($this->ftclient == "data:image") {
-                    $html .= $this->getImage("data:" . Convert::imageMimeType($download) . ";base64," . base64_encode($download), "Server Icon", null, false);
+                if ($this->ftclient == 'data:image') {
+                    $html .= $this->getImage('data:'.Convert::imageMimeType($download).';base64,'.base64_encode($download), 'Server Icon', null, false);
                 } else {
-                    $html .= $this->getImage($this->ftclient . "?ftdata=" . base64_encode(serialize($download)), "Server Icon", null, false);
+                    $html .= $this->getImage($this->ftclient.'?ftdata='.base64_encode(serialize($download)), 'Server Icon', null, false);
                 }
-            } elseif (in_array($this->currObj["virtualserver_icon_id"], $this->cachedIcons)) {
-                $html .= $this->getImage("group_icon_" . $this->currObj["virtualserver_icon_id"] . ".png", "Server Icon");
+            } elseif (in_array($this->currObj['virtualserver_icon_id'], $this->cachedIcons)) {
+                $html .= $this->getImage('group_icon_'.$this->currObj['virtualserver_icon_id'].'.png', 'Server Icon');
             }
         }
 
@@ -458,48 +458,48 @@ class Html implements ViewerInterface
     protected function getSuffixIconChannel(): string
     {
         if ($this->currObj instanceof Channel && $this->currObj->isSpacer()) {
-            return "";
+            return '';
         }
 
-        $html = "";
+        $html = '';
 
-        if ($this->currObj["channel_flag_default"]) {
-            $html .= $this->getImage("channel_flag_default.png", "Default Channel");
+        if ($this->currObj['channel_flag_default']) {
+            $html .= $this->getImage('channel_flag_default.png', 'Default Channel');
         }
 
-        if ($this->currObj["channel_flag_password"]) {
-            $html .= $this->getImage("channel_flag_password.png", "Password-protected");
+        if ($this->currObj['channel_flag_password']) {
+            $html .= $this->getImage('channel_flag_password.png', 'Password-protected');
         }
 
-        if ($this->currObj["channel_codec"] == TeamSpeak3::CODEC_CELT_MONO || $this->currObj["channel_codec"] == TeamSpeak3::CODEC_OPUS_MUSIC) {
-            $html .= $this->getImage("channel_flag_music.png", "Music Codec");
+        if ($this->currObj['channel_codec'] == TeamSpeak3::CODEC_CELT_MONO || $this->currObj['channel_codec'] == TeamSpeak3::CODEC_OPUS_MUSIC) {
+            $html .= $this->getImage('channel_flag_music.png', 'Music Codec');
         }
 
-        if ($this->currObj["channel_needed_talk_power"]) {
-            $html .= $this->getImage("channel_flag_moderated.png", "Moderated");
+        if ($this->currObj['channel_needed_talk_power']) {
+            $html .= $this->getImage('channel_flag_moderated.png', 'Moderated');
         }
 
-        if ($this->currObj["channel_icon_id"]) {
-            if (!$this->currObj->iconIsLocal("channel_icon_id") && $this->ftclient) {
-                if (!isset($this->cacheIcon[$this->currObj["channel_icon_id"]])) {
-                    $download = $this->currObj->getParent()->transferInitDownload(rand(0x0000, 0xFFFF), 0, $this->currObj->iconGetName("channel_icon_id"));
+        if ($this->currObj['channel_icon_id']) {
+            if (! $this->currObj->iconIsLocal('channel_icon_id') && $this->ftclient) {
+                if (! isset($this->cacheIcon[$this->currObj['channel_icon_id']])) {
+                    $download = $this->currObj->getParent()->transferInitDownload(rand(0x0000, 0xFFFF), 0, $this->currObj->iconGetName('channel_icon_id'));
 
-                    if ($this->ftclient == "data:image") {
-                        $download = TeamSpeak3::factory("filetransfer://" . (str_contains($download["host"], ":") ? "[" . $download["host"] . "]" : $download["host"]) . ":" . $download["port"])->download($download["ftkey"], $download["size"]);
+                    if ($this->ftclient == 'data:image') {
+                        $download = TeamSpeak3::factory('filetransfer://'.(str_contains($download['host'], ':') ? '['.$download['host'].']' : $download['host']).':'.$download['port'])->download($download['ftkey'], $download['size']);
                     }
 
-                    $this->cacheIcon[$this->currObj["channel_icon_id"]] = $download;
+                    $this->cacheIcon[$this->currObj['channel_icon_id']] = $download;
                 } else {
-                    $download = $this->cacheIcon[$this->currObj["channel_icon_id"]];
+                    $download = $this->cacheIcon[$this->currObj['channel_icon_id']];
                 }
 
-                if ($this->ftclient == "data:image") {
-                    $html .= $this->getImage("data:" . Convert::imageMimeType($download) . ";base64," . base64_encode($download), "Channel Icon", null, false);
+                if ($this->ftclient == 'data:image') {
+                    $html .= $this->getImage('data:'.Convert::imageMimeType($download).';base64,'.base64_encode($download), 'Channel Icon', null, false);
                 } else {
-                    $html .= $this->getImage($this->ftclient . "?ftdata=" . base64_encode(serialize($download)), "Channel Icon", null, false);
+                    $html .= $this->getImage($this->ftclient.'?ftdata='.base64_encode(serialize($download)), 'Channel Icon', null, false);
                 }
-            } elseif (in_array($this->currObj["channel_icon_id"], $this->cachedIcons)) {
-                $html .= $this->getImage("group_icon_" . $this->currObj["channel_icon_id"] . ".png", "Channel Icon");
+            } elseif (in_array($this->currObj['channel_icon_id'], $this->cachedIcons)) {
+                $html .= $this->getImage('group_icon_'.$this->currObj['channel_icon_id'].'.png', 'Channel Icon');
             }
         }
 
@@ -517,75 +517,75 @@ class Html implements ViewerInterface
      */
     protected function getSuffixIconClient(): string
     {
-        $html = "";
+        $html = '';
 
-        if ($this->currObj["client_is_priority_speaker"]) {
-            $html .= $this->getImage("client_priority.png", "Priority Speaker");
+        if ($this->currObj['client_is_priority_speaker']) {
+            $html .= $this->getImage('client_priority.png', 'Priority Speaker');
         }
 
-        if ($this->currObj["client_is_channel_commander"]) {
-            $html .= $this->getImage("client_cc.png", "Channel Commander");
+        if ($this->currObj['client_is_channel_commander']) {
+            $html .= $this->getImage('client_cc.png', 'Channel Commander');
         }
 
-        if ($this->currObj["client_is_talker"]) {
-            $html .= $this->getImage("client_talker.png", "Talk Power granted");
-        } elseif ($cntp = $this->currObj->getParent()->channelGetById($this->currObj["cid"])->channel_needed_talk_power) {
-            if ($cntp > $this->currObj["client_talk_power"]) {
-                $html .= $this->getImage("client_mic_muted.png", "Insufficient Talk Power");
+        if ($this->currObj['client_is_talker']) {
+            $html .= $this->getImage('client_talker.png', 'Talk Power granted');
+        } elseif ($cntp = $this->currObj->getParent()->channelGetById($this->currObj['cid'])->channel_needed_talk_power) {
+            if ($cntp > $this->currObj['client_talk_power']) {
+                $html .= $this->getImage('client_mic_muted.png', 'Insufficient Talk Power');
             }
         }
 
         foreach ($this->currObj->memberOf() as $group) {
-            if (!$group["iconid"]) {
+            if (! $group['iconid']) {
                 continue;
             }
 
-            $type = ($group instanceof ServerGroup) ? "Server Group" : "Channel Group";
+            $type = ($group instanceof ServerGroup) ? 'Server Group' : 'Channel Group';
 
-            if (!$group->iconIsLocal("iconid") && $this->ftclient) {
-                if (!isset($this->cacheIcon[$group["iconid"]])) {
-                    $download = $group->getParent()->transferInitDownload(rand(0x0000, 0xFFFF), 0, $group->iconGetName("iconid"));
+            if (! $group->iconIsLocal('iconid') && $this->ftclient) {
+                if (! isset($this->cacheIcon[$group['iconid']])) {
+                    $download = $group->getParent()->transferInitDownload(rand(0x0000, 0xFFFF), 0, $group->iconGetName('iconid'));
 
-                    if ($this->ftclient == "data:image") {
-                        $download = TeamSpeak3::factory("filetransfer://" . (str_contains($download["host"], ":") ? "[" . $download["host"] . "]" : $download["host"]) . ":" . $download["port"])->download($download["ftkey"], $download["size"]);
+                    if ($this->ftclient == 'data:image') {
+                        $download = TeamSpeak3::factory('filetransfer://'.(str_contains($download['host'], ':') ? '['.$download['host'].']' : $download['host']).':'.$download['port'])->download($download['ftkey'], $download['size']);
                     }
 
-                    $this->cacheIcon[$group["iconid"]] = $download;
+                    $this->cacheIcon[$group['iconid']] = $download;
                 } else {
-                    $download = $this->cacheIcon[$group["iconid"]];
+                    $download = $this->cacheIcon[$group['iconid']];
                 }
 
-                if ($this->ftclient == "data:image") {
-                    $html .= $this->getImage("data:" . Convert::imageMimeType($download) . ";base64," . base64_encode($download), $group . " [" . $type . "]", null, false);
+                if ($this->ftclient == 'data:image') {
+                    $html .= $this->getImage('data:'.Convert::imageMimeType($download).';base64,'.base64_encode($download), $group.' ['.$type.']', null, false);
                 } else {
-                    $html .= $this->getImage($this->ftclient . "?ftdata=" . base64_encode(serialize($download)), $group . " [" . $type . "]", null, false);
+                    $html .= $this->getImage($this->ftclient.'?ftdata='.base64_encode(serialize($download)), $group.' ['.$type.']', null, false);
                 }
-            } elseif (in_array($group["iconid"], $this->cachedIcons)) {
-                $html .= $this->getImage("group_icon_" . $group["iconid"] . ".png", $group . " [" . $type . "]");
+            } elseif (in_array($group['iconid'], $this->cachedIcons)) {
+                $html .= $this->getImage('group_icon_'.$group['iconid'].'.png', $group.' ['.$type.']');
             }
         }
 
-        if ($this->currObj["client_icon_id"]) {
-            if (!$this->currObj->iconIsLocal("client_icon_id") && $this->ftclient) {
-                if (!isset($this->cacheIcon[$this->currObj["client_icon_id"]])) {
-                    $download = $this->currObj->getParent()->transferInitDownload(rand(0x0000, 0xFFFF), 0, $this->currObj->iconGetName("client_icon_id"));
+        if ($this->currObj['client_icon_id']) {
+            if (! $this->currObj->iconIsLocal('client_icon_id') && $this->ftclient) {
+                if (! isset($this->cacheIcon[$this->currObj['client_icon_id']])) {
+                    $download = $this->currObj->getParent()->transferInitDownload(rand(0x0000, 0xFFFF), 0, $this->currObj->iconGetName('client_icon_id'));
 
-                    if ($this->ftclient == "data:image") {
-                        $download = TeamSpeak3::factory("filetransfer://" . (str_contains($download["host"], ":") ? "[" . $download["host"] . "]" : $download["host"]) . ":" . $download["port"])->download($download["ftkey"], $download["size"]);
+                    if ($this->ftclient == 'data:image') {
+                        $download = TeamSpeak3::factory('filetransfer://'.(str_contains($download['host'], ':') ? '['.$download['host'].']' : $download['host']).':'.$download['port'])->download($download['ftkey'], $download['size']);
                     }
 
-                    $this->cacheIcon[$this->currObj["client_icon_id"]] = $download;
+                    $this->cacheIcon[$this->currObj['client_icon_id']] = $download;
                 } else {
-                    $download = $this->cacheIcon[$this->currObj["client_icon_id"]];
+                    $download = $this->cacheIcon[$this->currObj['client_icon_id']];
                 }
 
-                if ($this->ftclient == "data:image") {
-                    $html .= $this->getImage("data:" . Convert::imageMimeType($download) . ";base64," . base64_encode($download), "Client Icon", null, false);
+                if ($this->ftclient == 'data:image') {
+                    $html .= $this->getImage('data:'.Convert::imageMimeType($download).';base64,'.base64_encode($download), 'Client Icon', null, false);
                 } else {
-                    $html .= $this->getImage($this->ftclient . "?ftdata=" . base64_encode(serialize($download)), "Client Icon", null, false);
+                    $html .= $this->getImage($this->ftclient.'?ftdata='.base64_encode(serialize($download)), 'Client Icon', null, false);
                 }
-            } elseif (in_array($this->currObj["client_icon_id"], $this->cachedIcons)) {
-                $html .= $this->getImage("group_icon_" . $this->currObj["client_icon_id"] . ".png", "Client Icon");
+            } elseif (in_array($this->currObj['client_icon_id'], $this->cachedIcons)) {
+                $html .= $this->getImage('group_icon_'.$this->currObj['client_icon_id'].'.png', 'Client Icon');
             }
         }
 
@@ -600,15 +600,15 @@ class Html implements ViewerInterface
      */
     protected function getSuffixFlag(): string
     {
-        if (!$this->currObj instanceof Client) {
-            return "";
+        if (! $this->currObj instanceof Client) {
+            return '';
         }
 
-        if ($this->flagpath && $this->currObj["client_country"]) {
-            return $this->getImage($this->currObj["client_country"]->toLower() . ".png", $this->currObj["client_country"], null, false, true);
+        if ($this->flagpath && $this->currObj['client_country']) {
+            return $this->getImage($this->currObj['client_country']->toLower().'.png', $this->currObj['client_country'], null, false, true);
         }
 
-        return "";
+        return '';
     }
 
     /**
@@ -617,13 +617,13 @@ class Html implements ViewerInterface
      * @param string $name
      * @param string $text
      * @param string|null $class
-     * @param boolean $iconpath
-     * @param boolean $flagpath
+     * @param bool $iconpath
+     * @param bool $flagpath
      * @return string
      */
-    protected function getImage(string $name, string $text = "", string $class = null, bool $iconpath = true, bool $flagpath = false): string
+    protected function getImage(string $name, string $text = '', string $class = null, bool $iconpath = true, bool $flagpath = false): string
     {
-        $src = "";
+        $src = '';
 
         if ($iconpath) {
             $src = $this->iconpath;
@@ -633,6 +633,6 @@ class Html implements ViewerInterface
             $src = $this->flagpath;
         }
 
-        return "<img src='" . $src . $name . "' title='" . $text . "' alt='' align='top' />";
+        return "<img src='".$src.$name."' title='".$text."' alt='' align='top' />";
     }
 }

@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- * @package   TeamSpeak3
  * @author    Sven 'ScP' Paulsen
  * @copyright Copyright (c) Planet TeamSpeak. All rights reserved.
  */
@@ -30,7 +29,6 @@ use PlanetTeamSpeak\TeamSpeak3Framework\Helper\StringHelper;
 
 /**
  * Class UDP
- * @package PlanetTeamSpeak\TeamSpeak3Framework\Transport
  * @class UDP
  * @brief Class for connecting to a remote server through UDP.
  */
@@ -48,11 +46,11 @@ class UDP extends Transport
             return;
         }
 
-        $host = strval($this->config["host"]);
-        $port = strval($this->config["port"]);
+        $host = strval($this->config['host']);
+        $port = strval($this->config['port']);
 
-        $address = "udp://" . (str_contains($host, ":") ? "[" . $host . "]" : $host) . ":" . $port;
-        $timeout = (int)$this->config["timeout"];
+        $address = 'udp://'.(str_contains($host, ':') ? '['.$host.']' : $host).':'.$port;
+        $timeout = (int) $this->config['timeout'];
 
         $this->stream = @stream_socket_client($address, $errno, $errstr, $timeout);
 
@@ -61,7 +59,7 @@ class UDP extends Transport
         }
 
         @stream_set_timeout($this->stream, $timeout);
-        @stream_set_blocking($this->stream, $this->config["blocking"] ? 1 : 0);
+        @stream_set_blocking($this->stream, $this->config['blocking'] ? 1 : 0);
     }
 
     /**
@@ -77,13 +75,13 @@ class UDP extends Transport
 
         $this->stream = null;
 
-        Signal::getInstance()->emit(strtolower($this->getAdapterType()) . "Disconnected");
+        Signal::getInstance()->emit(strtolower($this->getAdapterType()).'Disconnected');
     }
 
     /**
      * Reads data from the stream.
      *
-     * @param integer $length
+     * @param int $length
      * @return StringHelper
      * @throws TransportException
      */
@@ -94,10 +92,10 @@ class UDP extends Transport
 
         $data = @fread($this->stream, $length);
 
-        Signal::getInstance()->emit(strtolower($this->getAdapterType()) . "DataRead", $data);
+        Signal::getInstance()->emit(strtolower($this->getAdapterType()).'DataRead', $data);
 
         if ($data === false) {
-            throw new TransportException("connection to server '" . $this->config["host"] . ":" . $this->config["port"] . "' lost");
+            throw new TransportException("connection to server '".$this->config['host'].':'.$this->config['port']."' lost");
         }
 
         return new StringHelper($data);
@@ -116,6 +114,6 @@ class UDP extends Transport
 
         @stream_socket_sendto($this->stream, $data);
 
-        Signal::getInstance()->emit(strtolower($this->getAdapterType()) . "DataSend", $data);
+        Signal::getInstance()->emit(strtolower($this->getAdapterType()).'DataSend', $data);
     }
 }

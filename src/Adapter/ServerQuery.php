@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- * @package   TeamSpeak3
  * @author    Sven 'ScP' Paulsen
  * @copyright Copyright (c) Planet TeamSpeak. All rights reserved.
  */
@@ -52,14 +51,14 @@ class ServerQuery extends Adapter
     /**
      * Stores the timestamp of the last command.
      *
-     * @var integer|null
+     * @var int|null
      */
     protected ?int $timer = null;
 
     /**
      * Number of queries executed on the server.
      *
-     * @var integer
+     * @var int
      */
     protected int $count = 0;
 
@@ -68,7 +67,7 @@ class ServerQuery extends Adapter
      *
      * @var array
      */
-    protected array $block = ["help"];
+    protected array $block = ['help'];
 
     /**
      * Connects the Transport object and performs initial actions on the remote
@@ -86,11 +85,11 @@ class ServerQuery extends Adapter
 
         $rdy = $this->getTransport()->readLine();
 
-        if (!$rdy->startsWith(TeamSpeak3::TS3_PROTO_IDENT) && !$rdy->startsWith(TeamSpeak3::TEA_PROTO_IDENT)) {
-            throw new AdapterException("invalid reply from the server (" . $rdy . ")");
+        if (! $rdy->startsWith(TeamSpeak3::TS3_PROTO_IDENT) && ! $rdy->startsWith(TeamSpeak3::TEA_PROTO_IDENT)) {
+            throw new AdapterException('invalid reply from the server ('.$rdy.')');
         }
 
-        Signal::getInstance()->emit("serverqueryConnected", $this);
+        Signal::getInstance()->emit('serverqueryConnected', $this);
     }
 
     /**
@@ -101,13 +100,13 @@ class ServerQuery extends Adapter
     public function __destruct()
     {
         // do not disconnect, when acting as bot in non-blocking mode
-        if (! $this->getTransport()->getConfig("blocking")) {
+        if (! $this->getTransport()->getConfig('blocking')) {
             return;
         }
 
         if ($this->getTransport() instanceof Transport && $this->transport->isConnected()) {
             try {
-                $this->request("quit");
+                $this->request('quit');
             } catch (AdapterException) {
                 return;
             }
@@ -118,7 +117,7 @@ class ServerQuery extends Adapter
      * Sends a prepared command to the server and returns the result.
      *
      * @param string $cmd
-     * @param boolean $throw
+     * @param bool $throw
      * @return Reply
      * @throws AdapterException|ServerQueryException
      */
@@ -127,12 +126,12 @@ class ServerQuery extends Adapter
         $query = StringHelper::factory($cmd)->section(TeamSpeak3::SEPARATOR_CELL);
 
         if (strstr($cmd, "\r") || strstr($cmd, "\n")) {
-            throw new AdapterException("illegal characters in command '" . $query . "'");
+            throw new AdapterException("illegal characters in command '".$query."'");
         } elseif (in_array($query, $this->block)) {
-            throw new ServerQueryException("command not found", 0x100);
+            throw new ServerQueryException('command not found', 0x100);
         }
 
-        Signal::getInstance()->emit("serverqueryCommandStarted", $cmd);
+        Signal::getInstance()->emit('serverqueryCommandStarted', $cmd);
 
         $this->getProfiler()->start();
         $this->getTransport()->sendLine($cmd);
@@ -153,7 +152,7 @@ class ServerQuery extends Adapter
 
         $reply = new Reply($rpl, $cmd, $this->getHost(), $throw);
 
-        Signal::getInstance()->emit("serverqueryCommandFinished", $cmd, $reply);
+        Signal::getInstance()->emit('serverqueryCommandFinished', $cmd, $reply);
 
         return $reply;
     }
@@ -166,8 +165,8 @@ class ServerQuery extends Adapter
      */
     public function wait(): Event
     {
-        if ($this->getTransport()->getConfig("blocking")) {
-            throw new AdapterException("only available in non-blocking mode");
+        if ($this->getTransport()->getConfig('blocking')) {
+            throw new AdapterException('only available in non-blocking mode');
         }
 
         do {
@@ -175,7 +174,7 @@ class ServerQuery extends Adapter
                 break;
             }
             $evt = $this->getTransport()->readLine();
-        } while (!$evt->section(TeamSpeak3::SEPARATOR_CELL)->startsWith(TeamSpeak3::EVENT));
+        } while (! $evt->section(TeamSpeak3::SEPARATOR_CELL)->startsWith(TeamSpeak3::EVENT));
 
         return new Event($evt, $this->getHost());
     }
@@ -193,7 +192,7 @@ class ServerQuery extends Adapter
         $cells = [];
 
         foreach ($params as $ident => $value) {
-            $ident = is_numeric($ident) ? "" : strtolower($ident) . TeamSpeak3::SEPARATOR_PAIR;
+            $ident = is_numeric($ident) ? '' : strtolower($ident).TeamSpeak3::SEPARATOR_PAIR;
 
             if (is_array($value)) {
                 $value = array_values($value);
@@ -209,7 +208,7 @@ class ServerQuery extends Adapter
                         $value[$i] = $value[$i]->getId();
                     }
 
-                    $cells[$i][] = $ident . StringHelper::factory($value[$i])->escape()->toUtf8();
+                    $cells[$i][] = $ident.StringHelper::factory($value[$i])->escape()->toUtf8();
                 }
             } else {
                 if ($value === null) {
@@ -222,7 +221,7 @@ class ServerQuery extends Adapter
                     $value = $value->getId();
                 }
 
-                $args[] = $ident . StringHelper::factory($value)->escape()->toUtf8();
+                $args[] = $ident.StringHelper::factory($value)->escape()->toUtf8();
             }
         }
 
@@ -231,10 +230,10 @@ class ServerQuery extends Adapter
         }
 
         if (count($args)) {
-            $cmd .= " " . implode(TeamSpeak3::SEPARATOR_CELL, $args);
+            $cmd .= ' '.implode(TeamSpeak3::SEPARATOR_CELL, $args);
         }
         if (count($cells)) {
-            $cmd .= " " . implode(TeamSpeak3::SEPARATOR_LIST, $cells);
+            $cmd .= ' '.implode(TeamSpeak3::SEPARATOR_LIST, $cells);
         }
 
         return trim($cmd);
@@ -253,7 +252,7 @@ class ServerQuery extends Adapter
     /**
      * Returns the number of queries executed on the server.
      *
-     * @return integer
+     * @return int
      */
     public function getQueryCount(): int
     {
