@@ -139,21 +139,21 @@ class Uri
             throw new HelperException('URI scheme-specific decomposition failed');
         }
 
-        $this->scheme = StringHelper::factory(isset($components['scheme']) ? $components['scheme'] : '');
+        $this->scheme = StringHelper::factory($components['scheme'] ?? '');
 
         if (empty(trim($this->scheme)) or ! ctype_alnum($this->scheme->toString())) {
             throw new HelperException("invalid URI scheme '".$this->scheme."' supplied");
         }
 
-        $this->host = StringHelper::factory(isset($components['host']) ? $components['host'] : '');
-        $this->port = StringHelper::factory(isset($components['port']) ? $components['port'] : '');
+        $this->host = StringHelper::factory($components['host'] ?? '');
+        $this->port = StringHelper::factory($components['port'] ?? '');
 
-        $this->user = StringHelper::factory(isset($components['user']) ? $components['user'] : '');
-        $this->pass = StringHelper::factory(isset($components['pass']) ? $components['pass'] : '');
+        $this->user = StringHelper::factory($components['user'] ?? '');
+        $this->pass = StringHelper::factory($components['pass'] ?? '');
 
-        $this->path = StringHelper::factory((isset($components['path'])) ? $components['path'] : '');
-        $this->query = StringHelper::factory((isset($components['query'])) ? $components['query'] : '');
-        $this->fragment = StringHelper::factory((isset($components['fragment'])) ? $components['fragment'] : '');
+        $this->path = StringHelper::factory($components['path'] ?? '');
+        $this->query = StringHelper::factory($components['query'] ?? '');
+        $this->fragment = StringHelper::factory($components['fragment'] ?? '');
 
         if (str_contains($this->fragment, '?')) {
             throw new HelperException("invalid URI fragment '".$this->fragment."' supplied (fragment must be after query)");
