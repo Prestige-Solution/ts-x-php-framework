@@ -242,7 +242,11 @@ class Reply
      */
     public function toList(): array
     {
-        $array = func_num_args() ? $this->toArray(1) : $this->toArray();
+        //changed $array = func_num_args() ? $this->toArray(1) : $this->toArray();
+        //TODO Documentation: not clear what func_num_args() will do it here.
+        //TODO func_num_args() results in 0 or greater than 0 but not false so this function result every time in $this->toArray()
+        //Reference Host.php line 513 and 971
+        $array = $this->toArray();
 
         if (count($array) == 1) {
             return array_shift($array);
