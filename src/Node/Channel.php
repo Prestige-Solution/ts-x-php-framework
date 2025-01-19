@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- * @package   TeamSpeak3
  * @author    Sven 'ScP' Paulsen
  * @copyright Copyright (c) Planet TeamSpeak. All rights reserved.
  */
@@ -32,13 +31,13 @@ use PlanetTeamSpeak\TeamSpeak3Framework\TeamSpeak3;
 
 /**
  * Class Channel
- * @package PlanetTeamSpeak\TeamSpeak3Framework\Node
  * @class Channel
  * @brief Class describing a TeamSpeak 3 channel and all it's parameters.
  */
 class Channel extends Node
 {
     private array|null $clientList = null;
+
     private array $channelList = [];
 
     /**
@@ -49,13 +48,13 @@ class Channel extends Node
      * @param string $index
      * @throws ServerQueryException
      */
-    public function __construct(Server $server, array $info, string $index = "cid")
+    public function __construct(Server $server, array $info, string $index = 'cid')
     {
         $this->parent = $server;
         $this->nodeInfo = $info;
 
-        if (!array_key_exists($index, $this->nodeInfo)) {
-            throw new ServerQueryException("invalid channelID", 0x300);
+        if (! array_key_exists($index, $this->nodeInfo)) {
+            throw new ServerQueryException('invalid channelID', 0x300);
         }
 
         $this->nodeId = $this->nodeInfo[$index];
@@ -72,7 +71,7 @@ class Channel extends Node
         $channels = [];
 
         foreach ($this->getParent()->channelList() as $channel) {
-            if ($channel["pid"] == $this->getId()) {
+            if ($channel['pid'] == $this->getId()) {
                 $channels[$channel->getId()] = $channel;
             }
         }
@@ -83,14 +82,14 @@ class Channel extends Node
     /**
      * Returns the PlanetTeamSpeak\TeamSpeak3Framework\Node\Channel object matching the given ID.
      *
-     * @param integer $cid
+     * @param int $cid
      * @return Channel
      * @throws ServerQueryException
      */
-    public function subChannelGetById(int $cid): Channel
+    public function subChannelGetById(int $cid): self
     {
-        if (!array_key_exists($cid, $this->subChannelList())) {
-            throw new ServerQueryException("invalid channelID", 0x300);
+        if (! array_key_exists($cid, $this->subChannelList())) {
+            throw new ServerQueryException('invalid channelID', 0x300);
         }
 
         return $this->channelList[$cid];
@@ -99,19 +98,19 @@ class Channel extends Node
     /**
      * Returns the PlanetTeamSpeak\TeamSpeak3Framework\Node\Channel object matching the given name.
      *
-     * @param integer $name
+     * @param int $name
      * @return Channel
      * @throws ServerQueryException
      */
-    public function subChannelGetByName(int $name): Channel
+    public function subChannelGetByName(int $name): self
     {
         foreach ($this->subChannelList() as $channel) {
-            if ($channel["channel_name"] == $name) {
+            if ($channel['channel_name'] == $name) {
                 return $channel;
             }
         }
 
-        throw new ServerQueryException("invalid channelID", 0x300);
+        throw new ServerQueryException('invalid channelID', 0x300);
     }
 
     /**
@@ -125,7 +124,7 @@ class Channel extends Node
         $clients = [];
 
         foreach ($this->getParent()->clientList() as $client) {
-            if ($client["cid"] == $this->getId()) {
+            if ($client['cid'] == $this->getId()) {
                 $clients[$client->getId()] = $client;
             }
         }
@@ -136,14 +135,14 @@ class Channel extends Node
     /**
      * Returns the PlanetTeamSpeak\TeamSpeak3Framework\Node\Client object matching the given ID.
      *
-     * @param integer $clid
+     * @param int $clid
      * @return Client
      * @throws ServerQueryException
      */
     public function clientGetById(int $clid): Client
     {
-        if (!array_key_exists($clid, $this->clientList())) {
-            throw new ServerQueryException("invalid clientID", 0x200);
+        if (! array_key_exists($clid, $this->clientList())) {
+            throw new ServerQueryException('invalid clientID', 0x200);
         }
 
         return $this->clientList[$clid];
@@ -152,26 +151,26 @@ class Channel extends Node
     /**
      * Returns the PlanetTeamSpeak\TeamSpeak3Framework\Node\Client object matching the given name.
      *
-     * @param integer $name
+     * @param int $name
      * @return Client
      * @throws ServerQueryException
      */
     public function clientGetByName(int $name): Client
     {
         foreach ($this->clientList() as $client) {
-            if ($client["client_nickname"] == $name) {
+            if ($client['client_nickname'] == $name) {
                 return $client;
             }
         }
 
-        throw new ServerQueryException("invalid clientID", 0x200);
+        throw new ServerQueryException('invalid clientID', 0x200);
     }
 
     /**
      * Returns a list of permissions defined for a client in the channel.
      *
-     * @param integer $cldbid
-     * @param boolean $permsid
+     * @param int $cldbid
+     * @param bool $permsid
      * @return array
      */
     public function clientPermList(int $cldbid, bool $permsid = false): array
@@ -183,9 +182,9 @@ class Channel extends Node
      * Adds a set of specified permissions to a client in a specific channel. Multiple permissions can be added by
      * providing the two parameters of each permission.
      *
-     * @param integer $cldbid
-     * @param integer|integer[] $permid
-     * @param integer|integer[] $permvalue
+     * @param int $cldbid
+     * @param int|int[] $permid
+     * @param int|int[] $permvalue
      * @return void
      */
     public function clientPermAssign(int $cldbid, int|array $permid, int|array $permvalue): void
@@ -206,8 +205,8 @@ class Channel extends Node
     /**
      * Removes a set of specified permissions from a client in the channel. Multiple permissions can be removed at once.
      *
-     * @param integer $cldbid
-     * @param integer|integer[] $permid
+     * @param int $cldbid
+     * @param int|int[] $permid
      * @return void
      */
     public function clientPermRemove(int $cldbid, int|array $permid): void
@@ -228,7 +227,7 @@ class Channel extends Node
     /**
      * Returns a list of permissions defined for the channel.
      *
-     * @param boolean $permsid
+     * @param bool $permsid
      * @return array
      */
     public function permList(bool $permsid = false): array
@@ -240,8 +239,8 @@ class Channel extends Node
      * Adds a set of specified permissions to the channel. Multiple permissions can be added by
      * providing the two parameters of each permission.
      *
-     * @param integer|integer[] $permid
-     * @param integer|integer[] $permvalue
+     * @param int|int[] $permid
+     * @param int|int[] $permvalue
      * @return void
      */
     public function permAssign(int|array $permid, int|array $permvalue): void
@@ -262,7 +261,7 @@ class Channel extends Node
     /**
      * Removes a set of specified permissions from the channel. Multiple permissions can be removed at once.
      *
-     * @param integer|integer[] $permid
+     * @param int|int[] $permid
      * @return void
      */
     public function permRemove(int|array $permid): void
@@ -285,10 +284,10 @@ class Channel extends Node
      *
      * @param string $cpw
      * @param string $path
-     * @param boolean $recursive
+     * @param bool $recursive
      * @return array
      */
-    public function fileList(string $cpw = "", string $path = "/", bool $recursive = false): array
+    public function fileList(string $cpw = '', string $path = '/', bool $recursive = false): array
     {
         return $this->getParent()->channelFileList($this->getId(), $cpw, $path, $recursive);
     }
@@ -300,7 +299,7 @@ class Channel extends Node
      * @param string $name
      * @return array
      */
-    public function fileInfo(string $cpw = "", string $name = "/"): array
+    public function fileInfo(string $cpw = '', string $name = '/'): array
     {
         return $this->getParent()->channelFileInfo($this->getId(), $cpw, $name);
     }
@@ -312,11 +311,11 @@ class Channel extends Node
      * @param string $cpw
      * @param string $oldname
      * @param string $newname
-     * @param integer|null $tcid
+     * @param int|null $tcid
      * @param string|null $tcpw
      * @return void
      */
-    public function fileRename(string $cpw = "", string $oldname = "/", string $newname = "/", int $tcid = null, string $tcpw = null): void
+    public function fileRename(string $cpw = '', string $oldname = '/', string $newname = '/', int $tcid = null, string $tcpw = null): void
     {
         $this->getParent()->channelFileRename($this->getId(), $cpw, $oldname, $newname, $tcid, $tcpw);
     }
@@ -328,7 +327,7 @@ class Channel extends Node
      * @param string $name
      * @return void
      */
-    public function fileDelete(string $cpw = "", string $name = "/"): void
+    public function fileDelete(string $cpw = '', string $name = '/'): void
     {
         $this->getParent()->channelFileDelete($this->getId(), $cpw, $name);
     }
@@ -340,7 +339,7 @@ class Channel extends Node
      * @param string $dirname
      * @return void
      */
-    public function dirCreate(string $cpw = "", string $dirname = "/"): void
+    public function dirCreate(string $cpw = '', string $dirname = '/'): void
     {
         $this->getParent()->channelDirCreate($this->getId(), $cpw, $dirname);
     }
@@ -348,7 +347,7 @@ class Channel extends Node
     /**
      * Returns the level of the channel.
      *
-     * @return integer
+     * @return int
      */
     public function getLevel(): int
     {
@@ -368,7 +367,7 @@ class Channel extends Node
     /**
      * Returns the possible spacer type of the channel.
      *
-     * @return integer
+     * @return int
      */
     public function spacerGetType(): int
     {
@@ -378,7 +377,7 @@ class Channel extends Node
     /**
      * Returns the possible spacer alignment of the channel.
      *
-     * @return integer
+     * @return int
      */
     public function spacerGetAlign(): int
     {
@@ -388,7 +387,7 @@ class Channel extends Node
     /**
      * Returns TRUE if the channel is a spacer.
      *
-     * @return boolean
+     * @return bool
      */
     public function isSpacer(): bool
     {
@@ -406,18 +405,18 @@ class Channel extends Node
     public function iconDownload()
     {
         $iconid = $this['channel_icon_id'];
-        if (!is_int($iconid)) {
+        if (! is_int($iconid)) {
             $iconid = $iconid->toInt();
         }
 
-        if ($this->iconIsLocal("channel_icon_id") || $iconid == 0) {
+        if ($this->iconIsLocal('channel_icon_id') || $iconid == 0) {
             return;
         }
 
-        $download = $this->getParent()->transferInitDownload(rand(0x0000, 0xFFFF), 0, $this->iconGetName("channel_icon_id"));
-        $transfer = TeamSpeak3::factory("filetransfer://" . (str_contains($download["host"], ":") ? "[" . $download["host"] . "]" : $download["host"]) . ":" . $download["port"]);
+        $download = $this->getParent()->transferInitDownload(rand(0x0000, 0xFFFF), 0, $this->iconGetName('channel_icon_id'));
+        $transfer = TeamSpeak3::factory('filetransfer://'.(str_contains($download['host'], ':') ? '['.$download['host'].']' : $download['host']).':'.$download['port']);
 
-        return $transfer->download($download["ftkey"], $download["size"]);
+        return $transfer->download($download['ftkey'], $download['size']);
     }
 
     /**
@@ -430,9 +429,9 @@ class Channel extends Node
      */
     public function modify(array $properties): void
     {
-        $properties["cid"] = $this->getId();
+        $properties['cid'] = $this->getId();
 
-        $this->execute("channeledit", $properties);
+        $this->execute('channeledit', $properties);
         $this->resetNodeInfo();
     }
 
@@ -447,17 +446,17 @@ class Channel extends Node
      */
     public function message(string $msg, string $cpw = null): void
     {
-        if ($this->getId() != $this->getParent()->whoamiGet("client_channel_id")) {
-            $this->getParent()->clientMove($this->getParent()->whoamiGet("client_id"), $this->getId(), $cpw);
+        if ($this->getId() != $this->getParent()->whoamiGet('client_channel_id')) {
+            $this->getParent()->clientMove($this->getParent()->whoamiGet('client_id'), $this->getId(), $cpw);
         }
 
-        $this->execute("sendtextmessage", ["msg" => $msg, "target" => $this->getId(), "targetmode" => TeamSpeak3::TEXTMSG_CHANNEL]);
+        $this->execute('sendtextmessage', ['msg' => $msg, 'target' => $this->getId(), 'targetmode' => TeamSpeak3::TEXTMSG_CHANNEL]);
     }
 
     /**
      * Deletes the channel.
      *
-     * @param boolean $force
+     * @param bool $force
      * @return void
      */
     public function delete(bool $force = false): void
@@ -468,8 +467,8 @@ class Channel extends Node
     /**
      * Moves the channel to the parent channel specified with $pid.
      *
-     * @param integer $pid
-     * @param integer|null $order
+     * @param int $pid
+     * @param int|null $order
      * @return void
      */
     public function move(int $pid, int $order = null): void
@@ -483,18 +482,18 @@ class Channel extends Node
      * @param string $plugin
      * @param string $data
      * @param string|null $cpw
-     * @param boolean $subscribed
+     * @param bool $subscribed
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
      */
     public function sendPluginCmd(string $plugin, string $data, string $cpw = null, bool $subscribed = false): void
     {
-        if ($this->getId() != $this->getParent()->whoamiGet("client_channel_id")) {
-            $this->getParent()->clientMove($this->getParent()->whoamiGet("client_id"), $this->getId(), $cpw);
+        if ($this->getId() != $this->getParent()->whoamiGet('client_channel_id')) {
+            $this->getParent()->clientMove($this->getParent()->whoamiGet('client_id'), $this->getId(), $cpw);
         }
 
-        $this->execute("plugincmd", ["name" => $plugin, "data" => $data, "targetmode" => $subscribed ? TeamSpeak3::PLUGINCMD_CHANNEL_SUBSCRIBED : TeamSpeak3::PLUGINCMD_CHANNEL]);
+        $this->execute('plugincmd', ['name' => $plugin, 'data' => $data, 'targetmode' => $subscribed ? TeamSpeak3::PLUGINCMD_CHANNEL_SUBSCRIBED : TeamSpeak3::PLUGINCMD_CHANNEL]);
     }
 
     /**
@@ -506,25 +505,25 @@ class Channel extends Node
 
         if ($this->getParent()->getLoadClientlistFirst()) {
             foreach ($this->clientList() as $client) {
-                if ($client["cid"] == $this->getId()) {
+                if ($client['cid'] == $this->getId()) {
                     $this->nodeList[] = $client;
                 }
             }
 
             foreach ($this->subChannelList() as $channel) {
-                if ($channel["pid"] == $this->getId()) {
+                if ($channel['pid'] == $this->getId()) {
                     $this->nodeList[] = $channel;
                 }
             }
         } else {
             foreach ($this->subChannelList() as $channel) {
-                if ($channel["pid"] == $this->getId()) {
+                if ($channel['pid'] == $this->getId()) {
                     $this->nodeList[] = $channel;
                 }
             }
 
             foreach ($this->clientList() as $client) {
-                if ($client["cid"] == $this->getId()) {
+                if ($client['cid'] == $this->getId()) {
                     $this->nodeList[] = $client;
                 }
             }
@@ -538,7 +537,7 @@ class Channel extends Node
      */
     protected function fetchNodeInfo()
     {
-        $this->nodeInfo = array_merge($this->nodeInfo, $this->execute("channelinfo", ["cid" => $this->getId()])->toList());
+        $this->nodeInfo = array_merge($this->nodeInfo, $this->execute('channelinfo', ['cid' => $this->getId()])->toList());
     }
 
     /**
@@ -548,7 +547,7 @@ class Channel extends Node
      */
     public function getUniqueId(): string
     {
-        return $this->getParent()->getUniqueId() . "_ch" . $this->getId();
+        return $this->getParent()->getUniqueId().'_ch'.$this->getId();
     }
 
     /**
@@ -558,12 +557,12 @@ class Channel extends Node
      */
     public function getIcon(): string
     {
-        if (!$this["channel_maxclients"] || ($this["channel_maxclients"] != -1 && $this["channel_maxclients"] <= $this["total_clients"])) {
-            return "channel_full";
-        } elseif ($this["channel_flag_password"]) {
-            return "channel_pass";
+        if (! $this['channel_maxclients'] || ($this['channel_maxclients'] != -1 && $this['channel_maxclients'] <= $this['total_clients'])) {
+            return 'channel_full';
+        } elseif ($this['channel_flag_password']) {
+            return 'channel_pass';
         } else {
-            return "channel_open";
+            return 'channel_open';
         }
     }
 
@@ -574,7 +573,7 @@ class Channel extends Node
      */
     public function getSymbol(): string
     {
-        return "#";
+        return '#';
     }
 
     /**
@@ -584,6 +583,6 @@ class Channel extends Node
      */
     public function __toString()
     {
-        return (string)$this["channel_name"];
+        return (string) $this['channel_name'];
     }
 }

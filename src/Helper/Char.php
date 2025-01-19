@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- * @package   TeamSpeak3
  * @author    Sven 'ScP' Paulsen
  * @copyright Copyright (c) Planet TeamSpeak. All rights reserved.
  */
@@ -28,7 +27,6 @@ use PlanetTeamSpeak\TeamSpeak3Framework\Exception\HelperException;
 
 /**
  * Class Char
- * @package PlanetTeamSpeak\TeamSpeak3Framework\Helper
  * @class Char
  * @brief Helper class for char handling.
  */
@@ -50,7 +48,7 @@ class Char
     public function __construct(string $char)
     {
         if (strlen($char) != 1) {
-            throw new HelperException("char parameter may not contain more or less than one character");
+            throw new HelperException('char parameter may not contain more or less than one character');
         }
 
         $this->char = $char;
@@ -59,7 +57,7 @@ class Char
     /**
      * Returns true if the character is a letter.
      *
-     * @return boolean
+     * @return bool
      */
     public function isLetter(): bool
     {
@@ -69,7 +67,7 @@ class Char
     /**
      * Returns true if the character is a decimal digit.
      *
-     * @return boolean
+     * @return bool
      */
     public function isDigit(): bool
     {
@@ -79,7 +77,7 @@ class Char
     /**
      * Returns true if the character is a space.
      *
-     * @return boolean
+     * @return bool
      */
     public function isSpace(): bool
     {
@@ -89,7 +87,7 @@ class Char
     /**
      * Returns true if the character is a mark.
      *
-     * @return boolean
+     * @return bool
      */
     public function isMark(): bool
     {
@@ -99,7 +97,7 @@ class Char
     /**
      * Returns true if the character is a control character (i.e. "\t").
      *
-     * @return boolean
+     * @return bool
      */
     public function isControl(): bool
     {
@@ -109,7 +107,7 @@ class Char
     /**
      * Returns true if the character is a printable character.
      *
-     * @return boolean
+     * @return bool
      */
     public function isPrintable(): bool
     {
@@ -119,7 +117,7 @@ class Char
     /**
      * Returns true if the character is the Unicode character 0x0000 ("\0").
      *
-     * @return boolean
+     * @return bool
      */
     public function isNull(): bool
     {
@@ -129,7 +127,7 @@ class Char
     /**
      * Returns true if the character is an uppercase letter.
      *
-     * @return boolean
+     * @return bool
      */
     public function isUpper(): bool
     {
@@ -139,7 +137,7 @@ class Char
     /**
      * Returns true if the character is a lowercase letter.
      *
-     * @return boolean
+     * @return bool
      */
     public function isLower(): bool
     {
@@ -152,7 +150,7 @@ class Char
      * @return Char
      * @throws HelperException
      */
-    public function toUpper(): Char
+    public function toUpper(): self
     {
         return ($this->isUpper()) ? $this : new self(strtoupper($this));
     }
@@ -163,7 +161,7 @@ class Char
      * @return Char
      * @throws HelperException
      */
-    public function toLower(): Char
+    public function toLower(): self
     {
         return ($this->isLower()) ? $this : new self(strtolower($this));
     }
@@ -171,7 +169,7 @@ class Char
     /**
      * Returns the ascii value of the character.
      *
-     * @return integer
+     * @return int
      */
     public function toAscii(): int
     {
@@ -181,7 +179,7 @@ class Char
     /**
      * Returns the Unicode value of the character.
      *
-     * @return integer
+     * @return int
      */
     public function toUnicode(): int
     {
@@ -219,10 +217,10 @@ class Char
      * @return Char
      * @throws HelperException
      */
-    public static function fromHex(string $hex): Char
+    public static function fromHex(string $hex): self
     {
         if (strlen($hex) != 2) {
-            throw new HelperException("given parameter '" . $hex . "' is not a valid hexadecimal number");
+            throw new HelperException("given parameter '".$hex."' is not a valid hexadecimal number");
         }
 
         return new self(chr(hexdec($hex)));
@@ -241,7 +239,7 @@ class Char
     /**
      * Returns the integer value of the character.
      *
-     * @return integer
+     * @return int
      */
     public function toInt(): int
     {

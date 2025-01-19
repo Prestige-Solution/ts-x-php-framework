@@ -13,8 +13,6 @@ use PlanetTeamSpeak\TeamSpeak3Framework\Helper\StringHelper;
  *
  * Constants: S_... - Sample response for a command (raw formatting) from server.
  *            E_... - Expected (parsed) response (i.e. from _Helper_String) from framework
- *
- * @package Tests\Unit\Adapter\ServerQuery
  */
 class ReplyTest extends TestCase
 {
@@ -38,14 +36,22 @@ class ReplyTest extends TestCase
 
     // `clientlist` command with all parameters (single client)
     private static string $S_CLIENTLIST_EXTENDED_SINGLE = "clid=63 cid=53 client_database_id=25 client_nickname=HouseMaister-Radio\sBob\s(Rock) client_type=0 client_away=0 client_away_message client_flag_talking=0 client_input_muted=0 client_output_muted=0 client_input_hardware=1 client_output_hardware=1 client_talk_power=70 client_is_talker=0 client_is_priority_speaker=0 client_is_recording=0 client_is_channel_commander=0 client_unique_identifier=7seVjHY4Hbe2cSxTjyv8es7wv54= client_servergroups=147,227 client_channel_group_id=13 client_channel_group_inherited_channel_id=53 client_version=3.5.6\s[Build:\s1606312422] client_platform=Linux client_idle_time=102752 client_created=1684051977 client_lastconnected=1691241932 client_icon_id=0 client_country=DE connection_client_ip=fe80::9400:ff:fe2b::1 client_badges=Overwolf=1:badges=c2368518-3728-4260-bcd1-8b85e9f8984c";
-    private static string $E_CLIENTLIST_EXTENDED_SINGLE_CLID = "63";
+
+    private static string $E_CLIENTLIST_EXTENDED_SINGLE_CLID = '63';
+
     private static string $E_CLIENTLIST_EXTENDED_SINGLE_CLIENT_NICKNAME = "HouseMaister-Radio\sBob\s(Rock)";
-    private static string $E_CLIENTLIST_EXTENDED_SINGLE_CLIENT_AWAY_MESSAGE = "";
-    private static string $E_CLIENTLIST_EXTENDED_SINGLE_CLIENT_FLAG_TALKING = "0";
-    private static string $E_CLIENTLIST_EXTENDED_SINGLE_CLIENT_UNIQUE_IDENTIFIER = "7seVjHY4Hbe2cSxTjyv8es7wv54=";
-    private static string $E_CLIENTLIST_EXTENDED_SINGLE_CLIENT_SERVERGROUPS = "147,227";
+
+    private static string $E_CLIENTLIST_EXTENDED_SINGLE_CLIENT_AWAY_MESSAGE = '';
+
+    private static string $E_CLIENTLIST_EXTENDED_SINGLE_CLIENT_FLAG_TALKING = '0';
+
+    private static string $E_CLIENTLIST_EXTENDED_SINGLE_CLIENT_UNIQUE_IDENTIFIER = '7seVjHY4Hbe2cSxTjyv8es7wv54=';
+
+    private static string $E_CLIENTLIST_EXTENDED_SINGLE_CLIENT_SERVERGROUPS = '147,227';
+
     private static string $E_CLIENTLIST_EXTENDED_SINGLE_CLIENT_VERSION = "3.5.6\s[Build:\s1606312422]";
-    private static string $E_CLIENTLIST_EXTENDED_SINGLE_CLIENT_BADGES = "Overwolf=1:badges=c2368518-3728-4260-bcd1-8b85e9f8984c";
+
+    private static string $E_CLIENTLIST_EXTENDED_SINGLE_CLIENT_BADGES = 'Overwolf=1:badges=c2368518-3728-4260-bcd1-8b85e9f8984c';
 
     /**
      * @throws AdapterException
@@ -54,8 +60,8 @@ class ReplyTest extends TestCase
     public function testConstructor()
     {
         $reply = new Reply([
-          new StringHelper(static::$S_SERVERLIST),
-          new StringHelper(static::$S_ERROR_OK)
+            new StringHelper(static::$S_SERVERLIST),
+            new StringHelper(static::$S_ERROR_OK),
         ]);
 
         $this->assertInstanceOf(Reply::class, $reply);
@@ -68,8 +74,8 @@ class ReplyTest extends TestCase
     public function testToString()
     {
         $reply = new Reply([
-          new StringHelper(static::$S_SERVERLIST),
-          new StringHelper(static::$S_ERROR_OK)
+            new StringHelper(static::$S_SERVERLIST),
+            new StringHelper(static::$S_ERROR_OK),
         ]);
 
         $this->assertEquals(static::$E_SERVERLIST, (string) $reply->toString());
@@ -80,6 +86,7 @@ class ReplyTest extends TestCase
         //TODO testToLines
         $this->markTestSkipped('todo: testToLines');
     }
+
     public function testToTable()
     {
         //TODO testToTable
@@ -92,8 +99,8 @@ class ReplyTest extends TestCase
     public function testToArray()
     {
         $reply = new Reply([
-          new StringHelper(static::$S_CLIENTLIST_EXTENDED_SINGLE),
-          new StringHelper(static::$S_ERROR_OK)
+            new StringHelper(static::$S_CLIENTLIST_EXTENDED_SINGLE),
+            new StringHelper(static::$S_ERROR_OK),
         ]);
 
         $clientlist_array = $reply->toArray('clid')[0];
@@ -113,31 +120,37 @@ class ReplyTest extends TestCase
         //TODO testToAssocArray
         $this->markTestSkipped('todo: testToTable');
     }
+
     public function testToList()
     {
         //TODO testToList
         $this->markTestSkipped('todo: testToTable');
     }
+
     public function testToObjectArray()
     {
         //TODO testToObjectArray
         $this->markTestSkipped('todo: testToObjectArray');
     }
+
     public function testGetCommandString()
     {
         //TODO testGetCommandString
         $this->markTestSkipped('todo: testGetCommandString');
     }
+
     public function testGetNotifyEvents()
     {
         //TODO testGetNotifyEvents
         $this->markTestSkipped('todo: testGetNotifyEvents');
     }
+
     public function testGetErrorProperty()
     {
         //TODO testGetErrorProperty
         $this->markTestSkipped('todo: testGetErrorProperty');
     }
+
     public function testFetchError()
     {
         //TODO testFetchError
@@ -148,6 +161,7 @@ class ReplyTest extends TestCase
         //$this->assertInternalType(PHPUnit_IsType::TYPE_STRING, $reply->getErrorProperty('msg'));
         //$this->assertEquals('ok', $reply->getErrorProperty('msg'));
     }
+
     public function testFetchReply()
     {
         //TODO testFetchReply

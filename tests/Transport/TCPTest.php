@@ -8,12 +8,13 @@ use PlanetTeamSpeak\TeamSpeak3Framework\Adapter\MockServerQuery;
 use PlanetTeamSpeak\TeamSpeak3Framework\Adapter\ServerQuery;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\ServerQueryException;
-use PlanetTeamSpeak\TeamSpeak3Framework\Transport\TCP;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\TransportException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Transport\TCP;
 
 class TCPTest extends TestCase
 {
     private string $host;
+
     private string $port;
 
     public function setUp(): void
@@ -139,12 +140,12 @@ class TCPTest extends TestCase
         );
         $this->expectException(TransportException::class);
         if (PHP_VERSION_ID < 80100) {
-            $this->expectExceptionMessage("getaddrinfo failed");
+            $this->expectExceptionMessage('getaddrinfo failed');
         } else {
             //TODO Not sure how to handle different languages
             //TODO handle different expectExceptionMessages
             //$this->expectExceptionMessage("getaddrinfo for $this->host failed");
-            $this->expectExceptionMessage("Es konnte keine Verbindung hergestellt werden, da der Zielcomputer die Verbindung verweigerte");
+            $this->expectExceptionMessage('Es konnte keine Verbindung hergestellt werden, da der Zielcomputer die Verbindung verweigerte');
         }
         $transport->connect();
     }
@@ -202,12 +203,12 @@ class TCPTest extends TestCase
         );
         $this->expectException(TransportException::class);
         if (PHP_VERSION_ID < 80100) {
-            $this->expectExceptionMessage("getaddrinfo failed");
+            $this->expectExceptionMessage('getaddrinfo failed');
         } else {
             //TODO Not sure how to handle different languages
             //TODO handle different expectExceptionMessages
             //$this->expectExceptionMessage("getaddrinfo for $this->port failed");
-            $this->expectExceptionMessage("Es konnte keine Verbindung hergestellt werden, da der Zielcomputer die Verbindung verweigerte");
+            $this->expectExceptionMessage('Es konnte keine Verbindung hergestellt werden, da der Zielcomputer die Verbindung verweigerte');
         }
         $transport->read();
     }
@@ -223,12 +224,12 @@ class TCPTest extends TestCase
         );
         $this->expectException(TransportException::class);
         if (PHP_VERSION_ID < 80100) {
-            $this->expectExceptionMessage("getaddrinfo failed");
+            $this->expectExceptionMessage('getaddrinfo failed');
         } else {
             //TODO Not sure how to handle different languages
             //TODO handle different expectExceptionMessages
             //$this->expectExceptionMessage("getaddrinfo for $this->host failed");
-            $this->expectExceptionMessage("Es konnte keine Verbindung hergestellt werden, da der Zielcomputer die Verbindung verweigerte");
+            $this->expectExceptionMessage('Es konnte keine Verbindung hergestellt werden, da der Zielcomputer die Verbindung verweigerte');
         }
         $transport->readLine();
     }
@@ -244,12 +245,12 @@ class TCPTest extends TestCase
         );
         $this->expectException(TransportException::class);
         if (PHP_VERSION_ID < 80100) {
-            $this->expectExceptionMessage("getaddrinfo failed");
+            $this->expectExceptionMessage('getaddrinfo failed');
         } else {
             //TODO Not sure how to handle different languages
             //TODO handle different expectExceptionMessages
             //$this->expectExceptionMessage("getaddrinfo for $this->host failed");
-            $this->expectExceptionMessage("Es konnte keine Verbindung hergestellt werden, da der Zielcomputer die Verbindung verweigerte");
+            $this->expectExceptionMessage('Es konnte keine Verbindung hergestellt werden, da der Zielcomputer die Verbindung verweigerte');
         }
         $transport->send('testsend');
     }
@@ -265,12 +266,12 @@ class TCPTest extends TestCase
         );
         $this->expectException(TransportException::class);
         if (PHP_VERSION_ID < 80100) {
-            $this->expectExceptionMessage("getaddrinfo failed");
+            $this->expectExceptionMessage('getaddrinfo failed');
         } else {
             //TODO Not sure how to handle different languages
             //TODO handle different expectExceptionMessages
             //$this->expectExceptionMessage("getaddrinfo for $this->host failed");
-            $this->expectExceptionMessage("Es konnte keine Verbindung hergestellt werden, da der Zielcomputer die Verbindung verweigerte");
+            $this->expectExceptionMessage('Es konnte keine Verbindung hergestellt werden, da der Zielcomputer die Verbindung verweigerte');
         }
         $transport->sendLine('test.sendLine');
     }

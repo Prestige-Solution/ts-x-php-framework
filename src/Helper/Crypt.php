@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- * @package   TeamSpeak3
  * @author    Sven 'ScP' Paulsen
  * @copyright Copyright (c) Planet TeamSpeak. All rights reserved.
  */
@@ -30,7 +29,6 @@ use PlanetTeamSpeak\TeamSpeak3Framework\Exception\HelperException;
  * Class Crypt
  * todo: Replace this class with native encryption
  *
- * @package PlanetTeamSpeak\TeamSpeak3Framework\Helper
  * @class Crypt
  * @brief Helper class for data encryption.
  */
@@ -78,14 +76,14 @@ class Crypt
     public function encrypt(string $string): string
     {
         $string = trim($string);
-        $encryp = "";
+        $encryp = '';
         $length = strlen($string);
         $string .= str_repeat(chr(0), (8 - ($length % 8)) % 8);
 
         for ($i = 0; $i < $length; $i += 8) {
-            list(, $xl, $xr) = unpack("N2", substr($string, $i, 8));
+            list(, $xl, $xr) = unpack('N2', substr($string, $i, 8));
             $this->encipher($xl, $xr);
-            $encryp .= pack("N2", $xl, $xr);
+            $encryp .= pack('N2', $xl, $xr);
         }
 
         return base64_encode($encryp);
@@ -100,14 +98,14 @@ class Crypt
     public function decrypt(string $string): string
     {
         $string = base64_decode($string);
-        $decryp = "";
+        $decryp = '';
         $length = strlen($string);
         $string .= str_repeat(chr(0), (8 - ($length % 8)) % 8);
 
         for ($i = 0; $i < $length; $i += 8) {
-            list(, $xl, $xr) = unpack("N2", substr($string, $i, 8));
+            list(, $xl, $xr) = unpack('N2', substr($string, $i, 8));
             $this->decipher($xl, $xr);
-            $decryp .= pack("N2", $xl, $xr);
+            $decryp .= pack('N2', $xl, $xr);
         }
 
         return trim($decryp);
@@ -116,8 +114,8 @@ class Crypt
     /**
      * Enciphers a single 64-bit block.
      *
-     * @param integer $xl
-     * @param integer $xr
+     * @param int $xl
+     * @param int $xr
      */
     protected function encipher(int &$xl, int &$xr): void
     {
@@ -134,8 +132,8 @@ class Crypt
     /**
      * Deciphers a single 64-bit block
      *
-     * @param integer $xl
-     * @param integer $xr
+     * @param int $xl
+     * @param int $xr
      * @return void
      */
     protected function decipher(int &$xl, int &$xr): void
@@ -162,7 +160,7 @@ class Crypt
         $length = strlen($passphrase);
 
         if (strlen($passphrase) < 1 || strlen($passphrase) > 56) {
-            throw new HelperException("secret passphrase must contain at least one but less than 56 characters");
+            throw new HelperException('secret passphrase must contain at least one but less than 56 characters');
         }
 
         $k = 0;
@@ -177,7 +175,6 @@ class Crypt
             }
             $this->p[$i] ^= $data;
         }
-
 
         for ($i = 0; $i <= 16; $i += 2) {
             $this->encipher($datal, $datar);
@@ -271,7 +268,7 @@ class Crypt
                 0xD60F573F, 0xBC9BC6E4, 0x2B60A476, 0x81E67400,
                 0x08BA6FB5, 0x571BE91F, 0xF296EC6B, 0x2A0DD915,
                 0xB6636521, 0xE7B9F9B6, 0xFF34052E, 0xC5855664,
-                0x53B02D5D, 0xA99F8FA1, 0x08BA4799, 0x6E85076A
+                0x53B02D5D, 0xA99F8FA1, 0x08BA4799, 0x6E85076A,
             ],
             [
                 0x4B7A70E9, 0xB5B32944, 0xDB75092E, 0xC4192623,
@@ -337,7 +334,7 @@ class Crypt
                 0x9E447A2E, 0xC3453484, 0xFDD56705, 0x0E1E9EC9,
                 0xDB73DBD3, 0x105588CD, 0x675FDA79, 0xE3674340,
                 0xC5C43465, 0x713E38D8, 0x3D28F89E, 0xF16DFF20,
-                0x153E21E7, 0x8FB03D4A, 0xE6E39F2B, 0xDB83ADF7
+                0x153E21E7, 0x8FB03D4A, 0xE6E39F2B, 0xDB83ADF7,
             ],
             [
                 0xE93D5A68, 0x948140F7, 0xF64C261C, 0x94692934,
@@ -403,7 +400,7 @@ class Crypt
                 0xED545578, 0x08FCA5B5, 0xD83D7CD3, 0x4DAD0FC4,
                 0x1E50EF5E, 0xB161E6F8, 0xA28514D9, 0x6C51133C,
                 0x6FD5C7E7, 0x56E14EC4, 0x362ABFCE, 0xDDC6C837,
-                0xD79A3234, 0x92638212, 0x670EFA8E, 0x406000E0
+                0xD79A3234, 0x92638212, 0x670EFA8E, 0x406000E0,
             ],
             [
                 0x3A39CE37, 0xD3FAF5CF, 0xABC27737, 0x5AC52D1B,
@@ -469,8 +466,8 @@ class Crypt
                 0x85CBFE4E, 0x8AE88DD8, 0x7AAAF9B0, 0x4CF9AA7E,
                 0x1948C25C, 0x02FB8A8C, 0x01C36AE4, 0xD6EBE1F9,
                 0x90D4F869, 0xA65CDEA0, 0x3F09252D, 0xC208E69F,
-                0xB74E6132, 0xCE77E25B, 0x578FDFE3, 0x3AC372E6
-            ]
+                0xB74E6132, 0xCE77E25B, 0x578FDFE3, 0x3AC372E6,
+            ],
         ];
     }
 }

@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- * @package   TeamSpeak3
  * @author    Sven 'ScP' Paulsen
  * @copyright Copyright (c) Planet TeamSpeak. All rights reserved.
  */
@@ -29,7 +28,6 @@ use PlanetTeamSpeak\TeamSpeak3Framework\TeamSpeak3;
 
 /**
  * Class Convert
- * @package PlanetTeamSpeak\TeamSpeak3Framework\Helper
  * @class Convert
  * @brief Helper class for data conversion.
  */
@@ -37,42 +35,43 @@ class Convert
 {
     /**
      * Converts bytes to a human-readable value.
-     *
-     * @param integer $bytes
+     * @param  int  $bytes
+     * @param  int  $precision
      * @return string
      */
     public static function bytes(int $bytes, int $precision = 10): string
     {
         // Identify if its a negative or positive number
-        $negative = (str_starts_with($bytes, '-')) ? true : false;
+        $negative = str_starts_with($bytes, '-');
 
         // force calculation with positive numbers only
         $bytes = floatval(abs($bytes));
 
         $unit_conversions = [
-            0 => ["UNIT" => "B", "VALUE" => pow(1024, 0)],
-            1 => ["UNIT" => "KiB", "VALUE" => pow(1024, 1)],
-            2 => ["UNIT" => "MiB", "VALUE" => pow(1024, 2)],
-            3 => ["UNIT" => "GiB", "VALUE" => pow(1024, 3)],
-            4 => ["UNIT" => "TiB", "VALUE" => pow(1024, 4)],
-            5 => ["UNIT" => "PiB", "VALUE" => pow(1024, 5)],
-            6 => ["UNIT" => "EiB", "VALUE" => pow(1024, 6)],
-            7 => ["UNIT" => "ZiB", "VALUE" => pow(1024, 7)],
-            8 => ["UNIT" => "YiB", "VALUE" => pow(1024, 8)],
+            0 => ['UNIT' => 'B', 'VALUE' => pow(1024, 0)],
+            1 => ['UNIT' => 'KiB', 'VALUE' => pow(1024, 1)],
+            2 => ['UNIT' => 'MiB', 'VALUE' => pow(1024, 2)],
+            3 => ['UNIT' => 'GiB', 'VALUE' => pow(1024, 3)],
+            4 => ['UNIT' => 'TiB', 'VALUE' => pow(1024, 4)],
+            5 => ['UNIT' => 'PiB', 'VALUE' => pow(1024, 5)],
+            6 => ['UNIT' => 'EiB', 'VALUE' => pow(1024, 6)],
+            7 => ['UNIT' => 'ZiB', 'VALUE' => pow(1024, 7)],
+            8 => ['UNIT' => 'YiB', 'VALUE' => pow(1024, 8)],
         ];
 
         // Sort from the biggest defined unit to smallest to get the best human readable format.
         krsort($unit_conversions);
 
         foreach ($unit_conversions as $conversion) {
-            if ($bytes >= $conversion["VALUE"]) {
-                $result = $bytes / $conversion["VALUE"];
-                $result = strval(round($result, $precision)) . " " . $conversion["UNIT"];
-                return ($negative) ? '-' . $result : $result;
+            if ($bytes >= $conversion['VALUE']) {
+                $result = $bytes / $conversion['VALUE'];
+                $result = round($result, $precision).' '.$conversion['UNIT'];
+
+                return ($negative) ? '-'.$result : $result;
             }
         }
 
-        return ($negative) ? '-' . $bytes . " B" : $bytes . " B";
+        return ($negative) ? '-'.$bytes.' B' : $bytes.' B';
     }
 
     /**
@@ -80,13 +79,11 @@ class Convert
      *
      * Note: Assumes non-negative integer, but no validation
      * @param float $seconds
-     * @param boolean $is_ms
+     * @param bool $is_ms
      * @param string $format
      * @return string
-     * @todo: Handle negative integer $seconds, or invalidate
-     *
      */
-    public static function seconds(float $seconds, bool $is_ms = false, string $format = "%r%aD %H:%I:%S"): string
+    public static function seconds(float $seconds, bool $is_ms = false, string $format = '%r%aD %H:%I:%S'): string
     {
         if ($is_ms) {
             $seconds = intval($seconds) / 1000;
@@ -94,7 +91,7 @@ class Convert
             $seconds = intval($seconds);
         }
 
-        $current_datetime = new DateTime("@0");
+        $current_datetime = new DateTime('@0');
         $seconds_datetime = new DateTime("@$seconds");
 
         return $current_datetime->diff($seconds_datetime)->format($format);
@@ -103,172 +100,172 @@ class Convert
     /**
      * Converts a given codec ID to a human-readable name.
      *
-     * @param integer $codec
+     * @param int $codec
      * @return string
      */
     public static function codec(int $codec): string
     {
         if ($codec == TeamSpeak3::CODEC_SPEEX_NARROWBAND) {
-            return "Speex Narrowband";
+            return 'Speex Narrowband';
         }
         if ($codec == TeamSpeak3::CODEC_SPEEX_WIDEBAND) {
-            return "Speex Wideband";
+            return 'Speex Wideband';
         }
         if ($codec == TeamSpeak3::CODEC_SPEEX_ULTRAWIDEBAND) {
-            return "Speex Ultra-Wideband";
+            return 'Speex Ultra-Wideband';
         }
         if ($codec == TeamSpeak3::CODEC_CELT_MONO) {
-            return "CELT Mono";
+            return 'CELT Mono';
         }
         if ($codec == TeamSpeak3::CODEC_OPUS_VOICE) {
-            return "Opus Voice";
+            return 'Opus Voice';
         }
         if ($codec == TeamSpeak3::CODEC_OPUS_MUSIC) {
-            return "Opus Music";
+            return 'Opus Music';
         }
 
-        return "Unknown";
+        return 'Unknown';
     }
 
     /**
      * Converts a given group type ID to a human-readable name.
      *
-     * @param integer $type
+     * @param int $type
      * @return string
      */
     public static function groupType(int $type): string
     {
         if ($type == TeamSpeak3::GROUP_DBTYPE_TEMPLATE) {
-            return "Template";
+            return 'Template';
         }
         if ($type == TeamSpeak3::GROUP_DBTYPE_REGULAR) {
-            return "Regular";
+            return 'Regular';
         }
         if ($type == TeamSpeak3::GROUP_DBTYPE_SERVERQUERY) {
-            return "ServerQuery";
+            return 'ServerQuery';
         }
 
-        return "Unknown";
+        return 'Unknown';
     }
 
     /**
      * Converts a given permission type ID to a human-readable name.
      *
-     * @param integer $type
+     * @param int $type
      * @return string
      */
     public static function permissionType(int $type): string
     {
         if ($type == TeamSpeak3::PERM_TYPE_SERVERGROUP) {
-            return "Server Group";
+            return 'Server Group';
         }
         if ($type == TeamSpeak3::PERM_TYPE_CLIENT) {
-            return "Client";
+            return 'Client';
         }
         if ($type == TeamSpeak3::PERM_TYPE_CHANNEL) {
-            return "Channel";
+            return 'Channel';
         }
         if ($type == TeamSpeak3::PERM_TYPE_CHANNELGROUP) {
-            return "Channel Group";
+            return 'Channel Group';
         }
         if ($type == TeamSpeak3::PERM_TYPE_CHANNELCLIENT) {
-            return "Channel Client";
+            return 'Channel Client';
         }
 
-        return "Unknown";
+        return 'Unknown';
     }
 
     /**
      * Converts a given permission category value to a human-readable name.
      *
-     * @param integer $pcat
+     * @param int $pcat
      * @return string
      */
     public static function permissionCategory(int $pcat): string
     {
         if ($pcat == TeamSpeak3::PERM_CAT_GLOBAL) {
-            return "Global";
+            return 'Global';
         }
         if ($pcat == TeamSpeak3::PERM_CAT_GLOBAL_INFORMATION) {
-            return "Global / Information";
+            return 'Global / Information';
         }
         if ($pcat == TeamSpeak3::PERM_CAT_GLOBAL_SERVER_MGMT) {
-            return "Global / Virtual Server Management";
+            return 'Global / Virtual Server Management';
         }
         if ($pcat == TeamSpeak3::PERM_CAT_GLOBAL_ADM_ACTIONS) {
-            return "Global / Administration";
+            return 'Global / Administration';
         }
         if ($pcat == TeamSpeak3::PERM_CAT_GLOBAL_SETTINGS) {
-            return "Global / Settings";
+            return 'Global / Settings';
         }
         if ($pcat == TeamSpeak3::PERM_CAT_SERVER) {
-            return "Virtual Server";
+            return 'Virtual Server';
         }
         if ($pcat == TeamSpeak3::PERM_CAT_SERVER_INFORMATION) {
-            return "Virtual Server / Information";
+            return 'Virtual Server / Information';
         }
         if ($pcat == TeamSpeak3::PERM_CAT_SERVER_ADM_ACTIONS) {
-            return "Virtual Server / Administration";
+            return 'Virtual Server / Administration';
         }
         if ($pcat == TeamSpeak3::PERM_CAT_SERVER_SETTINGS) {
-            return "Virtual Server / Settings";
+            return 'Virtual Server / Settings';
         }
         if ($pcat == TeamSpeak3::PERM_CAT_CHANNEL) {
-            return "Channel";
+            return 'Channel';
         }
         if ($pcat == TeamSpeak3::PERM_CAT_CHANNEL_INFORMATION) {
-            return "Channel / Information";
+            return 'Channel / Information';
         }
         if ($pcat == TeamSpeak3::PERM_CAT_CHANNEL_CREATE) {
-            return "Channel / Create";
+            return 'Channel / Create';
         }
         if ($pcat == TeamSpeak3::PERM_CAT_CHANNEL_MODIFY) {
-            return "Channel / Modify";
+            return 'Channel / Modify';
         }
         if ($pcat == TeamSpeak3::PERM_CAT_CHANNEL_DELETE) {
-            return "Channel / Delete";
+            return 'Channel / Delete';
         }
         if ($pcat == TeamSpeak3::PERM_CAT_CHANNEL_ACCESS) {
-            return "Channel / Access";
+            return 'Channel / Access';
         }
         if ($pcat == TeamSpeak3::PERM_CAT_GROUP) {
-            return "Group";
+            return 'Group';
         }
         if ($pcat == TeamSpeak3::PERM_CAT_GROUP_INFORMATION) {
-            return "Group / Information";
+            return 'Group / Information';
         }
         if ($pcat == TeamSpeak3::PERM_CAT_GROUP_CREATE) {
-            return "Group / Create";
+            return 'Group / Create';
         }
         if ($pcat == TeamSpeak3::PERM_CAT_GROUP_MODIFY) {
-            return "Group / Modify";
+            return 'Group / Modify';
         }
         if ($pcat == TeamSpeak3::PERM_CAT_GROUP_DELETE) {
-            return "Group / Delete";
+            return 'Group / Delete';
         }
         if ($pcat == TeamSpeak3::PERM_CAT_CLIENT) {
-            return "Client";
+            return 'Client';
         }
         if ($pcat == TeamSpeak3::PERM_CAT_CLIENT_INFORMATION) {
-            return "Client / Information";
+            return 'Client / Information';
         }
         if ($pcat == TeamSpeak3::PERM_CAT_CLIENT_ADM_ACTIONS) {
-            return "Client / Admin";
+            return 'Client / Admin';
         }
         if ($pcat == TeamSpeak3::PERM_CAT_CLIENT_BASICS) {
-            return "Client / Basics";
+            return 'Client / Basics';
         }
         if ($pcat == TeamSpeak3::PERM_CAT_CLIENT_MODIFY) {
-            return "Client / Modify";
+            return 'Client / Modify';
         }
         if ($pcat == TeamSpeak3::PERM_CAT_FILETRANSFER) {
-            return "File Transfer";
+            return 'File Transfer';
         }
         if ($pcat == TeamSpeak3::PERM_CAT_NEEDED_MODIFY_POWER) {
-            return "Grant";
+            return 'Grant';
         }
 
-        return "Unknown";
+        return 'Unknown';
     }
 
     /**
@@ -281,36 +278,36 @@ class Convert
     {
         if (is_numeric($level)) {
             if ($level == TeamSpeak3::LOGLEVEL_CRITICAL) {
-                return "CRITICAL";
+                return 'CRITICAL';
             }
             if ($level == TeamSpeak3::LOGLEVEL_ERROR) {
-                return "ERROR";
+                return 'ERROR';
             }
             if ($level == TeamSpeak3::LOGLEVEL_DEBUG) {
-                return "DEBUG";
+                return 'DEBUG';
             }
             if ($level == TeamSpeak3::LOGLEVEL_WARNING) {
-                return "WARNING";
+                return 'WARNING';
             }
             if ($level == TeamSpeak3::LOGLEVEL_INFO) {
-                return "INFO";
+                return 'INFO';
             }
 
-            return "DEVELOP";
+            return 'DEVELOP';
         } else {
-            if (strtoupper($level) == "CRITICAL") {
+            if (strtoupper($level) == 'CRITICAL') {
                 return TeamSpeak3::LOGLEVEL_CRITICAL;
             }
-            if (strtoupper($level) == "ERROR") {
+            if (strtoupper($level) == 'ERROR') {
                 return TeamSpeak3::LOGLEVEL_ERROR;
             }
-            if (strtoupper($level) == "DEBUG") {
+            if (strtoupper($level) == 'DEBUG') {
                 return TeamSpeak3::LOGLEVEL_DEBUG;
             }
-            if (strtoupper($level) == "WARNING") {
+            if (strtoupper($level) == 'WARNING') {
                 return TeamSpeak3::LOGLEVEL_WARNING;
             }
-            if (strtoupper($level) == "INFO") {
+            if (strtoupper($level) == 'INFO') {
                 return TeamSpeak3::LOGLEVEL_INFO;
             }
 
@@ -326,25 +323,25 @@ class Convert
      */
     public static function logEntry(string $entry): array
     {
-        $parts = explode("|", $entry, 5);
+        $parts = explode('|', $entry, 5);
         $array = [];
 
         if (count($parts) != 5) {
-            $array["timestamp"] = 0;
-            $array["level"] = TeamSpeak3::LOGLEVEL_ERROR;
-            $array["channel"] = "ParamParser";
-            $array["server_id"] = "";
-            $array["msg"] = StringHelper::factory("convert error (" . trim($entry) . ")");
-            $array["msg_plain"] = $entry;
-            $array["malformed"] = true;
+            $array['timestamp'] = 0;
+            $array['level'] = TeamSpeak3::LOGLEVEL_ERROR;
+            $array['channel'] = 'ParamParser';
+            $array['server_id'] = '';
+            $array['msg'] = StringHelper::factory('convert error ('.trim($entry).')');
+            $array['msg_plain'] = $entry;
+            $array['malformed'] = true;
         } else {
-            $array["timestamp"] = strtotime(trim($parts[0]) . " UTC");
-            $array["level"] = self::logLevel(trim($parts[1]));
-            $array["channel"] = trim($parts[2]);
-            $array["server_id"] = trim($parts[3]);
-            $array["msg"] = StringHelper::factory(trim($parts[4]));
-            $array["msg_plain"] = $entry;
-            $array["malformed"] = false;
+            $array['timestamp'] = strtotime(trim($parts[0]).' UTC');
+            $array['level'] = self::logLevel(trim($parts[1]));
+            $array['channel'] = trim($parts[2]);
+            $array['server_id'] = trim($parts[3]);
+            $array['msg'] = StringHelper::factory(trim($parts[4]));
+            $array['msg_plain'] = $entry;
+            $array['malformed'] = false;
         }
 
         return $array;
@@ -353,8 +350,8 @@ class Convert
     /**
      * Converts a specified 32-bit unsigned integer value to a signed 32-bit integer value.
      *
-     * @param integer $unsigned
-     * @return integer
+     * @param int $unsigned
+     * @return int
      */
     public static function iconId(int $unsigned): int
     {
@@ -387,15 +384,15 @@ class Convert
      * @param string $format
      * @return string|StringHelper
      */
-    public static function version(string $version, string $format = "Y-m-d h:i:s"): string|StringHelper
+    public static function version(string $version, string $format = 'Y-m-d h:i:s'): string|StringHelper
     {
-        if (!$version instanceof StringHelper) {
+        if (! $version instanceof StringHelper) {
             $version = new StringHelper($version);
         }
 
-        $buildno = $version->section("[", 1)->filterDigits()->toInt();
+        $buildno = $version->section('[', 1)->filterDigits()->toInt();
 
-        return ($buildno <= 15001) ? $version : $version->section("[")->append("(" . date($format, $buildno) . ")");
+        return ($buildno <= 15001) ? $version : $version->section('[')->append('('.date($format, $buildno).')');
     }
 
     /**
@@ -406,11 +403,11 @@ class Convert
      */
     public static function versionShort(string $version): StringHelper
     {
-        if (!$version instanceof StringHelper) {
+        if (! $version instanceof StringHelper) {
             $version = new StringHelper($version);
         }
 
-        return $version->section(" ");
+        return $version->section(' ');
     }
 
     /**
@@ -421,17 +418,17 @@ class Convert
      */
     public static function imageMimeType(string $binary): string
     {
-        if (!preg_match('/\A(?:(\xff\xd8\xff)|(GIF8[79]a)|(\x89PNG\x0d\x0a)|(BM)|(\x49\x49(\\x2a\x00|\x00\x4a))|(FORM.{4}ILBM))/', $binary, $matches)) {
-            return "image/svg+xml";
+        if (! preg_match('/\A(?:(\xff\xd8\xff)|(GIF8[79]a)|(\x89PNG\x0d\x0a)|(BM)|(\x49\x49(\\x2a\x00|\x00\x4a))|(FORM.{4}ILBM))/', $binary, $matches)) {
+            return 'image/svg+xml';
         }
 
         $type = [
-            1 => "image/jpeg",
-            2 => "image/gif",
-            3 => "image/png",
-            4 => "image/x-windows-bmp",
-            5 => "image/tiff",
-            6 => "image/x-ilbm",
+            1 => 'image/jpeg',
+            2 => 'image/gif',
+            3 => 'image/png',
+            4 => 'image/x-windows-bmp',
+            5 => 'image/tiff',
+            6 => 'image/x-ilbm',
         ];
 
         return $type[count($matches) - 1];

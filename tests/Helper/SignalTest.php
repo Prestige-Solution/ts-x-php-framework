@@ -4,8 +4,8 @@ namespace PlanetTeamSpeak\TeamSpeak3Framework\Tests\Helper;
 
 use PHPUnit\Framework\TestCase;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\HelperException;
-use PlanetTeamSpeak\TeamSpeak3Framework\Helper\Signal;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\SignalException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Helper\Signal;
 use PlanetTeamSpeak\TeamSpeak3Framework\Helper\Signal\Handler;
 
 class SignalTest extends TestCase
@@ -13,7 +13,9 @@ class SignalTest extends TestCase
     protected static array $cTriggers;
 
     protected static string $signal = 'notifyEvent';
-    protected static string $callback = __CLASS__ . '::onEvent';
+
+    protected static string $callback = __CLASS__.'::onEvent';
+
     protected static string $testString = '!@w~//{tI_8G77<qS+g*[Gb@u`pJ^2>rO*f=KS:8Yj';
 
     protected function setUp(): void
@@ -66,7 +68,7 @@ class SignalTest extends TestCase
         $this->assertNotEquals($snapshot, Signal::getInstance());
 
         // Test state: subscribed signals
-        $signals  = $instSignal->getSignals();
+        $signals = $instSignal->getSignals();
         $this->assertIsArray($signals);
         $this->assertEquals(1, count($signals));
         $this->assertEquals(static::$signal, $signals[0]);
@@ -90,7 +92,7 @@ class SignalTest extends TestCase
     public function testEmit()
     {
         $callbackHash = Signal::getInstance()
-      ->getCallbackHash(__CLASS__ . '::onEvent');
+      ->getCallbackHash(__CLASS__.'::onEvent');
         Signal::getInstance()->subscribe(static::$signal, static::$callback);
         $response = Signal::getInstance()->emit(static::$signal, static::$testString);
         $this->assertEquals(static::$testString, $response);
@@ -149,8 +151,8 @@ class SignalTest extends TestCase
     public function testEmitToTwoSubscribers()
     {
         $instSignal = Signal::getInstance();
-        $callbackHash1 = $instSignal->getCallbackHash(__CLASS__ . '::onEvent');
-        $callbackHash2 = $instSignal->getCallbackHash(__CLASS__ . '::onEvent2');
+        $callbackHash1 = $instSignal->getCallbackHash(__CLASS__.'::onEvent');
+        $callbackHash2 = $instSignal->getCallbackHash(__CLASS__.'::onEvent2');
 
         $instSignal->subscribe(static::$signal, static::$callback);
         $instSignal->subscribe(static::$signal, static::$callback.'2');
@@ -163,11 +165,11 @@ class SignalTest extends TestCase
         // Verify correct count of callback executions
         $this->assertEquals(2, count(static::$cTriggers));
         $this->assertEquals(
-            '0-' . static::$testString,
+            '0-'.static::$testString,
             static::$cTriggers[$callbackHash1]
         );
         $this->assertEquals(
-            '1-' . static::$testString,
+            '1-'.static::$testString,
             static::$cTriggers[$callbackHash2]
         );
     }
@@ -178,9 +180,10 @@ class SignalTest extends TestCase
     public static function onEvent($data)
     {
         $signature = Signal::getInstance()
-      ->getCallbackHash(__CLASS__ . '::onEvent');
+      ->getCallbackHash(__CLASS__.'::onEvent');
 
         static::$cTriggers[$signature] = count(static::$cTriggers).'-'.$data;
+
         return $data;
     }
 
@@ -190,9 +193,10 @@ class SignalTest extends TestCase
     public static function onEvent2($data)
     {
         $signature = Signal::getInstance()
-      ->getCallbackHash(__CLASS__ . '::onEvent2');
+      ->getCallbackHash(__CLASS__.'::onEvent2');
 
         static::$cTriggers[$signature] = count(static::$cTriggers).'-'.$data;
+
         return $data;
     }
 }

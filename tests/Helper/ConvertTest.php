@@ -9,8 +9,9 @@ class ConvertTest extends TestCase
 {
     public function setUp(): void
     {
-        date_default_timezone_set("UTC");
+        date_default_timezone_set('UTC');
     }
+
     public function testConvertBytesToHumanReadableWithFactor1000()
     {
         $output = Convert::bytes(0);
@@ -149,7 +150,6 @@ class ConvertTest extends TestCase
         $this->assertEquals('0D 00:01:00', $output);
         $this->assertIsString($output);
 
-
         $output = Convert::seconds((59 * 60) + 59);
         $this->assertEquals('0D 00:59:59', $output);
         $this->assertIsString($output);
@@ -169,7 +169,6 @@ class ConvertTest extends TestCase
         );
         $this->assertEquals('1D 00:00:00', $output);
         $this->assertIsString($output);
-
 
         $output = Convert::seconds(
             (47 * (60 ** 2)) + (59 * 60) + 59
@@ -340,7 +339,6 @@ class ConvertTest extends TestCase
         $this->assertEquals('File Transfer', Convert::permissionCategory($hexArrayIssue[25]));
         $this->assertEquals('Grant', Convert::permissionCategory($hexArrayIssue[26]));
         $this->assertEquals('Unknown', Convert::permissionCategory(hexdec(0x99)));
-
     }
 
     public function testConvertLogLevelIDToHumanReadable()
@@ -381,7 +379,7 @@ class ConvertTest extends TestCase
     {
         // @todo: Implement matching integration test for testing real log entries
         $mock_data = [
-            '2017-06-26 21:55:30.307009|INFO    |Query         |   |query from 47 [::1]:62592 issued: login with account "serveradmin"(serveradmin)'
+            '2017-06-26 21:55:30.307009|INFO    |Query         |   |query from 47 [::1]:62592 issued: login with account "serveradmin"(serveradmin)',
         ];
 
         foreach ($mock_data as $entry) {

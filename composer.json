@@ -1,39 +1,38 @@
 {
-  "name": "planetteamspeak/ts3-php-framework",
+  "name": "majoroli/ts3-php-framework",
   "type": "library",
   "description": "Modern use-at-will framework that provides individual components to manage TeamSpeak 3 Server instances",
   "keywords": ["ts3", "teamspeak","server","query","filetransfer","management","interface","api"],
-  "homepage": "https://www.planetteamspeak.com",
   "license": "GPL-3.0",
   "authors": [
     {
-      "name": "Sven 'ScP' Paulsen",
-      "email": "scp@planetteamspeak.com"
+      "name": "Oliver Nitzsche",
+      "email": "onitzsche@prestige-solutions.de"
     }
   ],
   "support": {
-    "email": "info@planetteamspeak.com",
-    "issues": "https://github.com/planetteamspeak/ts3phpframework/issues",
-    "docs": "https://docs.planetteamspeak.com/ts3/php/framework"
+    "email": "contact@prestige-solutions.de",
+    "issues": "https://github.com/MajorOli/ts3-php-framework/issues"
   },
   "config": {
     "sort-packages": true
   },
   "require": {
-    "php": ">=8.2",
+    "php": "^8.2",
     "ext-mbstring": "*",
     "ext-json": "*",
     "ext-ctype": "*",
     "phpseclib/phpseclib": "^3.0",
-    "ext-openssl": "*"
+    "ext-openssl": "*",
+    "ext-ssh2": "*"
   },
   "require-dev": {
-    "friendsofphp/php-cs-fixer": "^3.8",
+    "friendsofphp/php-cs-fixer": "^3.6",
     "php-coveralls/php-coveralls": "^2.5",
     "phpcompatibility/php-compatibility": "^9.3",
     "phpunit/phpunit": "^11.0",
     "react/socket": "^1.11",
-    "squizlabs/php_codesniffer": "^3.6",
+    "squizlabs/php_codesniffer": "^3.11",
     "symfony/yaml": "^7.0"
   },
   "autoload": {
@@ -47,7 +46,6 @@
     }
   },
   "scripts": {
-    "compatibility": "\"vendor/bin/phpcs\" -ps --basepath=. --standard=PHPCompatibility --runtime-set testVersion 8.0- src",
     "code-style": "\"vendor/bin/php-cs-fixer\" fix --config .php-cs-fixer.php --diff",
     "tests": [
       "\"vendor/bin/phpunit\" --no-coverage"

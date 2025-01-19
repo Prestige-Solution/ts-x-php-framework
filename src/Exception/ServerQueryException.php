@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- * @package   TeamSpeak3
  * @author    Sven 'ScP' Paulsen
  * @copyright Copyright (c) Planet TeamSpeak. All rights reserved.
  */
@@ -26,7 +25,6 @@ namespace PlanetTeamSpeak\TeamSpeak3Framework\Exception;
 
 /**
  * Class ServerQueryException
- * @package PlanetTeamSpeak\TeamSpeak3Framework\Exception
  * @class ServerQueryException
  * @brief Enhanced exception class for PlanetTeamSpeak\TeamSpeak3Framework\Adapter\ServerQuery objects.
  */
@@ -43,7 +41,7 @@ class ServerQueryException extends AdapterException
      * The PlanetTeamSpeak\TeamSpeak3Framework\ServerQuery\Exception constructor.
      *
      * @param string $mesg
-     * @param integer $code
+     * @param int $code
      * @param string $return_code
      */
     public function __construct(string $mesg, int $code = 0x00, $return_code = null)
@@ -56,7 +54,7 @@ class ServerQueryException extends AdapterException
     /**
      * Returns TRUE if the exception provides a return code for ServerQuery errors.
      *
-     * @return boolean
+     * @return bool
      */
     public function hasReturnCode(): bool
     {

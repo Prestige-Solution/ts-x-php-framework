@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- * @package   TeamSpeak3
  * @author    Sven 'ScP' Paulsen
  * @copyright Copyright (c) Planet TeamSpeak. All rights reserved.
  */
@@ -28,7 +27,6 @@ use PlanetTeamSpeak\TeamSpeak3Framework\Exception\SignalException;
 
 /**
  * Class Handler
- * @package PlanetTeamSpeak\TeamSpeak3Framework\Helper\Signal
  * @class Handler
  * @brief Helper class providing handler functions for signals.
  */
@@ -59,8 +57,8 @@ class Handler
     {
         $this->signal = $signal;
 
-        if (!is_callable($callback)) {
-            throw new SignalException("invalid callback specified for signal '" . $signal . "'");
+        if (! is_callable($callback)) {
+            throw new SignalException("invalid callback specified for signal '".$signal."'");
         }
 
         $this->callback = $callback;

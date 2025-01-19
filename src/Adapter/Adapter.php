@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- * @package   TeamSpeak3
  * @author    Sven 'ScP' Paulsen
  * @copyright Copyright (c) Planet TeamSpeak. All rights reserved.
  */
@@ -88,7 +87,7 @@ abstract class Adapter
      */
     public function __sleep()
     {
-        return ["options"];
+        return ['options'];
     }
 
     /**
@@ -143,7 +142,7 @@ abstract class Adapter
      */
     public function getTransportHost(): string
     {
-        return $this->getTransport()->getConfig("host", "0.0.0.0");
+        return $this->getTransport()->getConfig('host', '0.0.0.0');
     }
 
     /**
@@ -154,6 +153,6 @@ abstract class Adapter
      */
     public function getTransportPort(): string
     {
-        return $this->getTransport()->getConfig("port", "0");
+        return $this->getTransport()->getConfig('port', '0');
     }
 }

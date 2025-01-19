@@ -9,7 +9,9 @@ use PlanetTeamSpeak\TeamSpeak3Framework\Helper\StringHelper;
 class MockTCP extends TCP
 {
     public const S_WELCOME_L0 = 'TS3';
+
     public const S_WELCOME_L1 = 'Welcome to the TeamSpeak 3 ServerQuery interface, type "help" for a list of commands and "help <command>" for information on a specific command.';
+
     public const S_ERROR_OK = 'error id=0 msg=ok';
 
     public const CMD = [
@@ -31,19 +33,19 @@ class MockTCP extends TCP
 
     public function readLine(string $token = "\n"): StringHelper
     {
-        $line = StringHelper::factory("");
+        $line = StringHelper::factory('');
         $this->connect();
 
-        while (!$line->endsWith($token)) {
+        while (! $line->endsWith($token)) {
             // $this->waitForReadyRead();
 
             $data = $this->fget();
-            Signal::getInstance()->emit(strtolower($this->getAdapterType()) . "DataRead", $data);
-            if (!$data) {
+            Signal::getInstance()->emit(strtolower($this->getAdapterType()).'DataRead', $data);
+            if (! $data) {
                 if ($line->count()) {
                     $line->append($token);
                 } else {
-                    throw new TransportException("connection to server '" . $this->config["host"] . ":" . $this->config["port"] . "' lost");
+                    throw new TransportException("connection to server '".$this->config['host'].':'.$this->config['port']."' lost");
                 }
             } else {
                 $line->append($data);
@@ -67,21 +69,23 @@ class MockTCP extends TCP
     public function send(string $data): void
     {
         $this->fwrite($data);
-        Signal::getInstance()->emit(strtolower($this->getAdapterType()) . "DataSend", $data);
+        Signal::getInstance()->emit(strtolower($this->getAdapterType()).'DataSend', $data);
     }
 
     protected function fget(): string
     {
         $this->reply = explode("\n", $this->reply);
         $reply = array_shift($this->reply);
-        $this->reply = join("\n", $this->reply);
-        return $reply . "\n";
+        $this->reply = implode("\n", $this->reply);
+
+        return $reply."\n";
     }
 
     protected function fwrite($data)
     {
-        if (!key_exists($data, self::CMD)) {
+        if (! array_key_exists($data, self::CMD)) {
             $this->reply = "error id=1 msg=Unkown\n";
+
             return;
         }
 
