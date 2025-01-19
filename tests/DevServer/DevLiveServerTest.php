@@ -27,6 +27,7 @@ class DevLiveServerTest extends TestCase
     private string $password;
 
     private string $ts3_server_uri;
+    private string $ts3_server_uri_ssh;
 
     private string $ts3_unit_test_channel_name;
 
@@ -55,6 +56,14 @@ class DevLiveServerTest extends TestCase
             '&blocking=0'.
             '&timeout=30'.
             '&nickname=UnitTestBot';
+
+        $this->ts3_server_uri_ssh = 'serverquery://'.$this->user.':'.$this->password.'@'.$this->host.':10022'.
+            '/?server_port=9987'.
+            '&ssh=1'.
+            '&no_query_clients'.
+            '&blocking=0'.
+            '&timeout=30'.
+            '&nickname=UnitTestBot';
     }
 
     /**
@@ -62,14 +71,33 @@ class DevLiveServerTest extends TestCase
      * @throws ServerQueryException
      * @throws HelperException
      */
-    public function test_can_connect()
+    public function test_can_raw_connect()
     {
         if ($this->active == 'false') {
             $this->markTestSkipped('DevLiveServer ist not active');
         }
 
-        //TODO: infinity connection on connection without responses. Explain in case 10022 is not allowed but connection is trying
+        //TODO: infinity connection on connection without access or wrong port
         $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        $nodeInfo = $ts3_VirtualServer->getInfo();
+
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $this->assertEquals('Linux', $nodeInfo['virtualserver_platform']);
+    }
+
+    /**
+     * @throws AdapterException
+     * @throws ServerQueryException
+     * @throws HelperException
+     */
+    public function test_can_ssh_connect()
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        //TODO: infinity connection on connection without access or wrong port
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri_ssh);
         $nodeInfo = $ts3_VirtualServer->getInfo();
 
         $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
