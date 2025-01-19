@@ -106,7 +106,15 @@ class Reply
      */
     public function toString(): ?StringHelper
     {
-        return (! func_num_args()) ? $this->rpl->unescape() : $this->rpl;
+        //get count of arguments there passed to this function / 0 is similar to !func_num_args() but this variant results in bool(false)
+        $stringArgs = func_get_args();
+        if ($stringArgs >= 1)
+        {
+            return $this->rpl;
+        }else
+        {
+            return $this->rpl->unescape();
+        }
     }
 
     /**
@@ -120,9 +128,11 @@ class Reply
             return [];
         }
 
-        $list = $this->toString(0)->split(TeamSpeak3::SEPARATOR_LIST);
+        $list = $this->toString()->split(TeamSpeak3::SEPARATOR_LIST);
 
-        if (! func_num_args()) {
+        //get count of arguments there passed to this function / 0 is similar to !func_num_args() but this variant results in bool(false)
+        $linesArgs = func_num_args();
+        if ($linesArgs >= 1) {
             for ($i = 0; $i < count($list); $i++) {
                 $list[$i]->unescape();
             }
@@ -140,10 +150,12 @@ class Reply
     {
         $table = [];
 
-        foreach ($this->toLines(0) as $cells) {
+        foreach ($this->toLines() as $cells) {
             $pairs = $cells->split(TeamSpeak3::SEPARATOR_CELL);
 
-            if (! func_num_args()) {
+            //get count of arguments there passed to this function / 0 is similar to !func_num_args() but this variant results in bool(false)
+            $tableArgs = func_get_args();
+            if ($tableArgs >= 1) {
                 for ($i = 0; $i < count($pairs); $i++) {
                     $pairs[$i]->unescape();
                 }
@@ -163,7 +175,7 @@ class Reply
     public function toArray(): array
     {
         $array = [];
-        $table = $this->toTable(1);
+        $table = $this->toTable();
 
         for ($i = 0; $i < count($table); $i++) {
             foreach ($table[$i] as $pair) {
@@ -176,7 +188,22 @@ class Reply
                 } else {
                     list($ident, $value) = $pair->split(TeamSpeak3::SEPARATOR_PAIR, 2);
 
-                    $array[$i][$ident->toString()] = $value->isInt() ? $value->toInt() : (! func_num_args() ? $value->unescape() : $value);
+                    //get count of arguments there passed to this function / 0 is similar to !func_num_args() but this variant results in bool(false)
+                    //let us make the code more readable to understand what happened. Con is, there is a bit longer
+                    $arrayArgs = func_get_args();
+                    if ($value->isInt() === true)
+                    {
+                        $array[$i][$ident->toString()] = $value->toInt();
+                    }else
+                    {
+                        if ($arrayArgs >= 1)
+                        {
+                            $array[$i][$ident->toString()] = $value->unescape();
+                        }else
+                        {
+                            $array[$i][$ident->toString()] = $value;
+                        }
+                    }
                 }
             }
         }
