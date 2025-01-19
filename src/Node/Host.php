@@ -510,7 +510,7 @@ class Host extends Node
      */
     public function apiKeyCount(): int
     {
-        return current($this->execute('apikeylist -count', ['duration' => 1])->toList('count'));
+        return current($this->execute('apikeylist -count', ['duration' => 1])->toList());
     }
 
     /**
@@ -968,7 +968,7 @@ class Host extends Node
      */
     public function queryCountLogin(string $pattern = null): mixed
     {
-        return current($this->execute('queryloginlist -count', ['duration' => 1, 'pattern' => $pattern])->toList('count'));
+        return current($this->execute('queryloginlist -count', ['duration' => 1, 'pattern' => $pattern])->toList());
     }
 
     /**
