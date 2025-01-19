@@ -1,3 +1,12 @@
+---
+name: Feature request
+about: Suggest an idea for this project
+title: ''
+labels: enhancement
+assignees: MajorOli
+
+---
+
 ## User stories
 **For How I want**
 
@@ -51,5 +60,3 @@ _This section is populated by the developer and reports the expected practical a
 *
 *
 *
-
-/label ~"enhancement"

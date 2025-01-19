@@ -1,3 +1,12 @@
+---
+name: Bug report
+about: Create a report to help us improve
+title: ''
+labels: ''
+assignees: MajorOli
+
+---
+
 ## Description of the problem
 
 _Provide a concise description of the bug_
@@ -22,5 +31,3 @@ _A clear and concise description of what happens instead._
 ## Screenshots
 
 _If relevant, copy and paste screenshots or photos of the problem here._
-
-/label ~"bug"
