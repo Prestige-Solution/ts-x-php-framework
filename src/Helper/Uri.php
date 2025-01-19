@@ -381,9 +381,9 @@ class Uri
             case ! is_int($port):
             case ! filter_var($port, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 65535]]):
                 return false;
+            default:
+                return true;
         }
-
-        return true;
     }
 
     /**
