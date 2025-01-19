@@ -1,20 +1,18 @@
 {
-  "name": "planetteamspeak/ts3-php-framework",
+  "name": "majoroli/ts3-php-framework",
   "type": "library",
   "description": "Modern use-at-will framework that provides individual components to manage TeamSpeak 3 Server instances",
   "keywords": ["ts3", "teamspeak","server","query","filetransfer","management","interface","api"],
-  "homepage": "https://www.planetteamspeak.com",
   "license": "GPL-3.0",
   "authors": [
     {
-      "name": "Sven 'ScP' Paulsen",
-      "email": "scp@planetteamspeak.com"
+      "name": "Oliver Nitzsche",
+      "email": "onitzsche@prestige-solutions.de"
     }
   ],
   "support": {
-    "email": "info@planetteamspeak.com",
-    "issues": "https://github.com/planetteamspeak/ts3phpframework/issues",
-    "docs": "https://docs.planetteamspeak.com/ts3/php/framework"
+    "email": "contact@prestige-solutions.de",
+    "issues": "https://github.com/MajorOli/ts3-php-framework/issues"
   },
   "config": {
     "sort-packages": true
