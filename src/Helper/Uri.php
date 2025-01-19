@@ -667,7 +667,7 @@ class Uri
      */
     public static function getHostUri(): StringHelper
     {
-        $sheme = (self::getHostParam('HTTPS') == 'on') ? 'https' : 'http';
+        $scheme = (self::getHostParam('HTTPS') == 'on') ? 'https' : 'http';
 
         $serverName = new StringHelper(self::getHostParam('HTTP_HOST'));
         $serverPort = self::getHostParam('SERVER_PORT');
@@ -677,7 +677,7 @@ class Uri
             $serverName = $serverName->replace($serverPort, '');
         }
 
-        return new StringHelper($sheme.'://'.$serverName.$serverPort);
+        return new StringHelper($scheme.'://'.$serverName.$serverPort);
     }
 
     /**
