@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- * @package   TeamSpeak3
  * @author    Sven 'ScP' Paulsen
  * @copyright Copyright (c) Planet TeamSpeak. All rights reserved.
  */
@@ -28,7 +27,6 @@ use PlanetTeamSpeak\TeamSpeak3Framework\Helper\Profiler\Timer;
 
 /**
  * Class Profiler
- * @package PlanetTeamSpeak\TeamSpeak3Framework\Helper
  * @class Profiler
  * @brief Helper class for profiler handling.
  */
@@ -47,7 +45,7 @@ class Profiler
      * @param string $name
      * @return void
      */
-    public static function init(string $name = "default"): void
+    public static function init(string $name = 'default'): void
     {
         self::$timers[$name] = new Timer($name);
     }
@@ -58,7 +56,7 @@ class Profiler
      * @param string $name
      * @return void
      */
-    public static function start(string $name = "default"): void
+    public static function start(string $name = 'default'): void
     {
         if (array_key_exists($name, self::$timers)) {
             self::$timers[$name]->start();
@@ -73,9 +71,9 @@ class Profiler
      * @param string $name
      * @return void
      */
-    public static function stop(string $name = "default"): void
+    public static function stop(string $name = 'default'): void
     {
-        if (!array_key_exists($name, self::$timers)) {
+        if (! array_key_exists($name, self::$timers)) {
             self::init($name);
         }
 
@@ -88,9 +86,9 @@ class Profiler
      * @param string $name
      * @return Timer
      */
-    public static function get(string $name = "default"): Timer
+    public static function get(string $name = 'default'): Timer
     {
-        if (!array_key_exists($name, self::$timers)) {
+        if (! array_key_exists($name, self::$timers)) {
             self::init($name);
         }
 

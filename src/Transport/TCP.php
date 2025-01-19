@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- * @package   TeamSpeak3
  * @author    Sven 'ScP' Paulsen
  * @copyright Copyright (c) Planet TeamSpeak. All rights reserved.
  */
@@ -31,7 +30,6 @@ use PlanetTeamSpeak\TeamSpeak3Framework\Helper\StringHelper;
 
 /**
  * Class TCP
- * @package PlanetTeamSpeak\TeamSpeak3Framework\Transport
  * @class TCP
  * @brief Class for connecting to a remote server through TCP.
  */
@@ -50,44 +48,44 @@ class TCP extends Transport
             return;
         }
 
-        $host = strval($this->config["host"]);
-        $port = strval($this->config["port"]);
-        $timeout = intval($this->config["timeout"]);
-        $blocking = intval($this->config["blocking"]);
+        $host = strval($this->config['host']);
+        $port = strval($this->config['port']);
+        $timeout = intval($this->config['timeout']);
+        $blocking = intval($this->config['blocking']);
 
-        if (empty($this->config["ssh"])) {
-            $address = "tcp://" . (str_contains($host, ":") ? "[" . $host . "]" : $host) . ":" . $port;
-            $options = empty($this->config["tls"]) ? [] : ["ssl" => ["allow_self_signed" => true, "verify_peer" => false, "verify_peer_name" => false]];
+        if (empty($this->config['ssh'])) {
+            $address = 'tcp://'.(str_contains($host, ':') ? '['.$host.']' : $host).':'.$port;
+            $options = empty($this->config['tls']) ? [] : ['ssl' => ['allow_self_signed' => true, 'verify_peer' => false, 'verify_peer_name' => false]];
 
-            $this->stream = @stream_socket_client($address, $errno, $errstr, $this->config["timeout"], STREAM_CLIENT_CONNECT, stream_context_create($options));
+            $this->stream = stream_socket_client($address, $errno, $errstr, $this->config['timeout'], STREAM_CLIENT_CONNECT, stream_context_create($options));
 
             if ($this->stream === false) {
                 throw new TransportException(StringHelper::factory($errstr)->toUtf8()->toString(), $errno);
             }
 
-            if (!empty($this->config["tls"])) {
+            if (! empty($this->config['tls'])) {
                 stream_socket_enable_crypto($this->stream, true, STREAM_CRYPTO_METHOD_SSLv23_CLIENT);
             }
         } else {
-            $this->session = @ssh2_connect($host, $port);
+            $this->session = ssh2_connect($host, $port);
 
             if ($this->session === false) {
-                throw new TransportException("failed to establish secure shell connection to server '" . $this->config["host"] . ":" . $this->config["port"] . "'");
+                throw new TransportException("failed to establish secure shell connection to server '".$this->config['host'].':'.$this->config['port']."'");
             }
 
-            if (!@ssh2_auth_password($this->session, $this->config["username"], $this->config["password"])) {
-                throw new ServerQueryException("invalid loginname or password", 0x208);
+            if (! ssh2_auth_password($this->session, $this->config['username'], $this->config['password'])) {
+                throw new ServerQueryException('invalid loginname or password', 0x208);
             }
 
-            $this->stream = @ssh2_shell($this->session, "raw");
+            $this->stream = ssh2_shell($this->session, 'raw');
 
             if ($this->stream === false) {
-                throw new TransportException("failed to open a secure shell on server '" . $this->config["host"] . ":" . $this->config["port"] . "'");
+                throw new TransportException("failed to open a secure shell on server '".$this->config['host'].':'.$this->config['port']."'");
             }
         }
 
-        @stream_set_timeout($this->stream, $timeout);
-        @stream_set_blocking($this->stream, $blocking ? 1 : 0);
+        stream_set_timeout($this->stream, $timeout);
+        stream_set_blocking($this->stream, $blocking ? 1 : 0);
     }
 
     /**
@@ -104,16 +102,16 @@ class TCP extends Transport
         $this->stream = null;
 
         if (is_resource($this->session)) {
-            @ssh2_disconnect($this->session);
+            ssh2_disconnect($this->session);
         }
 
-        Signal::getInstance()->emit(strtolower($this->getAdapterType()) . "Disconnected");
+        Signal::getInstance()->emit(strtolower($this->getAdapterType()).'Disconnected');
     }
 
     /**
      * Reads data from the stream.
      *
-     * @param integer $length
+     * @param int $length
      * @return StringHelper
      * @throws TransportException
      * @throws ServerQueryException
@@ -125,10 +123,10 @@ class TCP extends Transport
 
         $data = @stream_get_contents($this->stream, $length);
 
-        Signal::getInstance()->emit(strtolower($this->getAdapterType()) . "DataRead", $data);
+        Signal::getInstance()->emit(strtolower($this->getAdapterType()).'DataRead', $data);
 
         if ($data === false) {
-            throw new TransportException("connection to server '" . $this->config["host"] . ":" . $this->config["port"] . "' lost");
+            throw new TransportException("connection to server '".$this->config['host'].':'.$this->config['port']."' lost");
         }
 
         return new StringHelper($data);
@@ -146,14 +144,14 @@ class TCP extends Transport
     {
         $this->connect();
 
-        $line = StringHelper::factory("");
+        $line = StringHelper::factory('');
 
-        while (!$line->endsWith($token)) {
+        while (! $line->endsWith($token)) {
             $this->waitForReadyRead();
 
-            $data = @fgets($this->stream, 4096);
+            $data = fgets($this->stream, 4096);
 
-            Signal::getInstance()->emit(strtolower($this->getAdapterType()) . "DataRead", $data);
+            Signal::getInstance()->emit(strtolower($this->getAdapterType()).'DataRead', $data);
 
             if ($data === false) {
                 if ($line->count()) {
@@ -181,7 +179,7 @@ class TCP extends Transport
 
         @fwrite($this->stream, $data);
 
-        Signal::getInstance()->emit(strtolower($this->getAdapterType()) . "DataSend", $data);
+        Signal::getInstance()->emit(strtolower($this->getAdapterType()).'DataSend', $data);
     }
 
     /**

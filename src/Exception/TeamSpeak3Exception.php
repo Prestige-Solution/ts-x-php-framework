@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- * @package   TeamSpeak3
  * @author    Sven 'ScP' Paulsen
  * @copyright Copyright (c) Planet TeamSpeak. All rights reserved.
  */
@@ -30,7 +29,6 @@ use PlanetTeamSpeak\TeamSpeak3Framework\Helper\StringHelper;
 
 /**
  * Class TeamSpeak3Exception
- * @package PlanetTeamSpeak\TeamSpeak3Framework\Exception
  * @class TeamSpeak3Exception
  * @brief Enhanced exception class for TeamSpeak3 objects.
  */
@@ -39,7 +37,7 @@ class TeamSpeak3Exception extends Exception
     /**
      * Stores the original error code.
      *
-     * @var integer
+     * @var int
      */
     protected int $raw_code = 0x00;
 
@@ -61,7 +59,7 @@ class TeamSpeak3Exception extends Exception
      * The TeamSpeak3Exception constructor.
      *
      * @param string $mesg
-     * @param integer $code
+     * @param int $code
      */
     public function __construct(string $mesg, int $code = 0x00)
     {
@@ -74,7 +72,7 @@ class TeamSpeak3Exception extends Exception
             $this->message = $this->prepareCustomMessage(self::$messages[$code]);
         }
 
-        Signal::getInstance()->emit("errorException", $this);
+        Signal::getInstance()->emit('errorException', $this);
     }
 
     /**
@@ -86,10 +84,10 @@ class TeamSpeak3Exception extends Exception
     protected function prepareCustomMessage(StringHelper $mesg): string
     {
         $args = [
-            "code" => $this->getCode(),
-            "mesg" => $this->getMessage(),
-            "line" => $this->getLine(),
-            "file" => $this->getFile(),
+            'code' => $this->getCode(),
+            'mesg' => $this->getMessage(),
+            'line' => $this->getLine(),
+            'file' => $this->getFile(),
         ];
 
         return $mesg->arg($args)->toString();
@@ -98,7 +96,7 @@ class TeamSpeak3Exception extends Exception
     /**
      * Registers a custom error message to $code.
      *
-     * @param integer $code
+     * @param int $code
      * @param string $mesg
      * @return void
      * @throws TeamSpeak3Exception
@@ -106,7 +104,7 @@ class TeamSpeak3Exception extends Exception
     public static function registerCustomMessage(int $code, string $mesg): void
     {
         if (array_key_exists($code, self::$messages)) {
-            throw new self("custom message for code 0x" . strtoupper(dechex($code)) . " is already registered");
+            throw new self('custom message for code 0x'.strtoupper(dechex($code)).' is already registered');
         }
 
         self::$messages[$code] = new StringHelper($mesg);
@@ -115,14 +113,14 @@ class TeamSpeak3Exception extends Exception
     /**
      * Unregisters a custom error message from $code.
      *
-     * @param integer $code
+     * @param int $code
      * @return void
      * @throws TeamSpeak3Exception
      */
     public static function unregisterCustomMessage(int $code): void
     {
-        if (!array_key_exists($code, self::$messages)) {
-            throw new self("custom message for code 0x" . strtoupper(dechex($code)) . " is not registered");
+        if (! array_key_exists($code, self::$messages)) {
+            throw new self('custom message for code 0x'.strtoupper(dechex($code)).' is not registered');
         }
 
         unset(self::$messages[$code]);
@@ -131,7 +129,7 @@ class TeamSpeak3Exception extends Exception
     /**
      * Returns the original error code.
      *
-     * @return integer
+     * @return int
      */
     public function getRawCode(): int
     {
@@ -157,6 +155,6 @@ class TeamSpeak3Exception extends Exception
     {
         $trace = $this->getTrace();
 
-        return (isset($trace[0]["class"])) ? $trace[0]["class"] : "{main}";
+        return (isset($trace[0]['class'])) ? $trace[0]['class'] : '{main}';
     }
 }

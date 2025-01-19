@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- * @package   TeamSpeak3
  * @author    Sven 'ScP' Paulsen
  * @copyright Copyright (c) Planet TeamSpeak. All rights reserved.
  */
@@ -29,7 +28,6 @@ use PlanetTeamSpeak\TeamSpeak3Framework\TeamSpeak3;
 
 /**
  * @class ServerGroup
- * @package PlanetTeamSpeak\TeamSpeak3Framework\Node
  * @brief Class describing a TeamSpeak 3 server group and all it's parameters.
  */
 class ServerGroup extends Group
@@ -42,13 +40,13 @@ class ServerGroup extends Group
      * @param string $index
      * @throws NodeException
      */
-    public function __construct(Server $server, array $info, string $index = "sgid")
+    public function __construct(Server $server, array $info, string $index = 'sgid')
     {
         $this->parent = $server;
         $this->nodeInfo = $info;
 
-        if (!array_key_exists($index, $this->nodeInfo)) {
-            throw new NodeException("invalid groupID", 0xA00);
+        if (! array_key_exists($index, $this->nodeInfo)) {
+            throw new NodeException('invalid groupID', 0xA00);
         }
 
         $this->nodeId = $this->nodeInfo[$index];
@@ -69,7 +67,7 @@ class ServerGroup extends Group
      * Deletes the server group. If $force is set to 1, the server group will be
      * deleted even if there are clients within.
      *
-     * @param boolean $force
+     * @param bool $force
      * @return void
      */
     public function delete(bool $force = false): void
@@ -81,9 +79,9 @@ class ServerGroup extends Group
      * Creates a copy of the server group and returns the new groups ID.
      *
      * @param string|null $name
-     * @param integer $tsgid
-     * @param integer $type
-     * @return integer
+     * @param int $tsgid
+     * @param int $type
+     * @return int
      */
     public function copy(string $name = null, int $tsgid = 0, int $type = TeamSpeak3::GROUP_DBTYPE_REGULAR): int
     {
@@ -93,7 +91,7 @@ class ServerGroup extends Group
     /**
      * Returns a list of permissions assigned to the server group.
      *
-     * @param boolean $permsid
+     * @param bool $permsid
      * @return array
      */
     public function permList(bool $permsid = false): array
@@ -105,10 +103,10 @@ class ServerGroup extends Group
      * Adds a set of specified permissions to the server group. Multiple permissions
      * can be added by providing the four parameters of each permission in separate arrays.
      *
-     * @param integer $permid
-     * @param integer $permvalue
-     * @param integer $permnegated
-     * @param integer $permskip
+     * @param int $permid
+     * @param int $permvalue
+     * @param int $permnegated
+     * @param int $permskip
      * @return void
      */
     public function permAssign(int $permid, int $permvalue, int $permnegated = 0, int $permskip = 0): void
@@ -130,7 +128,7 @@ class ServerGroup extends Group
      * Removes a set of specified permissions from the server group. Multiple
      * permissions can be removed at once.
      *
-     * @param integer $permid
+     * @param int $permid
      * @return void
      */
     public function permRemove(int $permid): void
@@ -162,7 +160,7 @@ class ServerGroup extends Group
      * Adds a client to the server group specified. Please note that a client cannot be
      * added to default groups or template groups.
      *
-     * @param integer $cldbid
+     * @param int $cldbid
      * @return void
      */
     public function clientAdd(int $cldbid): void
@@ -173,7 +171,7 @@ class ServerGroup extends Group
     /**
      * Removes a client from the server group.
      *
-     * @param integer $cldbid
+     * @param int $cldbid
      * @return void
      */
     public function clientDel(int $cldbid): void
@@ -212,7 +210,7 @@ class ServerGroup extends Group
         $this->nodeList = [];
 
         foreach ($this->getParent()->clientList() as $client) {
-            if (in_array($this->getId(), explode(",", $client["client_servergroups"]))) {
+            if (in_array($this->getId(), explode(',', $client['client_servergroups']))) {
                 $this->nodeList[] = $client;
             }
         }
@@ -225,7 +223,7 @@ class ServerGroup extends Group
      */
     public function getUniqueId(): string
     {
-        return $this->getParent()->getUniqueId() . "_sg" . $this->getId();
+        return $this->getParent()->getUniqueId().'_sg'.$this->getId();
     }
 
     /**
@@ -235,6 +233,6 @@ class ServerGroup extends Group
      */
     public function getIcon(): string
     {
-        return "group_server";
+        return 'group_server';
     }
 }

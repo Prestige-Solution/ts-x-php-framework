@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- * @package   TeamSpeak3
  * @author    Sven 'ScP' Paulsen
  * @copyright Copyright (c) Planet TeamSpeak. All rights reserved.
  */
@@ -30,7 +29,6 @@ use PlanetTeamSpeak\TeamSpeak3Framework\Helper\Signal\Handler;
 
 /**
  * Class Signal
- * @package PlanetTeamSpeak\TeamSpeak3Framework\Helper
  * @class Signal
  * @brief Helper class for signal slots.
  */
@@ -58,15 +56,14 @@ class Signal
      * @return mixed
      * @todo: Confirm / fix $return is set to last $slot->call() return value.
      *      It appears all previous calls before last are lost / ignored.
-     *
      */
     public function emit(string $signal, mixed $params = null): mixed
     {
-        if (!$this->hasHandlers($signal)) {
+        if (! $this->hasHandlers($signal)) {
             return null;
         }
 
-        if (!is_array($params)) {
+        if (! is_array($params)) {
             $params = func_get_args();
             $params = array_slice($params, 1);
         }
@@ -87,8 +84,8 @@ class Signal
      */
     public function getCallbackHash(mixed $callback): string
     {
-        if (!is_callable($callback, true, $callable_name)) {
-            throw new SignalException("invalid callback specified");
+        if (! is_callable($callback, true, $callable_name)) {
+            throw new SignalException('invalid callback specified');
         }
 
         return md5($callable_name);
@@ -110,7 +107,7 @@ class Signal
 
         $index = $this->getCallbackHash($callback);
 
-        if (!array_key_exists($index, $this->sigslots[$signal])) {
+        if (! array_key_exists($index, $this->sigslots[$signal])) {
             $this->sigslots[$signal][$index] = new Handler($signal, $callback);
         }
 
@@ -127,14 +124,14 @@ class Signal
      */
     public function unsubscribe(string $signal, mixed $callback = null): void
     {
-        if (!$this->hasHandlers($signal)) {
+        if (! $this->hasHandlers($signal)) {
             return;
         }
 
         if ($callback !== null) {
             $index = $this->getCallbackHash($callback);
 
-            if (!array_key_exists($index, $this->sigslots[$signal])) {
+            if (! array_key_exists($index, $this->sigslots[$signal])) {
                 return;
             }
 
@@ -158,11 +155,11 @@ class Signal
      * Returns TRUE there are slots subscribed for a specified signal.
      *
      * @param string $signal
-     * @return boolean
+     * @return bool
      */
     public function hasHandlers(string $signal): bool
     {
-        return !empty($this->sigslots[$signal]);
+        return ! empty($this->sigslots[$signal]);
     }
 
     /**
@@ -198,7 +195,7 @@ class Signal
      *
      * @return Signal|null
      */
-    public static function getInstance(): ?Signal
+    public static function getInstance(): ?self
     {
         if (self::$instance === null) {
             self::$instance = new self();

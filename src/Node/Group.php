@@ -22,7 +22,7 @@ abstract class Group extends Node
     {
         foreach ($this as $client) {
             try {
-                $this->execute("sendtextmessage", ["msg" => $msg, "target" => $client, "targetmode" => TeamSpeak3::TEXTMSG_CLIENT]);
+                $this->execute('sendtextmessage', ['msg' => $msg, 'target' => $client, 'targetmode' => TeamSpeak3::TEXTMSG_CLIENT]);
             } catch (ServerQueryException $e) {
                 /* ERROR_client_invalid_id */
                 if ($e->getCode() != 0x0200) {
@@ -43,18 +43,18 @@ abstract class Group extends Node
     public function iconDownload()
     {
         $iconid = $this['iconid'];
-        if (!is_int($iconid)) {
+        if (! is_int($iconid)) {
             $iconid = $iconid->toInt();
         }
 
-        if ($this->iconIsLocal("iconid") || $iconid == 0) {
+        if ($this->iconIsLocal('iconid') || $iconid == 0) {
             return;
         }
 
-        $download = $this->getParent()->transferInitDownload(rand(0x0000, 0xFFFF), 0, $this->iconGetName("iconid"));
-        $transfer = TeamSpeak3::factory("filetransfer://" . (str_contains($download["host"], ":") ? "[" . $download["host"] . "]" : $download["host"]) . ":" . $download["port"]);
+        $download = $this->getParent()->transferInitDownload(rand(0x0000, 0xFFFF), 0, $this->iconGetName('iconid'));
+        $transfer = TeamSpeak3::factory('filetransfer://'.(str_contains($download['host'], ':') ? '['.$download['host'].']' : $download['host']).':'.$download['port']);
 
-        return $transfer->download($download["ftkey"], $download["size"]);
+        return $transfer->download($download['ftkey'], $download['size']);
     }
 
     /**
@@ -64,7 +64,7 @@ abstract class Group extends Node
      */
     public function getSymbol(): string
     {
-        return "%";
+        return '%';
     }
 
     /**
@@ -74,6 +74,6 @@ abstract class Group extends Node
      */
     public function __toString()
     {
-        return (string)$this["name"];
+        return (string) $this['name'];
     }
 }

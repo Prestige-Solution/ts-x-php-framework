@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- * @package   TeamSpeak3
  * @author    Sven 'ScP' Paulsen
  * @copyright Copyright (c) Planet TeamSpeak. All rights reserved.
  */
@@ -33,7 +32,6 @@ use PlanetTeamSpeak\TeamSpeak3Framework\TeamSpeak3;
 
 /**
  * Class StringHelper
- * @package PlanetTeamSpeak\TeamSpeak3Framework\Helper
  * @class StringHelper
  * @brief Helper class for string handling.
  */
@@ -48,7 +46,7 @@ class StringHelper implements ArrayAccess, Iterator, Countable, JsonSerializable
 
     /**
      * @ignore
-     * @var integer
+     * @var int
      */
     protected int $position = 0;
 
@@ -68,7 +66,7 @@ class StringHelper implements ArrayAccess, Iterator, Countable, JsonSerializable
      * @param string $string
      * @return self
      */
-    public static function factory(string $string): StringHelper
+    public static function factory(string $string): self
     {
         return new self($string);
     }
@@ -78,7 +76,7 @@ class StringHelper implements ArrayAccess, Iterator, Countable, JsonSerializable
      *
      * @param array|string $search
      * @param array|string $replace
-     * @param boolean $caseSensitivity
+     * @param bool $caseSensitivity
      * @return self
      */
     public function replace(array|string $search, array|string $replace, bool $caseSensitivity = true): static
@@ -99,12 +97,12 @@ class StringHelper implements ArrayAccess, Iterator, Countable, JsonSerializable
      * @param string $char
      * @return self
      */
-    public function arg(array $args, string $char = "%"): static
+    public function arg(array $args, string $char = '%'): static
     {
         $args = array_reverse($args, true);
 
         foreach ($args as $key => $val) {
-            $args[$char . $key] = $val;
+            $args[$char.$key] = $val;
             unset($args[$key]);
         }
 
@@ -117,7 +115,7 @@ class StringHelper implements ArrayAccess, Iterator, Countable, JsonSerializable
      * Returns true if the string starts with $pattern.
      *
      * @param string $pattern
-     * @return boolean
+     * @return bool
      */
     public function startsWith(string $pattern): bool
     {
@@ -128,7 +126,7 @@ class StringHelper implements ArrayAccess, Iterator, Countable, JsonSerializable
      * Returns true if the string ends with $pattern.
      *
      * @param string $pattern
-     * @return boolean
+     * @return bool
      */
     public function endsWith(string $pattern): bool
     {
@@ -139,7 +137,7 @@ class StringHelper implements ArrayAccess, Iterator, Countable, JsonSerializable
      * Returns the position of the first occurrence of a char in a string.
      *
      * @param string $needle
-     * @return integer
+     * @return int
      */
     public function findFirst(string $needle): int
     {
@@ -150,7 +148,7 @@ class StringHelper implements ArrayAccess, Iterator, Countable, JsonSerializable
      * Returns the position of the last occurrence of a char in a string.
      *
      * @param string $needle
-     * @return integer
+     * @return int
      */
     public function findLast(string $needle): int
     {
@@ -162,7 +160,7 @@ class StringHelper implements ArrayAccess, Iterator, Countable, JsonSerializable
      *
      * @return self
      */
-    public function toLower(): StringHelper
+    public function toLower(): self
     {
         return new self(strtolower($this->string));
     }
@@ -172,7 +170,7 @@ class StringHelper implements ArrayAccess, Iterator, Countable, JsonSerializable
      *
      * @return self
      */
-    public function toUpper(): StringHelper
+    public function toUpper(): self
     {
         return new self(strtoupper($this->string));
     }
@@ -181,8 +179,8 @@ class StringHelper implements ArrayAccess, Iterator, Countable, JsonSerializable
      * Returns true if the string contains $pattern.
      *
      * @param string $pattern
-     * @param boolean $regexp
-     * @return boolean
+     * @param bool $regexp
+     * @return bool
      */
     public function contains(string $pattern, bool $regexp = false): bool
     {
@@ -191,7 +189,7 @@ class StringHelper implements ArrayAccess, Iterator, Countable, JsonSerializable
         }
 
         if ($regexp) {
-            return boolval(preg_match(sprintf("/%s/i", $pattern), $this->string));
+            return boolval(preg_match(sprintf('/%s/i', $pattern), $this->string));
         } else {
             return stristr($this->string, $pattern) !== false;
         }
@@ -200,11 +198,11 @@ class StringHelper implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Returns part of a string.
      *
-     * @param integer $start
-     * @param integer|null $length
+     * @param int $start
+     * @param int|null $length
      * @return self
      */
-    public function substr(int $start, int $length = null): StringHelper
+    public function substr(int $start, int $length = null): self
     {
         $string = ($length !== null) ? substr($this->string, $start, $length) : substr($this->string, $start);
 
@@ -215,7 +213,7 @@ class StringHelper implements ArrayAccess, Iterator, Countable, JsonSerializable
      * Splits the string into substrings wherever $separator occurs.
      *
      * @param string $separator
-     * @param integer $limit
+     * @param int $limit
      * @return array
      */
     public function split(string $separator, int $limit = 0): array
@@ -237,7 +235,7 @@ class StringHelper implements ArrayAccess, Iterator, Countable, JsonSerializable
      */
     public function append(string $part): static
     {
-        $this->string = $this->string . $part;
+        $this->string = $this->string.$part;
 
         return $this;
     }
@@ -250,7 +248,7 @@ class StringHelper implements ArrayAccess, Iterator, Countable, JsonSerializable
      */
     public function prepend(string $part): static
     {
-        $this->string = $part . $this->string;
+        $this->string = $part.$this->string;
 
         return $this;
     }
@@ -259,11 +257,11 @@ class StringHelper implements ArrayAccess, Iterator, Countable, JsonSerializable
      * Returns a section of the string.
      *
      * @param string $separator
-     * @param integer $first
-     * @param integer $last
+     * @param int $first
+     * @param int $last
      * @return StringHelper|null
      */
-    public function section(string $separator, int $first = 0, int $last = 0): ?StringHelper
+    public function section(string $separator, int $first = 0, int $last = 0): ?self
     {
         $sections = explode($separator, $this->string);
 
@@ -290,7 +288,7 @@ class StringHelper implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Sets the size of the string to $size characters.
      *
-     * @param integer $size
+     * @param int $size
      * @param string $char
      * @return self
      */
@@ -352,7 +350,7 @@ class StringHelper implements ArrayAccess, Iterator, Countable, JsonSerializable
      */
     public function filterAlnum(): static
     {
-        $this->string = preg_replace("/[^[:alnum:]]/", "", $this->string);
+        $this->string = preg_replace('/[^[:alnum:]]/', '', $this->string);
 
         return $this;
     }
@@ -364,7 +362,7 @@ class StringHelper implements ArrayAccess, Iterator, Countable, JsonSerializable
      */
     public function filterAlpha(): static
     {
-        $this->string = preg_replace("/[^[:alpha:]]/", "", $this->string);
+        $this->string = preg_replace('/[^[:alpha:]]/', '', $this->string);
 
         return $this;
     }
@@ -376,7 +374,7 @@ class StringHelper implements ArrayAccess, Iterator, Countable, JsonSerializable
      */
     public function filterDigits(): static
     {
-        $this->string = preg_replace("/[^[:digit:]]/", "", $this->string);
+        $this->string = preg_replace('/[^[:digit:]]/', '', $this->string);
 
         return $this;
     }
@@ -384,16 +382,16 @@ class StringHelper implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Returns TRUE if the string is a numeric value.
      *
-     * @return boolean
+     * @return bool
      */
     public function isInt(): bool
     {
         return is_numeric($this->string) &&
-            !$this->contains(".") &&
-            !$this->contains("x") &&
-            !$this->contains("e") &&
-            !$this->contains("+") &&
-            !$this->contains("-");
+            ! $this->contains('.') &&
+            ! $this->contains('x') &&
+            ! $this->contains('e') &&
+            ! $this->contains('+') &&
+            ! $this->contains('-');
     }
 
     /**
@@ -444,7 +442,7 @@ class StringHelper implements ArrayAccess, Iterator, Countable, JsonSerializable
      * Returns TRUE if the string is UTF-8 encoded. This method searches for non-ascii multibyte
      * sequences in the UTF-8 range.
      *
-     * @return boolean
+     * @return bool
      */
     public function isUtf8(): bool
     {
@@ -458,7 +456,7 @@ class StringHelper implements ArrayAccess, Iterator, Countable, JsonSerializable
         $pattern[] = "[\xF1-\xF3][\x80-\xBF]{3}";         // planes 4-15
         $pattern[] = "\xF4[\x80-\x8F][\x80-\xBF]{2}";     // plane 16
 
-        return (bool)preg_match("%(?:" . implode("|", $pattern) . ")+%xs", $this->string);
+        return (bool) preg_match('%(?:'.implode('|', $pattern).')+%xs', $this->string);
     }
 
     /**
@@ -468,7 +466,7 @@ class StringHelper implements ArrayAccess, Iterator, Countable, JsonSerializable
      */
     public function toUtf8(): static
     {
-        if (!$this->isUtf8()) {
+        if (! $this->isUtf8() && ! $this->isInt()) {
             $this->string = mb_convert_encoding($this->string, 'UTF-8', mb_list_encodings());
         }
 
@@ -491,7 +489,7 @@ class StringHelper implements ArrayAccess, Iterator, Countable, JsonSerializable
      * @param string $base64
      * @return self
      */
-    public static function fromBase64(string $base64): StringHelper
+    public static function fromBase64(string $base64): self
     {
         return new self(base64_decode($base64));
     }
@@ -503,7 +501,7 @@ class StringHelper implements ArrayAccess, Iterator, Countable, JsonSerializable
      */
     public function toHex(): string
     {
-        $hex = "";
+        $hex = '';
 
         foreach ($this as $char) {
             $hex .= $char->toHex();
@@ -519,12 +517,12 @@ class StringHelper implements ArrayAccess, Iterator, Countable, JsonSerializable
      * @return self
      * @throws HelperException
      */
-    public static function fromHex(string $hex): StringHelper
+    public static function fromHex(string $hex): self
     {
-        $string = "";
+        $string = '';
 
         if (strlen($hex) % 2 == 1) {
-            throw new HelperException("given parameter '" . $hex . "' is not a valid hexadecimal number");
+            throw new HelperException("given parameter '".$hex."' is not a valid hexadecimal number");
         }
 
         foreach (str_split($hex, 2) as $chunk) {
@@ -539,217 +537,217 @@ class StringHelper implements ArrayAccess, Iterator, Countable, JsonSerializable
      *
      * @return self
      */
-    public function transliterate(): StringHelper
+    public function transliterate(): self
     {
         $utf8_accents = [
-            "à" => "a",
-            "ô" => "o",
-            "ď" => "d",
-            "ḟ" => "f",
-            "ë" => "e",
-            "š" => "s",
-            "ơ" => "o",
-            "ß" => "ss",
-            "ă" => "a",
-            "ř" => "r",
-            "ț" => "t",
-            "ň" => "n",
-            "ā" => "a",
-            "ķ" => "k",
-            "ŝ" => "s",
-            "ỳ" => "y",
-            "ņ" => "n",
-            "ĺ" => "l",
-            "ħ" => "h",
-            "ṗ" => "p",
-            "ó" => "o",
-            "ú" => "u",
-            "ě" => "e",
-            "é" => "e",
-            "ç" => "c",
-            "ẁ" => "w",
-            "ċ" => "c",
-            "õ" => "o",
-            "ṡ" => "s",
-            "ø" => "o",
-            "ģ" => "g",
-            "ŧ" => "t",
-            "ș" => "s",
-            "ė" => "e",
-            "ĉ" => "c",
-            "ś" => "s",
-            "î" => "i",
-            "ű" => "u",
-            "ć" => "c",
-            "ę" => "e",
-            "ŵ" => "w",
-            "ṫ" => "t",
-            "ū" => "u",
-            "č" => "c",
-            "ö" => "oe",
-            "è" => "e",
-            "ŷ" => "y",
-            "ą" => "a",
-            "ł" => "l",
-            "ų" => "u",
-            "ů" => "u",
-            "ş" => "s",
-            "ğ" => "g",
-            "ļ" => "l",
-            "ƒ" => "f",
-            "ž" => "z",
-            "ẃ" => "w",
-            "ḃ" => "b",
-            "å" => "a",
-            "ì" => "i",
-            "ï" => "i",
-            "ḋ" => "d",
-            "ť" => "t",
-            "ŗ" => "r",
-            "ä" => "ae",
-            "í" => "i",
-            "ŕ" => "r",
-            "ê" => "e",
-            "ü" => "ue",
-            "ò" => "o",
-            "ē" => "e",
-            "ñ" => "n",
-            "ń" => "n",
-            "ĥ" => "h",
-            "ĝ" => "g",
-            "đ" => "d",
-            "ĵ" => "j",
-            "ÿ" => "y",
-            "ũ" => "u",
-            "ŭ" => "u",
-            "ư" => "u",
-            "ţ" => "t",
-            "ý" => "y",
-            "ő" => "o",
-            "â" => "a",
-            "ľ" => "l",
-            "ẅ" => "w",
-            "ż" => "z",
-            "ī" => "i",
-            "ã" => "a",
-            "ġ" => "g",
-            "ṁ" => "m",
-            "ō" => "o",
-            "ĩ" => "i",
-            "ù" => "u",
-            "į" => "i",
-            "ź" => "z",
-            "á" => "a",
-            "û" => "u",
-            "þ" => "th",
-            "ð" => "dh",
-            "æ" => "ae",
-            "µ" => "u",
-            "ĕ" => "e",
-            "œ" => "oe",
-            "À" => "A",
-            "Ô" => "O",
-            "Ď" => "D",
-            "Ḟ" => "F",
-            "Ë" => "E",
-            "Š" => "S",
-            "Ơ" => "O",
-            "Ă" => "A",
-            "Ř" => "R",
-            "Ț" => "T",
-            "Ň" => "N",
-            "Ā" => "A",
-            "Ķ" => "K",
-            "Ŝ" => "S",
-            "Ỳ" => "Y",
-            "Ņ" => "N",
-            "Ĺ" => "L",
-            "Ħ" => "H",
-            "Ṗ" => "P",
-            "Ó" => "O",
-            "Ú" => "U",
-            "Ě" => "E",
-            "É" => "E",
-            "Ç" => "C",
-            "Ẁ" => "W",
-            "Ċ" => "C",
-            "Õ" => "O",
-            "Ṡ" => "S",
-            "Ø" => "O",
-            "Ģ" => "G",
-            "Ŧ" => "T",
-            "Ș" => "S",
-            "Ė" => "E",
-            "Ĉ" => "C",
-            "Ś" => "S",
-            "Î" => "I",
-            "Ű" => "U",
-            "Ć" => "C",
-            "Ę" => "E",
-            "Ŵ" => "W",
-            "Ṫ" => "T",
-            "Ū" => "U",
-            "Č" => "C",
-            "Ö" => "Oe",
-            "È" => "E",
-            "Ŷ" => "Y",
-            "Ą" => "A",
-            "Ł" => "L",
-            "Ų" => "U",
-            "Ů" => "U",
-            "Ş" => "S",
-            "Ğ" => "G",
-            "Ļ" => "L",
-            "Ƒ" => "F",
-            "Ž" => "Z",
-            "Ẃ" => "W",
-            "Ḃ" => "B",
-            "Å" => "A",
-            "Ì" => "I",
-            "Ï" => "I",
-            "Ḋ" => "D",
-            "Ť" => "T",
-            "Ŗ" => "R",
-            "Ä" => "Ae",
-            "Í" => "I",
-            "Ŕ" => "R",
-            "Ê" => "E",
-            "Ü" => "Ue",
-            "Ò" => "O",
-            "Ē" => "E",
-            "Ñ" => "N",
-            "Ń" => "N",
-            "Ĥ" => "H",
-            "Ĝ" => "G",
-            "Đ" => "D",
-            "Ĵ" => "J",
-            "Ÿ" => "Y",
-            "Ũ" => "U",
-            "Ŭ" => "U",
-            "Ư" => "U",
-            "Ţ" => "T",
-            "Ý" => "Y",
-            "Ő" => "O",
-            "Â" => "A",
-            "Ľ" => "L",
-            "Ẅ" => "W",
-            "Ż" => "Z",
-            "Ī" => "I",
-            "Ã" => "A",
-            "Ġ" => "G",
-            "Ṁ" => "M",
-            "Ō" => "O",
-            "Ĩ" => "I",
-            "Ù" => "U",
-            "Į" => "I",
-            "Ź" => "Z",
-            "Á" => "A",
-            "Û" => "U",
-            "Þ" => "Th",
-            "Ð" => "Dh",
-            "Æ" => "Ae",
-            "Ĕ" => "E",
-            "Œ" => "Oe",
+            'à' => 'a',
+            'ô' => 'o',
+            'ď' => 'd',
+            'ḟ' => 'f',
+            'ë' => 'e',
+            'š' => 's',
+            'ơ' => 'o',
+            'ß' => 'ss',
+            'ă' => 'a',
+            'ř' => 'r',
+            'ț' => 't',
+            'ň' => 'n',
+            'ā' => 'a',
+            'ķ' => 'k',
+            'ŝ' => 's',
+            'ỳ' => 'y',
+            'ņ' => 'n',
+            'ĺ' => 'l',
+            'ħ' => 'h',
+            'ṗ' => 'p',
+            'ó' => 'o',
+            'ú' => 'u',
+            'ě' => 'e',
+            'é' => 'e',
+            'ç' => 'c',
+            'ẁ' => 'w',
+            'ċ' => 'c',
+            'õ' => 'o',
+            'ṡ' => 's',
+            'ø' => 'o',
+            'ģ' => 'g',
+            'ŧ' => 't',
+            'ș' => 's',
+            'ė' => 'e',
+            'ĉ' => 'c',
+            'ś' => 's',
+            'î' => 'i',
+            'ű' => 'u',
+            'ć' => 'c',
+            'ę' => 'e',
+            'ŵ' => 'w',
+            'ṫ' => 't',
+            'ū' => 'u',
+            'č' => 'c',
+            'ö' => 'oe',
+            'è' => 'e',
+            'ŷ' => 'y',
+            'ą' => 'a',
+            'ł' => 'l',
+            'ų' => 'u',
+            'ů' => 'u',
+            'ş' => 's',
+            'ğ' => 'g',
+            'ļ' => 'l',
+            'ƒ' => 'f',
+            'ž' => 'z',
+            'ẃ' => 'w',
+            'ḃ' => 'b',
+            'å' => 'a',
+            'ì' => 'i',
+            'ï' => 'i',
+            'ḋ' => 'd',
+            'ť' => 't',
+            'ŗ' => 'r',
+            'ä' => 'ae',
+            'í' => 'i',
+            'ŕ' => 'r',
+            'ê' => 'e',
+            'ü' => 'ue',
+            'ò' => 'o',
+            'ē' => 'e',
+            'ñ' => 'n',
+            'ń' => 'n',
+            'ĥ' => 'h',
+            'ĝ' => 'g',
+            'đ' => 'd',
+            'ĵ' => 'j',
+            'ÿ' => 'y',
+            'ũ' => 'u',
+            'ŭ' => 'u',
+            'ư' => 'u',
+            'ţ' => 't',
+            'ý' => 'y',
+            'ő' => 'o',
+            'â' => 'a',
+            'ľ' => 'l',
+            'ẅ' => 'w',
+            'ż' => 'z',
+            'ī' => 'i',
+            'ã' => 'a',
+            'ġ' => 'g',
+            'ṁ' => 'm',
+            'ō' => 'o',
+            'ĩ' => 'i',
+            'ù' => 'u',
+            'į' => 'i',
+            'ź' => 'z',
+            'á' => 'a',
+            'û' => 'u',
+            'þ' => 'th',
+            'ð' => 'dh',
+            'æ' => 'ae',
+            'µ' => 'u',
+            'ĕ' => 'e',
+            'œ' => 'oe',
+            'À' => 'A',
+            'Ô' => 'O',
+            'Ď' => 'D',
+            'Ḟ' => 'F',
+            'Ë' => 'E',
+            'Š' => 'S',
+            'Ơ' => 'O',
+            'Ă' => 'A',
+            'Ř' => 'R',
+            'Ț' => 'T',
+            'Ň' => 'N',
+            'Ā' => 'A',
+            'Ķ' => 'K',
+            'Ŝ' => 'S',
+            'Ỳ' => 'Y',
+            'Ņ' => 'N',
+            'Ĺ' => 'L',
+            'Ħ' => 'H',
+            'Ṗ' => 'P',
+            'Ó' => 'O',
+            'Ú' => 'U',
+            'Ě' => 'E',
+            'É' => 'E',
+            'Ç' => 'C',
+            'Ẁ' => 'W',
+            'Ċ' => 'C',
+            'Õ' => 'O',
+            'Ṡ' => 'S',
+            'Ø' => 'O',
+            'Ģ' => 'G',
+            'Ŧ' => 'T',
+            'Ș' => 'S',
+            'Ė' => 'E',
+            'Ĉ' => 'C',
+            'Ś' => 'S',
+            'Î' => 'I',
+            'Ű' => 'U',
+            'Ć' => 'C',
+            'Ę' => 'E',
+            'Ŵ' => 'W',
+            'Ṫ' => 'T',
+            'Ū' => 'U',
+            'Č' => 'C',
+            'Ö' => 'Oe',
+            'È' => 'E',
+            'Ŷ' => 'Y',
+            'Ą' => 'A',
+            'Ł' => 'L',
+            'Ų' => 'U',
+            'Ů' => 'U',
+            'Ş' => 'S',
+            'Ğ' => 'G',
+            'Ļ' => 'L',
+            'Ƒ' => 'F',
+            'Ž' => 'Z',
+            'Ẃ' => 'W',
+            'Ḃ' => 'B',
+            'Å' => 'A',
+            'Ì' => 'I',
+            'Ï' => 'I',
+            'Ḋ' => 'D',
+            'Ť' => 'T',
+            'Ŗ' => 'R',
+            'Ä' => 'Ae',
+            'Í' => 'I',
+            'Ŕ' => 'R',
+            'Ê' => 'E',
+            'Ü' => 'Ue',
+            'Ò' => 'O',
+            'Ē' => 'E',
+            'Ñ' => 'N',
+            'Ń' => 'N',
+            'Ĥ' => 'H',
+            'Ĝ' => 'G',
+            'Đ' => 'D',
+            'Ĵ' => 'J',
+            'Ÿ' => 'Y',
+            'Ũ' => 'U',
+            'Ŭ' => 'U',
+            'Ư' => 'U',
+            'Ţ' => 'T',
+            'Ý' => 'Y',
+            'Ő' => 'O',
+            'Â' => 'A',
+            'Ľ' => 'L',
+            'Ẅ' => 'W',
+            'Ż' => 'Z',
+            'Ī' => 'I',
+            'Ã' => 'A',
+            'Ġ' => 'G',
+            'Ṁ' => 'M',
+            'Ō' => 'O',
+            'Ĩ' => 'I',
+            'Ù' => 'U',
+            'Į' => 'I',
+            'Ź' => 'Z',
+            'Á' => 'A',
+            'Û' => 'U',
+            'Þ' => 'Th',
+            'Ð' => 'Dh',
+            'Æ' => 'Ae',
+            'Ĕ' => 'E',
+            'Œ' => 'Oe',
         ];
 
         return new self($this->toUtf8()->replace(array_keys($utf8_accents), array_values($utf8_accents)));
@@ -762,9 +760,9 @@ class StringHelper implements ArrayAccess, Iterator, Countable, JsonSerializable
      * @param string $spacer
      * @return self
      */
-    public function uriSafe(string $spacer = "-"): StringHelper
+    public function uriSafe(string $spacer = '-'): self
     {
-        $this->string = str_replace($spacer, " ", $this->string);
+        $this->string = str_replace($spacer, ' ', $this->string);
         $this->string = $this->transliterate();
         $this->string = preg_replace("/(\s|[^A-Za-z0-9\-])+/", $spacer, trim(strtolower($this->string)));
         $this->string = trim($this->string, $spacer);
@@ -779,7 +777,7 @@ class StringHelper implements ArrayAccess, Iterator, Countable, JsonSerializable
      */
     public function spaceToPercent(): string
     {
-        return str_replace(" ", "%20", $this->string);
+        return str_replace(' ', '%20', $this->string);
     }
 
     /**
@@ -802,15 +800,15 @@ class StringHelper implements ArrayAccess, Iterator, Countable, JsonSerializable
      */
     public function __call(string $function, array $args)
     {
-        if (!function_exists($function)) {
-            throw new HelperException("cannot call undefined function '" . $function . "' on this object");
+        if (! function_exists($function)) {
+            throw new HelperException("cannot call undefined function '".$function."' on this object");
         }
 
         if (count($args)) {
             if (($key = array_search($this, $args, true)) !== false) {
                 $args[$key] = $this->string;
             } else {
-                throw new HelperException("cannot call undefined function '" . $function . "' without the " . __CLASS__ . " object parameter");
+                throw new HelperException("cannot call undefined function '".$function."' without the ".__CLASS__.' object parameter');
             }
 
             $return = call_user_func_array($function, $args);
@@ -918,7 +916,7 @@ class StringHelper implements ArrayAccess, Iterator, Countable, JsonSerializable
      */
     public function offsetSet($offset, $value): void
     {
-        if (!$this->offsetExists($offset)) {
+        if (! $this->offsetExists($offset)) {
             return;
         }
 
@@ -930,10 +928,10 @@ class StringHelper implements ArrayAccess, Iterator, Countable, JsonSerializable
      */
     public function offsetUnset($offset): void
     {
-        if (!$this->offsetExists($offset)) {
+        if (! $this->offsetExists($offset)) {
             return;
         }
 
-        $this->string = substr_replace($this->string, "", $offset, 1);
+        $this->string = substr_replace($this->string, '', $offset, 1);
     }
 }

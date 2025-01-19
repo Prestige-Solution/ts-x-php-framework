@@ -4,7 +4,7 @@ namespace PlanetTeamSpeak\TeamSpeak3Framework\Tests\Transport;
 
 use PHPUnit\Framework\TestCase;
 use PlanetTeamSpeak\TeamSpeak3Framework\Adapter\MockServerQuery;
-use PlanetTeamSpeak\TeamSpeak3Framework\Transport\Transport;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
 
 class TransportTest extends TestCase
 {
@@ -17,16 +17,16 @@ class TransportTest extends TestCase
     }
 
     /**
-     * @throws TransportException
+     * @throws AdapterException
      */
     public function testGetAdapterTypeReturnValue()
     {
         $mockServerQuery = $this->createMockServerQuery();
 
         // The original value should be returned as it is
-        $this->assertEquals("MockServerQuery", $mockServerQuery->getTransport()->getAdapterType());
+        $this->assertEquals('MockServerQuery', $mockServerQuery->getTransport()->getAdapterType());
 
         // The Signal class combines the lowered class name with an additional string for the `emit()` function
-        $this->assertEquals("mockserverquery", strtolower($mockServerQuery->getTransport()->getAdapterType()));
+        $this->assertEquals('mockserverquery', strtolower($mockServerQuery->getTransport()->getAdapterType()));
     }
 }

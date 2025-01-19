@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- * @package   TeamSpeak3
  * @author    Sven 'ScP' Paulsen
  * @copyright Copyright (c) Planet TeamSpeak. All rights reserved.
  */
@@ -33,7 +32,6 @@ use PlanetTeamSpeak\TeamSpeak3Framework\TeamSpeak3;
 
 /**
  * Class Reply
- * @package PlanetTeamSpeak\TeamSpeak3Framework\Adapter\ServerQuery
  * @class Reply
  * @brief Provides methods to analyze and format a ServerQuery reply.
  */
@@ -58,7 +56,7 @@ class Reply
      *
      * @var Host
      */
-    protected ?Host $con;
+    protected Host $con;
 
     /**
      * Stores an assoc array containing the error info for this reply.
@@ -77,21 +75,21 @@ class Reply
     /**
      * Indicates whether exceptions should be thrown or not.
      *
-     * @var boolean
+     * @var bool
      */
     protected bool $exp = true;
 
     /**
      * Creates a new PlanetTeamSpeak\TeamSpeak3Framework\Adapter\ServerQuery\Reply object.
      *
-     * @param array $rpl
-     * @param null $cmd
-     * @param Host|null $con
-     * @param boolean $exp
+     * @param  array  $rpl
+     * @param  string  $cmd
+     * @param  Host|null  $con
+     * @param  bool  $exp
      * @throws AdapterException
      * @throws ServerQueryException
      */
-    public function __construct(array $rpl, string $cmd = "", Host $con = null, bool $exp = true)
+    public function __construct(array $rpl, string $cmd = '', Host $con = null, bool $exp = true)
     {
         $this->cmd = new StringHelper($cmd);
         $this->con = $con;
@@ -104,11 +102,19 @@ class Reply
     /**
      * Returns the reply as an PlanetTeamSpeak\TeamSpeak3Framework\Helper\StringHelper object.
      *
-     * @return StringHelper
+     * @return StringHelper|null
      */
     public function toString(): ?StringHelper
     {
-        return (!func_num_args()) ? $this->rpl->unescape() : $this->rpl;
+        //get count of arguments there passed to this function / 0 is similar to !func_num_args() but this variant results in bool(false)
+        $stringArgs = func_get_args();
+        if ($stringArgs >= 1)
+        {
+            return $this->rpl;
+        }else
+        {
+            return $this->rpl->unescape();
+        }
     }
 
     /**
@@ -118,13 +124,15 @@ class Reply
      */
     public function toLines(): array
     {
-        if (!count($this->rpl)) {
+        if (! count($this->rpl)) {
             return [];
         }
 
-        $list = $this->toString(0)->split(TeamSpeak3::SEPARATOR_LIST);
+        $list = $this->toString()->split(TeamSpeak3::SEPARATOR_LIST);
 
-        if (!func_num_args()) {
+        //get count of arguments there passed to this function / 0 is similar to !func_num_args() but this variant results in bool(false)
+        $linesArgs = func_num_args();
+        if ($linesArgs >= 1) {
             for ($i = 0; $i < count($list); $i++) {
                 $list[$i]->unescape();
             }
@@ -142,10 +150,12 @@ class Reply
     {
         $table = [];
 
-        foreach ($this->toLines(0) as $cells) {
+        foreach ($this->toLines() as $cells) {
             $pairs = $cells->split(TeamSpeak3::SEPARATOR_CELL);
 
-            if (!func_num_args()) {
+            //get count of arguments there passed to this function / 0 is similar to !func_num_args() but this variant results in bool(false)
+            $tableArgs = func_get_args();
+            if ($tableArgs >= 1) {
                 for ($i = 0; $i < count($pairs); $i++) {
                     $pairs[$i]->unescape();
                 }
@@ -165,20 +175,35 @@ class Reply
     public function toArray(): array
     {
         $array = [];
-        $table = $this->toTable(1);
+        $table = $this->toTable();
 
         for ($i = 0; $i < count($table); $i++) {
             foreach ($table[$i] as $pair) {
-                if (!count($pair)) {
+                if (! count($pair)) {
                     continue;
                 }
 
-                if (!$pair->contains(TeamSpeak3::SEPARATOR_PAIR)) {
+                if (! $pair->contains(TeamSpeak3::SEPARATOR_PAIR)) {
                     $array[$i][$pair->toString()] = null;
                 } else {
                     list($ident, $value) = $pair->split(TeamSpeak3::SEPARATOR_PAIR, 2);
 
-                    $array[$i][$ident->toString()] = $value->isInt() ? $value->toInt() : (!func_num_args() ? $value->unescape() : $value);
+                    //get count of arguments there passed to this function / 0 is similar to !func_num_args() but this variant results in bool(false)
+                    //let us make the code more readable to understand what happened. Con is, there is a bit longer
+                    $arrayArgs = func_get_args();
+                    if ($value->isInt() === true)
+                    {
+                        $array[$i][$ident->toString()] = $value->toInt();
+                    }else
+                    {
+                        if ($arrayArgs >= 1)
+                        {
+                            $array[$i][$ident->toString()] = $value->unescape();
+                        }else
+                        {
+                            $array[$i][$ident->toString()] = $value;
+                        }
+                    }
                 }
             }
         }
@@ -217,7 +242,11 @@ class Reply
      */
     public function toList(): array
     {
-        $array = func_num_args() ? $this->toArray(1) : $this->toArray();
+        //changed $array = func_num_args() ? $this->toArray(1) : $this->toArray();
+        //TODO Documentation: not clear what func_num_args() will do it here.
+        //TODO func_num_args() results in 0 or greater than 0 but not false so this function result every time in $this->toArray()
+        //Reference Host.php line 513 and 971
+        $array = $this->toArray();
 
         if (count($array) == 1) {
             return array_shift($array);
@@ -236,7 +265,7 @@ class Reply
         $array = (func_num_args() > 1) ? $this->toArray(1) : $this->toArray();
 
         for ($i = 0; $i < count($array); $i++) {
-            $array[$i] = (object)$array[$i];
+            $array[$i] = (object) $array[$i];
         }
 
         return $array;
@@ -293,22 +322,22 @@ class Reply
             $this->err[$ident->toString()] = $value->isInt() ? $value->toInt() : $value->unescape();
         }
 
-        Signal::getInstance()->emit("notifyError", $this);
+        Signal::getInstance()->emit('notifyError', $this);
 
-        if ($this->getErrorProperty("id", 0x00) != 0x00 && $this->exp) {
-            if ($permid = $this->getErrorProperty("failed_permid")) {
-                if ($permsid = key($this->con->request("permget permid=" . $permid, false)->toAssocArray("permsid"))) {
-                    $suffix = " (failed on " . $permsid . ")";
+        if ($this->getErrorProperty('id', 0x00) != 0x00 && $this->exp) {
+            if ($permid = $this->getErrorProperty('failed_permid')) {
+                if ($permsid = key($this->con->request('permget permid='.$permid, false)->toAssocArray('permsid'))) {
+                    $suffix = ' (failed on '.$permsid.')';
                 } else {
-                    $suffix = " (failed on " . $this->cmd->section(TeamSpeak3::SEPARATOR_CELL) . " " . $permid . "/0x" . strtoupper(dechex($permid)) . ")";
+                    $suffix = ' (failed on '.$this->cmd->section(TeamSpeak3::SEPARATOR_CELL).' '.$permid.'/0x'.strtoupper(dechex($permid)).')';
                 }
-            } elseif ($details = $this->getErrorProperty("extra_msg")) {
-                $suffix = " (" . trim($details) . ")";
+            } elseif ($details = $this->getErrorProperty('extra_msg')) {
+                $suffix = ' ('.trim($details).')';
             } else {
-                $suffix = "";
+                $suffix = '';
             }
 
-            throw new ServerQueryException($this->getErrorProperty("msg") . $suffix, $this->getErrorProperty("id"), $this->getErrorProperty("return_code"));
+            throw new ServerQueryException($this->getErrorProperty('msg').$suffix, $this->getErrorProperty('id'), $this->getErrorProperty('return_code'));
         }
     }
 
@@ -322,7 +351,7 @@ class Reply
     protected function fetchReply(array $rpl): void
     {
         foreach ($rpl as $key => $val) {
-            if ($val->startsWith(TeamSpeak3::TS3_MOTD_PREFIX) || $val->startsWith(TeamSpeak3::TEA_MOTD_PREFIX) || (defined("CUSTOM_MOTD_PREFIX") && $val->startsWith(CUSTOM_MOTD_PREFIX))) {
+            if ($val->startsWith(TeamSpeak3::TS3_MOTD_PREFIX) || $val->startsWith(TeamSpeak3::TEA_MOTD_PREFIX)) {
                 unset($rpl[$key]);
             } elseif ($val->startsWith(TeamSpeak3::EVENT)) {
                 $this->evt[] = new Event($val, $this->con);

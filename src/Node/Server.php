@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- * @package   TeamSpeak3
  * @author    Sven 'ScP' Paulsen
  * @copyright Copyright (c) Planet TeamSpeak. All rights reserved.
  */
@@ -35,7 +34,6 @@ use PlanetTeamSpeak\TeamSpeak3Framework\TeamSpeak3;
 
 /**
  * Class Server
- * @package PlanetTeamSpeak\TeamSpeak3Framework\Node
  * @class Server
  * @brief Class describing a TeamSpeak 3 virtual server and all it's parameters.
  */
@@ -69,13 +67,13 @@ class Server extends Node
      * @param string $index
      * @throws ServerQueryException
      */
-    public function __construct(Host $host, array $info, string $index = "virtualserver_id")
+    public function __construct(Host $host, array $info, string $index = 'virtualserver_id')
     {
         $this->parent = $host;
         $this->nodeInfo = $info;
 
-        if (!array_key_exists($index, $this->nodeInfo)) {
-            throw new ServerQueryException("invalid serverID", 0x400);
+        if (! array_key_exists($index, $this->nodeInfo)) {
+            throw new ServerQueryException('invalid serverID', 0x400);
         }
 
         $this->nodeId = $this->nodeInfo[$index];
@@ -85,7 +83,7 @@ class Server extends Node
      * Sends a prepared command to the server and returns the result.
      *
      * @param string $cmd
-     * @param boolean $throw
+     * @param bool $throw
      * @return Reply
      * @throws AdapterException
      * @throws ServerQueryException
@@ -110,7 +108,7 @@ class Server extends Node
     public function channelList(array $filter = []): array
     {
         if ($this->channelList === null) {
-            $channels = $this->request("channellist -topic -flags -voice -limits -icon")->toAssocArray("cid");
+            $channels = $this->request('channellist -topic -flags -voice -limits -icon')->toAssocArray('cid');
 
             $this->channelList = [];
 
@@ -145,49 +143,49 @@ class Server extends Node
     public function channelGetDefault(): Channel
     {
         foreach ($this->channelList() as $channel) {
-            if ($channel["channel_flag_default"]) {
+            if ($channel['channel_flag_default']) {
                 return $channel;
             }
         }
 
-        throw new ServerQueryException("invalid channelID", 0x300);
+        throw new ServerQueryException('invalid channelID', 0x300);
     }
 
     /**
      * Creates a new channel using given properties and returns the new ID.
      *
      * @param array $properties
-     * @return integer
+     * @return int
      * @throws AdapterException
      * @throws ServerQueryException
      */
     public function channelCreate(array $properties): int
     {
-        $cid = $this->execute("channelcreate", $properties)->toList();
+        $cid = $this->execute('channelcreate', $properties)->toList();
         $this->channelListReset();
 
-        if (!isset($properties["channel_flag_permanent"]) && !isset($properties["channel_flag_semi_permanent"])) {
-            $this->getParent()->whoamiSet("client_channel_id", $cid["cid"]);
+        if (! isset($properties['channel_flag_permanent']) && ! isset($properties['channel_flag_semi_permanent'])) {
+            $this->getParent()->whoamiSet('client_channel_id', $cid['cid']);
         }
 
-        return $cid["cid"];
+        return $cid['cid'];
     }
 
     /**
      * Deletes the channel specified by $cid.
      *
-     * @param integer|Node $cid
-     * @param boolean $force
+     * @param int|Node $cid
+     * @param bool $force
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
      */
     public function channelDelete(int|Node $cid, bool $force = false): void
     {
-        $this->execute("channeldelete", ["cid" => $cid, "force" => $force]);
+        $this->execute('channeldelete', ['cid' => $cid, 'force' => $force]);
         $this->channelListReset();
 
-        if (($cid instanceof Node ? $cid->getId() : $cid) == $this->whoamiGet("client_channel_id")) {
+        if (($cid instanceof Node ? $cid->getId() : $cid) == $this->whoamiGet('client_channel_id')) {
             $this->getParent()->whoamiReset();
         }
     }
@@ -195,16 +193,16 @@ class Server extends Node
     /**
      * Moves the channel specified by $cid to the parent channel specified with $pid.
      *
-     * @param integer $cid
-     * @param integer $pid
-     * @param integer|null $order
+     * @param int $cid
+     * @param int $pid
+     * @param int|null $order
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
      */
     public function channelMove(int $cid, int $pid, int $order = null): void
     {
-        $this->execute("channelmove", ["cid" => $cid, "cpid" => $pid, "order" => $order]);
+        $this->execute('channelmove', ['cid' => $cid, 'cpid' => $pid, 'order' => $order]);
         $this->channelListReset();
     }
 
@@ -212,11 +210,11 @@ class Server extends Node
      * Returns TRUE if the given PlanetTeamSpeak\TeamSpeak3Framework\Node\Channel object is a spacer.
      *
      * @param Channel $channel
-     * @return boolean
+     * @return bool
      */
     public function channelIsSpacer(Channel $channel): bool
     {
-        return preg_match("/\[[^]]*spacer[^]]*]/", $channel) && $channel["channel_flag_permanent"] && !$channel["pid"];
+        return preg_match("/\[[^]]*spacer[^]]*]/", $channel) && $channel['channel_flag_permanent'] && ! $channel['pid'];
     }
 
     /**
@@ -225,46 +223,46 @@ class Server extends Node
      *
      * @param string $ident
      * @param mixed|int $type
-     * @param integer $align
-     * @param integer|null $order
-     * @param integer $maxclients
-     * @return integer
+     * @param int $align
+     * @param int|null $order
+     * @param int $maxclients
+     * @return int
      * @throws AdapterException
      * @throws ServerQueryException
      */
     public function channelSpacerCreate(
         string $ident,
-        int    $type = TeamSpeak3::SPACER_SOLIDLINE,
-        int    $align = TeamSpeak3::SPACER_ALIGN_REPEAT,
-        int    $order = null,
-        int    $maxclients = 0
+        int $type = TeamSpeak3::SPACER_SOLIDLINE,
+        int $align = TeamSpeak3::SPACER_ALIGN_REPEAT,
+        int $order = null,
+        int $maxclients = 0
     ): int {
         $properties = [
-            "channel_name_phonetic" => "channel spacer",
-            "channel_codec" => TeamSpeak3::CODEC_OPUS_VOICE,
-            "channel_codec_quality" => 0x00,
-            "channel_flag_permanent" => true,
-            "channel_flag_maxclients_unlimited" => false,
-            "channel_flag_maxfamilyclients_unlimited" => false,
-            "channel_flag_maxfamilyclients_inherited" => false,
-            "channel_maxclients" => $maxclients,
-            "channel_order" => $order,
+            'channel_name_phonetic' => 'channel spacer',
+            'channel_codec' => TeamSpeak3::CODEC_OPUS_VOICE,
+            'channel_codec_quality' => 0x00,
+            'channel_flag_permanent' => true,
+            'channel_flag_maxclients_unlimited' => false,
+            'channel_flag_maxfamilyclients_unlimited' => false,
+            'channel_flag_maxfamilyclients_inherited' => false,
+            'channel_maxclients' => $maxclients,
+            'channel_order' => $order,
         ];
 
-        $properties["channel_name"] = match ($align) {
-            TeamSpeak3::SPACER_ALIGN_REPEAT => "[*spacer" . $ident . "]",
-            TeamSpeak3::SPACER_ALIGN_LEFT => "[lspacer" . $ident . "]",
-            TeamSpeak3::SPACER_ALIGN_RIGHT => "[rspacer" . $ident . "]",
-            TeamSpeak3::SPACER_ALIGN_CENTER => "[cspacer" . $ident . "]",
-            default => throw new ServerQueryException("missing required parameter", 0x606),
+        $properties['channel_name'] = match ($align) {
+            TeamSpeak3::SPACER_ALIGN_REPEAT => '[*spacer'.$ident.']',
+            TeamSpeak3::SPACER_ALIGN_LEFT => '[lspacer'.$ident.']',
+            TeamSpeak3::SPACER_ALIGN_RIGHT => '[rspacer'.$ident.']',
+            TeamSpeak3::SPACER_ALIGN_CENTER => '[cspacer'.$ident.']',
+            default => throw new ServerQueryException('missing required parameter', 0x606),
         };
 
-        $properties["channel_name"] .= match ($type) {
-            (string)TeamSpeak3::SPACER_SOLIDLINE => "___",
-            (string)TeamSpeak3::SPACER_DASHLINE => "---",
-            (string)TeamSpeak3::SPACER_DOTLINE => "...",
-            (string)TeamSpeak3::SPACER_DASHDOTLINE => "-.-",
-            (string)TeamSpeak3::SPACER_DASHDOTDOTLINE => "-..",
+        $properties['channel_name'] .= match ($type) {
+            (string) TeamSpeak3::SPACER_SOLIDLINE => '___',
+            (string) TeamSpeak3::SPACER_DASHLINE => '---',
+            (string) TeamSpeak3::SPACER_DOTLINE => '...',
+            (string) TeamSpeak3::SPACER_DASHDOTLINE => '-.-',
+            (string) TeamSpeak3::SPACER_DASHDOTDOTLINE => '-..',
             default => strval($type),
         };
 
@@ -274,8 +272,8 @@ class Server extends Node
     /**
      * Returns the possible type of a channel spacer.
      *
-     * @param integer $cid
-     * @return integer
+     * @param int $cid
+     * @return int
      * @throws AdapterException
      * @throws ServerQueryException
      */
@@ -283,16 +281,16 @@ class Server extends Node
     {
         $channel = $this->channelGetById($cid);
 
-        if (!$this->channelIsSpacer($channel)) {
-            throw new ServerQueryException("invalid channel flags", 0x307);
+        if (! $this->channelIsSpacer($channel)) {
+            throw new ServerQueryException('invalid channel flags', 0x307);
         }
 
-        return match ($channel["channel_name"]->section("]", 1)) {
-            "___" => TeamSpeak3::SPACER_SOLIDLINE,
-            "---" => TeamSpeak3::SPACER_DASHLINE,
-            "..." => TeamSpeak3::SPACER_DOTLINE,
-            "-.-" => TeamSpeak3::SPACER_DASHDOTLINE,
-            "-.." => TeamSpeak3::SPACER_DASHDOTDOTLINE,
+        return match ($channel['channel_name']->section(']', 1)) {
+            '___' => TeamSpeak3::SPACER_SOLIDLINE,
+            '---' => TeamSpeak3::SPACER_DASHLINE,
+            '...' => TeamSpeak3::SPACER_DOTLINE,
+            '-.-' => TeamSpeak3::SPACER_DASHDOTLINE,
+            '-..' => TeamSpeak3::SPACER_DASHDOTDOTLINE,
             default => TeamSpeak3::SPACER_CUSTOM,
         };
     }
@@ -300,8 +298,8 @@ class Server extends Node
     /**
      * Returns the possible alignment of a channel spacer.
      *
-     * @param integer $cid
-     * @return integer
+     * @param int $cid
+     * @return int
      * @throws AdapterException
      * @throws ServerQueryException
      */
@@ -309,14 +307,14 @@ class Server extends Node
     {
         $channel = $this->channelGetById($cid);
 
-        if (!$this->channelIsSpacer($channel) || !preg_match("/\[(.*)spacer.*]/", $channel, $matches) || !isset($matches[1])) {
-            throw new ServerQueryException("invalid channel flags", 0x307);
+        if (! $this->channelIsSpacer($channel) || ! preg_match("/\[(.*)spacer.*]/", $channel, $matches) || ! isset($matches[1])) {
+            throw new ServerQueryException('invalid channel flags', 0x307);
         }
 
         return match ($matches[1]) {
-            "*" => TeamSpeak3::SPACER_ALIGN_REPEAT,
-            "c" => TeamSpeak3::SPACER_ALIGN_CENTER,
-            "r" => TeamSpeak3::SPACER_ALIGN_RIGHT,
+            '*' => TeamSpeak3::SPACER_ALIGN_REPEAT,
+            'c' => TeamSpeak3::SPACER_ALIGN_CENTER,
+            'r' => TeamSpeak3::SPACER_ALIGN_RIGHT,
             default => TeamSpeak3::SPACER_ALIGN_LEFT,
         };
     }
@@ -324,154 +322,154 @@ class Server extends Node
     /**
      * Returns a list of permissions defined for a specific channel.
      *
-     * @param integer $cid
-     * @param boolean $permsid
+     * @param int $cid
+     * @param bool $permsid
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
      */
     public function channelPermList(int $cid, bool $permsid = false): array
     {
-        return $this->execute("channelpermlist", ["cid" => $cid, $permsid ? "-permsid" : null])
-            ->toAssocArray($permsid ? "permsid" : "permid");
+        return $this->execute('channelpermlist', ['cid' => $cid, $permsid ? '-permsid' : null])
+            ->toAssocArray($permsid ? 'permsid' : 'permid');
     }
 
     /**
      * Adds a set of specified permissions to a channel. Multiple permissions can be added by
      * providing the two parameters of each permission.
      *
-     * @param integer $cid
-     * @param integer|integer[] $permid
-     * @param integer|integer[] $permvalue
+     * @param int $cid
+     * @param int|int[] $permid
+     * @param int|int[] $permvalue
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
      */
     public function channelPermAssign(int $cid, int|array $permid, int|array $permvalue): void
     {
-        if (!is_array($permid)) {
-            $permident = (is_numeric($permid)) ? "permid" : "permsid";
+        if (! is_array($permid)) {
+            $permident = (is_numeric($permid)) ? 'permid' : 'permsid';
         } else {
-            $permident = (is_numeric(current($permid))) ? "permid" : "permsid";
+            $permident = (is_numeric(current($permid))) ? 'permid' : 'permsid';
         }
 
-        $this->execute("channeladdperm", ["cid" => $cid, $permident => $permid, "permvalue" => $permvalue]);
+        $this->execute('channeladdperm', ['cid' => $cid, $permident => $permid, 'permvalue' => $permvalue]);
     }
 
     /**
      * Removes a set of specified permissions from a channel. Multiple permissions can be removed at once.
      *
-     * @param integer $cid
-     * @param integer|integer[] $permid
+     * @param int $cid
+     * @param int|int[] $permid
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
      */
     public function channelPermRemove(int $cid, int|array $permid): void
     {
-        if (!is_array($permid)) {
-            $permident = (is_numeric($permid)) ? "permid" : "permsid";
+        if (! is_array($permid)) {
+            $permident = (is_numeric($permid)) ? 'permid' : 'permsid';
         } else {
-            $permident = (is_numeric(current($permid))) ? "permid" : "permsid";
+            $permident = (is_numeric(current($permid))) ? 'permid' : 'permsid';
         }
 
-        $this->execute("channeldelperm", ["cid" => $cid, $permident => $permid]);
+        $this->execute('channeldelperm', ['cid' => $cid, $permident => $permid]);
     }
 
     /**
      * Returns a list of permissions defined for a client in a specific channel.
      *
-     * @param integer $cid
-     * @param integer $cldbid
-     * @param boolean $permsid
+     * @param int $cid
+     * @param int $cldbid
+     * @param bool $permsid
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
      */
     public function channelClientPermList(int $cid, int $cldbid, bool $permsid = false): array
     {
-        return $this->execute("channelclientpermlist", ["cid" => $cid, "cldbid" => $cldbid, $permsid ? "-permsid" : null])
-            ->toAssocArray($permsid ? "permsid" : "permid");
+        return $this->execute('channelclientpermlist', ['cid' => $cid, 'cldbid' => $cldbid, $permsid ? '-permsid' : null])
+            ->toAssocArray($permsid ? 'permsid' : 'permid');
     }
 
     /**
      * Adds a set of specified permissions to a client in a specific channel. Multiple permissions can be added by
      * providing the two parameters of each permission.
      *
-     * @param integer $cid
-     * @param integer $cldbid
-     * @param integer|integer[] $permid
-     * @param integer|integer[] $permvalue
+     * @param int $cid
+     * @param int $cldbid
+     * @param int|int[] $permid
+     * @param int|int[] $permvalue
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
      */
     public function channelClientPermAssign(int $cid, int $cldbid, int|array $permid, int|array $permvalue): void
     {
-        if (!is_array($permid)) {
-            $permident = (is_numeric($permid)) ? "permid" : "permsid";
+        if (! is_array($permid)) {
+            $permident = (is_numeric($permid)) ? 'permid' : 'permsid';
         } else {
-            $permident = (is_numeric(current($permid))) ? "permid" : "permsid";
+            $permident = (is_numeric(current($permid))) ? 'permid' : 'permsid';
         }
 
-        $this->execute("channelclientaddperm", ["cid" => $cid, "cldbid" => $cldbid, $permident => $permid, "permvalue" => $permvalue]);
+        $this->execute('channelclientaddperm', ['cid' => $cid, 'cldbid' => $cldbid, $permident => $permid, 'permvalue' => $permvalue]);
     }
 
     /**
      * Removes a set of specified permissions from a client in a specific channel. Multiple permissions can be removed at once.
      *
-     * @param integer $cid
-     * @param integer $cldbid
-     * @param integer|integer[] $permid
+     * @param int $cid
+     * @param int $cldbid
+     * @param int|int[] $permid
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
      */
     public function channelClientPermRemove(int $cid, int $cldbid, int|array $permid): void
     {
-        if (!is_array($permid)) {
-            $permident = (is_numeric($permid)) ? "permid" : "permsid";
+        if (! is_array($permid)) {
+            $permident = (is_numeric($permid)) ? 'permid' : 'permsid';
         } else {
-            $permident = (is_numeric(current($permid))) ? "permid" : "permsid";
+            $permident = (is_numeric(current($permid))) ? 'permid' : 'permsid';
         }
 
-        $this->execute("channelclientdelperm", ["cid" => $cid, "cldbid" => $cldbid, $permident => $permid]);
+        $this->execute('channelclientdelperm', ['cid' => $cid, 'cldbid' => $cldbid, $permident => $permid]);
     }
 
     /**
      * Returns a list of files and directories stored in the specified channels file repository.
      *
-     * @param integer $cid
+     * @param int $cid
      * @param string $cpw
      * @param string $path
-     * @param boolean $recursive
+     * @param bool $recursive
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
      */
-    public function channelFileList(int $cid, string $cpw = "", string $path = "/", bool $recursive = false): array
+    public function channelFileList(int $cid, string $cpw = '', string $path = '/', bool $recursive = false): array
     {
-        $files = $this->execute("ftgetfilelist", ["cid" => $cid, "cpw" => $cpw, "path" => $path])->toArray();
+        $files = $this->execute('ftgetfilelist', ['cid' => $cid, 'cpw' => $cpw, 'path' => $path])->toArray();
         $count = count($files);
 
         for ($i = 0; $i < $count; $i++) {
-            $files[$i]["sid"] = $this->getId();
-            $files[$i]["cid"] = $files[0]["cid"];
-            $files[$i]["path"] = $files[0]["path"];
-            $files[$i]["src"] = new StringHelper($cid ? $files[$i]["path"] : "/");
+            $files[$i]['sid'] = $this->getId();
+            $files[$i]['cid'] = $files[0]['cid'];
+            $files[$i]['path'] = $files[0]['path'];
+            $files[$i]['src'] = new StringHelper($cid ? $files[$i]['path'] : '/');
 
-            if (!$files[$i]["src"]->endsWith("/")) {
-                $files[$i]["src"]->append("/");
+            if (! $files[$i]['src']->endsWith('/')) {
+                $files[$i]['src']->append('/');
             }
 
-            $files[$i]["src"]->append($files[$i]["name"]);
+            $files[$i]['src']->append($files[$i]['name']);
 
-            if ($recursive && $files[$i]["type"] == TeamSpeak3::FILE_TYPE_DIRECTORY) {
-                $files = array_merge($files, $this->channelFileList($cid, $cpw, $path . $files[$i]["name"], $recursive));
+            if ($recursive && $files[$i]['type'] == TeamSpeak3::FILE_TYPE_DIRECTORY) {
+                $files = array_merge($files, $this->channelFileList($cid, $cpw, $path.$files[$i]['name'], $recursive));
             }
         }
 
-        uasort($files, [__CLASS__, "sortFileList"]);
+        uasort($files, [__CLASS__, 'sortFileList']);
 
         return $files;
     }
@@ -479,16 +477,16 @@ class Server extends Node
     /**
      * Returns detailed information about the specified file stored in a channels file repository.
      *
-     * @param integer $cid
+     * @param int $cid
      * @param string $cpw
      * @param string $name
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
      */
-    public function channelFileInfo(int $cid, string $cpw = "", string $name = "/"): array
+    public function channelFileInfo(int $cid, string $cpw = '', string $name = '/'): array
     {
-        $info = $this->execute("ftgetfileinfo", ["cid" => $cid, "cpw" => $cpw, "name" => $name])->toArray();
+        $info = $this->execute('ftgetfileinfo', ['cid' => $cid, 'cpw' => $cpw, 'name' => $name])->toArray();
 
         return array_pop($info);
     }
@@ -497,56 +495,56 @@ class Server extends Node
      * Renames a file in a channels file repository. If the two parameters $tcid and $tcpw are specified, the file
      * will be moved into another channels file repository.
      *
-     * @param integer $cid
+     * @param int $cid
      * @param string $cpw
      * @param string $oldname
      * @param string $newname
-     * @param integer|null $tcid
+     * @param int|null $tcid
      * @param string|null $tcpw
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
      */
-    public function channelFileRename(int $cid, string $cpw = "", string $oldname = "/", string $newname = "/", int $tcid = null, string $tcpw = null): void
+    public function channelFileRename(int $cid, string $cpw = '', string $oldname = '/', string $newname = '/', int $tcid = null, string $tcpw = null): void
     {
-        $this->execute("ftrenamefile", ["cid" => $cid, "cpw" => $cpw, "oldname" => $oldname, "newname" => $newname, "tcid" => $tcid, "tcpw" => $tcpw]);
+        $this->execute('ftrenamefile', ['cid' => $cid, 'cpw' => $cpw, 'oldname' => $oldname, 'newname' => $newname, 'tcid' => $tcid, 'tcpw' => $tcpw]);
     }
 
     /**
      * Deletes one or more files stored in a channels file repository.
      *
-     * @param integer $cid
+     * @param int $cid
      * @param string $cpw
      * @param string $name
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
      */
-    public function channelFileDelete(int $cid, string $cpw = "", string $name = "/"): void
+    public function channelFileDelete(int $cid, string $cpw = '', string $name = '/'): void
     {
-        $this->execute("ftdeletefile", ["cid" => $cid, "cpw" => $cpw, "name" => $name]);
+        $this->execute('ftdeletefile', ['cid' => $cid, 'cpw' => $cpw, 'name' => $name]);
     }
 
     /**
      * Creates new directory in a channels file repository.
      *
-     * @param integer $cid
+     * @param int $cid
      * @param string $cpw
      * @param string $dirname
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
      */
-    public function channelDirCreate(int $cid, string $cpw = "", string $dirname = "/"): void
+    public function channelDirCreate(int $cid, string $cpw = '', string $dirname = '/'): void
     {
-        $this->execute("ftcreatedir", ["cid" => $cid, "cpw" => $cpw, "dirname" => $dirname]);
+        $this->execute('ftcreatedir', ['cid' => $cid, 'cpw' => $cpw, 'dirname' => $dirname]);
     }
 
     /**
      * Returns the level of a channel.
      *
-     * @param integer $cid
-     * @return integer
+     * @param int $cid
+     * @return int
      * @throws AdapterException
      * @throws ServerQueryException
      */
@@ -555,8 +553,8 @@ class Server extends Node
         $channel = $this->channelGetById($cid);
         $levelno = 0;
 
-        if ($channel["pid"]) {
-            $levelno = $this->channelGetLevel($channel["pid"]) + 1;
+        if ($channel['pid']) {
+            $levelno = $this->channelGetLevel($channel['pid']) + 1;
         }
 
         return $levelno;
@@ -565,7 +563,7 @@ class Server extends Node
     /**
      * Returns the pathway of a channel which can be used as a clients default channel.
      *
-     * @param integer $cid
+     * @param int $cid
      * @return string
      * @throws AdapterException
      * @throws ServerQueryException
@@ -573,10 +571,10 @@ class Server extends Node
     public function channelGetPathway(int $cid): string
     {
         $channel = $this->channelGetById($cid);
-        $pathway = $channel["channel_name"];
+        $pathway = $channel['channel_name'];
 
-        if ($channel["pid"]) {
-            $pathway = $this->channelGetPathway($channel["pid"]) . "/" . $channel["channel_name"];
+        if ($channel['pid']) {
+            $pathway = $this->channelGetPathway($channel['pid']).'/'.$channel['channel_name'];
         }
 
         return $pathway;
@@ -585,18 +583,18 @@ class Server extends Node
     /**
      * Returns the PlanetTeamSpeak\TeamSpeak3Framework\Node\Channel object matching the given ID.
      *
-     * @param integer $cid
+     * @param int $cid
      * @return Channel
      * @throws AdapterException
      * @throws ServerQueryException
      */
     public function channelGetById(int $cid): Channel
     {
-        if (!array_key_exists((string)$cid, $this->channelList())) {
-            throw new ServerQueryException("invalid channelID", 0x300);
+        if (! array_key_exists((string) $cid, $this->channelList())) {
+            throw new ServerQueryException('invalid channelID', 0x300);
         }
 
-        return $this->channelList[intval((string)$cid)];
+        return $this->channelList[intval((string) $cid)];
     }
 
     /**
@@ -610,12 +608,12 @@ class Server extends Node
     public function channelGetByName(string $name): Channel
     {
         foreach ($this->channelList() as $channel) {
-            if ($channel["channel_name"] == $name) {
+            if ($channel['channel_name'] == $name) {
                 return $channel;
             }
         }
 
-        throw new ServerQueryException("invalid channelID", 0x300);
+        throw new ServerQueryException('invalid channelID', 0x300);
     }
 
     /**
@@ -629,20 +627,20 @@ class Server extends Node
     public function clientList(array $filter = []): array
     {
         if ($this->clientList === null) {
-            $clients = $this->request("clientlist -uid -away -badges -voice -info -times -groups -icon -country -ip")
-                ->toAssocArray("clid");
+            $clients = $this->request('clientlist -uid -away -badges -voice -info -times -groups -icon -country -ip')
+                ->toAssocArray('clid');
 
             $this->clientList = [];
 
             foreach ($clients as $clid => $client) {
-                if ($this->getParent()->getExcludeQueryClients() && $client["client_type"]) {
+                if ($this->getParent()->getExcludeQueryClients() && $client['client_type']) {
                     continue;
                 }
 
                 $this->clientList[$clid] = new Client($this, $client);
             }
 
-            uasort($this->clientList, [__CLASS__, "sortClientList"]);
+            uasort($this->clientList, [__CLASS__, 'sortClientList']);
 
             $this->resetNodeList();
         }
@@ -671,48 +669,48 @@ class Server extends Node
      */
     public function clientFind(string $pattern): array
     {
-        return $this->execute("clientfind", ["pattern" => $pattern])->toAssocArray("clid");
+        return $this->execute('clientfind', ['pattern' => $pattern])->toAssocArray('clid');
     }
 
     /**
      * Returns a list of client identities known by the virtual server. By default, the server spits out 25 entries
      * at once.
      *
-     * @param integer|null $offset
-     * @param integer|null $limit
+     * @param int|null $offset
+     * @param int|null $limit
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
      */
     public function clientListDb(int $offset = null, int $limit = null): array
     {
-        return $this->execute("clientdblist -count", ["start" => $offset, "duration" => $limit])
-            ->toAssocArray("cldbid");
+        return $this->execute('clientdblist -count', ['start' => $offset, 'duration' => $limit])
+            ->toAssocArray('cldbid');
     }
 
     /**
      * Returns the number of client identities known by the virtual server.
      *
-     * @return integer
+     * @return int
      * @throws AdapterException
      * @throws ServerQueryException
      */
     public function clientCountDb(): int
     {
-        return current($this->execute("clientdblist -count", ["duration" => 1])->toList("count"));
+        return current($this->execute('clientdblist -count', ['duration' => 1])->toList('count'));
     }
 
     /**
      * Returns a list of properties from the database for the client specified by $cldbid.
      *
-     * @param integer $cldbid
+     * @param int $cldbid
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
      */
     public function clientInfoDb(int $cldbid): array
     {
-        return $this->execute("clientdbinfo", ["cldbid" => $cldbid])->toList();
+        return $this->execute('clientdbinfo', ['cldbid' => $cldbid])->toList();
     }
 
     /**
@@ -720,21 +718,21 @@ class Server extends Node
      * last known nickname or his unique identity by using the $uid option.
      *
      * @param string $pattern
-     * @param boolean $uid
+     * @param bool $uid
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
      */
     public function clientFindDb(string $pattern, bool $uid = false): array
     {
-        return array_keys($this->execute("clientdbfind", ["pattern" => $pattern, ($uid) ? "-uid" : null, "-details"])
-            ->toAssocArray("cldbid"));
+        return array_keys($this->execute('clientdbfind', ['pattern' => $pattern, ($uid) ? '-uid' : null, '-details'])
+            ->toAssocArray('cldbid'));
     }
 
     /**
      * Returns the number of regular clients online.
      *
-     * @return integer
+     * @return int
      */
     public function clientCount(): int
     {
@@ -742,24 +740,24 @@ class Server extends Node
             return 0;
         }
 
-        return $this["virtualserver_clientsonline"] - $this["virtualserver_queryclientsonline"];
+        return $this['virtualserver_clientsonline'] - $this['virtualserver_queryclientsonline'];
     }
 
     /**
      * Returns the PlanetTeamSpeak\TeamSpeak3Framework\Node\Client object matching the given ID.
      *
-     * @param integer $clid
+     * @param int $clid
      * @return Client
      * @throws AdapterException
      * @throws ServerQueryException
      */
     public function clientGetById(int $clid): Client
     {
-        if (!array_key_exists((string)$clid, $this->clientList())) {
-            throw new ServerQueryException("invalid clientID", 0x200);
+        if (! array_key_exists((string) $clid, $this->clientList())) {
+            throw new ServerQueryException('invalid clientID', 0x200);
         }
 
-        return $this->clientList[intval((string)$clid)];
+        return $this->clientList[intval((string) $clid)];
     }
 
     /**
@@ -773,12 +771,12 @@ class Server extends Node
     public function clientGetByName(string $name): Client
     {
         foreach ($this->clientList() as $client) {
-            if ($client["client_nickname"] == $name) {
+            if ($client['client_nickname'] == $name) {
                 return $client;
             }
         }
 
-        throw new ServerQueryException("invalid clientID", 0x200);
+        throw new ServerQueryException('invalid clientID', 0x200);
     }
 
     /**
@@ -792,18 +790,18 @@ class Server extends Node
     public function clientGetByUid(string $uid): Client
     {
         foreach ($this->clientList() as $client) {
-            if ($client["client_unique_identifier"] == $uid) {
+            if ($client['client_unique_identifier'] == $uid) {
                 return $client;
             }
         }
 
-        throw new ServerQueryException("invalid clientID", 0x200);
+        throw new ServerQueryException('invalid clientID', 0x200);
     }
 
     /**
      * Returns the PlanetTeamSpeak\TeamSpeak3Framework\Node\Client object matching the given database ID.
      *
-     * @param integer $dbid
+     * @param int $dbid
      * @return Client
      * @throws AdapterException
      * @throws ServerQueryException
@@ -811,12 +809,12 @@ class Server extends Node
     public function clientGetByDbid(int $dbid): Client
     {
         foreach ($this->clientList() as $client) {
-            if ($client["client_database_id"] == $dbid) {
+            if ($client['client_database_id'] == $dbid) {
                 return $client;
             }
         }
 
-        throw new ServerQueryException("invalid clientID", 0x200);
+        throw new ServerQueryException('invalid clientID', 0x200);
     }
 
     /**
@@ -830,7 +828,7 @@ class Server extends Node
      */
     public function clientGetNameByUid(string $cluid): array
     {
-        return $this->execute("clientgetnamefromuid", ["cluid" => $cluid])->toList();
+        return $this->execute('clientgetnamefromuid', ['cluid' => $cluid])->toList();
     }
 
     /**
@@ -844,7 +842,7 @@ class Server extends Node
      */
     public function clientGetIdsByUid(string $cluid): array
     {
-        return $this->execute("clientgetids", ["cluid" => $cluid])->toAssocArray("clid");
+        return $this->execute('clientgetids', ['cluid' => $cluid])->toAssocArray('clid');
     }
 
     /**
@@ -858,7 +856,7 @@ class Server extends Node
      */
     public function clientGetNameByDbid(string $cldbid): array
     {
-        return $this->execute("clientgetnamefromdbid", ["cldbid" => $cldbid])->toList();
+        return $this->execute('clientgetnamefromdbid', ['cldbid' => $cldbid])->toList();
     }
 
     /**
@@ -872,7 +870,7 @@ class Server extends Node
      */
     public function clientGetServerGroupsByDbid(string $cldbid): array
     {
-        return $this->execute("servergroupsbyclientid", ["cldbid" => $cldbid])->toAssocArray("sgid");
+        return $this->execute('servergroupsbyclientid', ['cldbid' => $cldbid])->toAssocArray('sgid');
     }
 
     /**
@@ -889,7 +887,7 @@ class Server extends Node
     {
         $this->clientListReset();
 
-        $this->execute("clientmove", ["clid" => $clid, "cid" => $cid, "cpw" => $cpw]);
+        $this->execute('clientmove', ['clid' => $clid, 'cid' => $cid, 'cpw' => $cpw]);
 
         if ($clid instanceof Node) {
             $clid = $clid->getId();
@@ -899,16 +897,16 @@ class Server extends Node
             $cid = $cid->getId();
         }
 
-        if (!is_array($clid) && $clid == $this->whoamiGet("client_id")) {
-            $this->getParent()->whoamiSet("client_channel_id", $cid);
+        if (! is_array($clid) && $clid == $this->whoamiGet('client_id')) {
+            $this->getParent()->whoamiSet('client_channel_id', $cid);
         }
     }
 
     /**
      * Kicks one or more clients from their currently joined channel or from the server.
      *
-     * @param integer $clid
-     * @param integer $reasonid
+     * @param int $clid
+     * @param int $reasonid
      * @param null $reasonmsg
      * @return void
      * @throws AdapterException
@@ -918,13 +916,13 @@ class Server extends Node
     {
         $this->clientListReset();
 
-        $this->execute("clientkick", ["clid" => $clid, "reasonid" => $reasonid, "reasonmsg" => $reasonmsg]);
+        $this->execute('clientkick', ['clid' => $clid, 'reasonid' => $reasonid, 'reasonmsg' => $reasonmsg]);
     }
 
     /**
      * Sends a poke message to a client.
      *
-     * @param integer $clid
+     * @param int $clid
      * @param string $msg
      * @return void
      * @throws AdapterException
@@ -932,15 +930,15 @@ class Server extends Node
      */
     public function clientPoke(int $clid, string $msg): void
     {
-        $this->execute("clientpoke", ["clid" => $clid, "msg" => $msg]);
+        $this->execute('clientpoke', ['clid' => $clid, 'msg' => $msg]);
     }
 
     /**
      * Bans the client specified with ID $clid from the server. Please note that this will create three separate
      * ban rules for the targeted clients IP address, the unique identifier and the myTeamSpeak ID (if available).
      *
-     * @param integer $clid
-     * @param integer|null $timeseconds
+     * @param int $clid
+     * @param int|null $timeseconds
      * @param string|null $reason
      * @return array
      * @throws AdapterException
@@ -950,8 +948,8 @@ class Server extends Node
     {
         $this->clientListReset();
 
-        $bans = $this->execute("banclient", ["clid" => $clid, "time" => $timeseconds, "banreason" => $reason])
-            ->toAssocArray("banid");
+        $bans = $this->execute('banclient', ['clid' => $clid, 'time' => $timeseconds, 'banreason' => $reason])
+            ->toAssocArray('banid');
 
         return array_keys($bans);
     }
@@ -967,9 +965,9 @@ class Server extends Node
      */
     public function clientModifyDb(string $cldbid, array $properties): void
     {
-        $properties["cldbid"] = $cldbid;
+        $properties['cldbid'] = $cldbid;
 
-        $this->execute("clientdbedit", $properties);
+        $this->execute('clientdbedit', $properties);
     }
 
     /**
@@ -982,29 +980,29 @@ class Server extends Node
      */
     public function clientDeleteDb(string $cldbid): void
     {
-        $this->execute("clientdbdelete", ["cldbid" => $cldbid]);
+        $this->execute('clientdbdelete', ['cldbid' => $cldbid]);
     }
 
     /**
      * Sets the channel group of a client to the ID specified.
      *
-     * @param integer $cldbid
-     * @param integer $cid
-     * @param integer $cgid
+     * @param int $cldbid
+     * @param int $cid
+     * @param int $cgid
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
      */
     public function clientSetChannelGroup(int $cldbid, int $cid, int $cgid): void
     {
-        $this->execute("setclientchannelgroup", ["cldbid" => $cldbid, "cid" => $cid, "cgid" => $cgid]);
+        $this->execute('setclientchannelgroup', ['cldbid' => $cldbid, 'cid' => $cid, 'cgid' => $cgid]);
     }
 
     /**
      * Returns a list of permissions defined for a client.
      *
-     * @param integer $cldbid
-     * @param boolean $permsid
+     * @param int $cldbid
+     * @param bool $permsid
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
@@ -1013,17 +1011,17 @@ class Server extends Node
     {
         $this->clientListReset();
 
-        return $this->execute("clientpermlist", ["cldbid" => $cldbid, $permsid ? "-permsid" : null])
-            ->toAssocArray($permsid ? "permsid" : "permid");
+        return $this->execute('clientpermlist', ['cldbid' => $cldbid, $permsid ? '-permsid' : null])
+            ->toAssocArray($permsid ? 'permsid' : 'permid');
     }
 
     /**
      * Adds a set of specified permissions to a client. Multiple permissions can be added by providing
      * the three parameters of each permission.
      *
-     * @param integer $cldbid
-     * @param integer|integer[] $permid
-     * @param integer|integer[] $permvalue
+     * @param int $cldbid
+     * @param int|int[] $permid
+     * @param int|int[] $permvalue
      * @param bool|bool[] $permskip
      * @return void
      * @throws AdapterException
@@ -1031,33 +1029,33 @@ class Server extends Node
      */
     public function clientPermAssign(int $cldbid, int|array $permid, int|array $permvalue, bool|array $permskip = false): void
     {
-        if (!is_array($permid)) {
-            $permident = (is_numeric($permid)) ? "permid" : "permsid";
+        if (! is_array($permid)) {
+            $permident = (is_numeric($permid)) ? 'permid' : 'permsid';
         } else {
-            $permident = (is_numeric(current($permid))) ? "permid" : "permsid";
+            $permident = (is_numeric(current($permid))) ? 'permid' : 'permsid';
         }
 
-        $this->execute("clientaddperm -continueonerror", ["cldbid" => $cldbid, $permident => $permid, "permvalue" => $permvalue, "permskip" => $permskip]);
+        $this->execute('clientaddperm -continueonerror', ['cldbid' => $cldbid, $permident => $permid, 'permvalue' => $permvalue, 'permskip' => $permskip]);
     }
 
     /**
      * Removes a set of specified permissions from a client. Multiple permissions can be removed at once.
      *
-     * @param integer $cldbid
-     * @param integer|integer[] $permid
+     * @param int $cldbid
+     * @param int|int[] $permid
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
      */
     public function clientPermRemove(int $cldbid, int|array $permid): void
     {
-        if (!is_array($permid)) {
-            $permident = (is_numeric($permid)) ? "permid" : "permsid";
+        if (! is_array($permid)) {
+            $permident = (is_numeric($permid)) ? 'permid' : 'permsid';
         } else {
-            $permident = (is_numeric(current($permid))) ? "permid" : "permsid";
+            $permident = (is_numeric(current($permid))) ? 'permid' : 'permsid';
         }
 
-        $this->execute("clientdelperm", ["cldbid" => $cldbid, $permident => $permid]);
+        $this->execute('clientdelperm', ['cldbid' => $cldbid, $permident => $permid]);
     }
 
     /**
@@ -1072,13 +1070,13 @@ class Server extends Node
     public function serverGroupList(array $filter = []): array
     {
         if ($this->sgroupList === null) {
-            $this->sgroupList = $this->request("servergrouplist")->toAssocArray("sgid");
+            $this->sgroupList = $this->request('servergrouplist')->toAssocArray('sgid');
 
             foreach ($this->sgroupList as $sgid => $group) {
                 $this->sgroupList[$sgid] = new ServerGroup($this, $group);
             }
 
-            uasort($this->sgroupList, [__CLASS__, "sortGroupList"]);
+            uasort($this->sgroupList, [__CLASS__, 'sortGroupList']);
         }
 
         return $this->filterList($this->sgroupList, $filter);
@@ -1098,8 +1096,8 @@ class Server extends Node
      * Creates a new server group using the name specified with $name and returns its ID.
      *
      * @param string $name
-     * @param integer $type
-     * @return integer
+     * @param int $type
+     * @return int
      * @throws AdapterException
      * @throws ServerQueryException
      */
@@ -1107,19 +1105,19 @@ class Server extends Node
     {
         $this->serverGroupListReset();
 
-        $sgid = $this->execute("servergroupadd", ["name" => $name, "type" => $type])->toList();
+        $sgid = $this->execute('servergroupadd', ['name' => $name, 'type' => $type])->toList();
 
-        return $sgid["sgid"];
+        return $sgid['sgid'];
     }
 
     /**
      * Creates a copy of an existing server group specified by $ssgid and returns the new groups ID.
      *
-     * @param integer $ssgid
+     * @param int $ssgid
      * @param string|null $name
-     * @param integer $tsgid
-     * @param integer $type
-     * @return integer
+     * @param int $tsgid
+     * @param int $type
+     * @return int
      * @throws AdapterException
      * @throws ServerQueryException
      */
@@ -1127,20 +1125,20 @@ class Server extends Node
     {
         $this->serverGroupListReset();
 
-        $sgid = $this->execute("servergroupcopy", ["ssgid" => $ssgid, "tsgid" => $tsgid, "name" => $name, "type" => $type])
+        $sgid = $this->execute('servergroupcopy', ['ssgid' => $ssgid, 'tsgid' => $tsgid, 'name' => $name, 'type' => $type])
             ->toList();
 
         if ($tsgid && $name) {
             $this->serverGroupRename($tsgid, $name);
         }
 
-        return count($sgid) ? $sgid["sgid"] : $tsgid;
+        return count($sgid) ? $sgid['sgid'] : $tsgid;
     }
 
     /**
      * Renames the server group specified with $sgid.
      *
-     * @param integer $sgid
+     * @param int $sgid
      * @param string $name
      * @return void
      * @throws AdapterException
@@ -1150,15 +1148,15 @@ class Server extends Node
     {
         $this->serverGroupListReset();
 
-        $this->execute("servergrouprename", ["sgid" => $sgid, "name" => $name]);
+        $this->execute('servergrouprename', ['sgid' => $sgid, 'name' => $name]);
     }
 
     /**
      * Deletes the server group specified with $sgid. If $force is set to 1, the server group
      * will be deleted even if there are clients within.
      *
-     * @param integer $sgid
-     * @param boolean $force
+     * @param int $sgid
+     * @param bool $force
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
@@ -1167,13 +1165,13 @@ class Server extends Node
     {
         $this->serverGroupListReset();
 
-        $this->execute("servergroupdel", ["sgid" => $sgid, "force" => $force]);
+        $this->execute('servergroupdel', ['sgid' => $sgid, 'force' => $force]);
     }
 
     /**
      * Returns the PlanetTeamSpeak\TeamSpeak3Framework\Node\Servergroup object matching the given ID.
      *
-     * @param integer $sgid
+     * @param int $sgid
      * @return ServerGroup
      * @throws AdapterException
      * @throws NodeException
@@ -1181,18 +1179,18 @@ class Server extends Node
      */
     public function serverGroupGetById(int $sgid): ServerGroup
     {
-        if (!array_key_exists((string)$sgid, $this->serverGroupList())) {
-            throw new ServerQueryException("invalid groupID", 0xA00);
+        if (! array_key_exists((string) $sgid, $this->serverGroupList())) {
+            throw new ServerQueryException('invalid groupID', 0xA00);
         }
 
-        return $this->sgroupList[intval((string)$sgid)];
+        return $this->sgroupList[intval((string) $sgid)];
     }
 
     /**
      * Returns the PlanetTeamSpeak\TeamSpeak3Framework\Node\Servergroup object matching the given name.
      *
      * @param string $name
-     * @param integer $type
+     * @param int $type
      * @return ServerGroup
      * @throws AdapterException
      * @throws NodeException
@@ -1201,37 +1199,37 @@ class Server extends Node
     public function serverGroupGetByName(string $name, int $type = TeamSpeak3::GROUP_DBTYPE_REGULAR): ServerGroup
     {
         foreach ($this->serverGroupList() as $group) {
-            if ($group["name"] == $name && $group["type"] == $type) {
+            if ($group['name'] == $name && $group['type'] == $type) {
                 return $group;
             }
         }
 
-        throw new ServerQueryException("invalid groupID", 0xA00);
+        throw new ServerQueryException('invalid groupID', 0xA00);
     }
 
     /**
      * Returns a list of permissions assigned to the server group specified.
      *
-     * @param integer $sgid
-     * @param boolean $permsid
+     * @param int $sgid
+     * @param bool $permsid
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
      */
     public function serverGroupPermList(int $sgid, bool $permsid = false): array
     {
-        return $this->execute("servergrouppermlist", ["sgid" => $sgid, $permsid ? "-permsid" : null])
-            ->toAssocArray($permsid ? "permsid" : "permid");
+        return $this->execute('servergrouppermlist', ['sgid' => $sgid, $permsid ? '-permsid' : null])
+            ->toAssocArray($permsid ? 'permsid' : 'permid');
     }
 
     /**
      * Adds a set of specified permissions to the server group specified. Multiple permissions
      * can be added by providing the four parameters of each permission in separate arrays.
      *
-     * @param integer $sgid
-     * @param integer|integer[] $permid
-     * @param integer|integer[] $permvalue
-     * @param integer|integer[] $permnegated
+     * @param int $sgid
+     * @param int|int[] $permid
+     * @param int|int[] $permvalue
+     * @param int|int[] $permnegated
      * @param bool|bool[] $permskip
      * @return void
      * @throws AdapterException
@@ -1239,59 +1237,59 @@ class Server extends Node
      */
     public function serverGroupPermAssign(int $sgid, int|array $permid, int|array $permvalue, int|array $permnegated = 0, bool|array $permskip = false): void
     {
-        if (!is_array($permid)) {
-            $permident = (is_numeric($permid)) ? "permid" : "permsid";
+        if (! is_array($permid)) {
+            $permident = (is_numeric($permid)) ? 'permid' : 'permsid';
         } else {
-            $permident = (is_numeric(current($permid))) ? "permid" : "permsid";
+            $permident = (is_numeric(current($permid))) ? 'permid' : 'permsid';
         }
 
-        $this->execute("servergroupaddperm", ["sgid" => $sgid, $permident => $permid, "permvalue" => $permvalue, "permnegated" => $permnegated, "permskip" => $permskip]);
+        $this->execute('servergroupaddperm', ['sgid' => $sgid, $permident => $permid, 'permvalue' => $permvalue, 'permnegated' => $permnegated, 'permskip' => $permskip]);
     }
 
     /**
      * Removes a set of specified permissions from the server group specified with $sgid. Multiple
      * permissions can be removed at once.
      *
-     * @param integer $sgid
-     * @param integer|integer[] $permid
+     * @param int $sgid
+     * @param int|int[] $permid
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
      */
     public function serverGroupPermRemove(int $sgid, int|array $permid): void
     {
-        if (!is_array($permid)) {
-            $permident = (is_numeric($permid)) ? "permid" : "permsid";
+        if (! is_array($permid)) {
+            $permident = (is_numeric($permid)) ? 'permid' : 'permsid';
         } else {
-            $permident = (is_numeric(current($permid))) ? "permid" : "permsid";
+            $permident = (is_numeric(current($permid))) ? 'permid' : 'permsid';
         }
 
-        $this->execute("servergroupdelperm", ["sgid" => $sgid, $permident => $permid]);
+        $this->execute('servergroupdelperm', ['sgid' => $sgid, $permident => $permid]);
     }
 
     /**
      * Returns a list of clients assigned to the server group specified.
      *
-     * @param integer $sgid
+     * @param int $sgid
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
      */
     public function serverGroupClientList(int $sgid): array
     {
-        if ($this["virtualserver_default_server_group"] == $sgid) {
+        if ($this['virtualserver_default_server_group'] == $sgid) {
             return [];
         }
 
-        return $this->execute("servergroupclientlist", ["sgid" => $sgid, "-names"])->toAssocArray("cldbid");
+        return $this->execute('servergroupclientlist', ['sgid' => $sgid, '-names'])->toAssocArray('cldbid');
     }
 
     /**
      * Adds a client to the server group specified. Please note that a client cannot be
      * added to default groups or template groups.
      *
-     * @param integer $sgid
-     * @param integer $cldbid
+     * @param int $sgid
+     * @param int $cldbid
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
@@ -1300,28 +1298,28 @@ class Server extends Node
     {
         $this->clientListReset();
 
-        $this->execute("servergroupaddclient", ["sgid" => $sgid, "cldbid" => $cldbid]);
+        $this->execute('servergroupaddclient', ['sgid' => $sgid, 'cldbid' => $cldbid]);
     }
 
     /**
      * Removes a client from the server group specified.
      *
-     * @param integer $sgid
-     * @param integer $cldbid
+     * @param int $sgid
+     * @param int $cldbid
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
      */
     public function serverGroupClientDel(int $sgid, int $cldbid): void
     {
-        $this->execute("servergroupdelclient", ["sgid" => $sgid, "cldbid" => $cldbid]);
+        $this->execute('servergroupdelclient', ['sgid' => $sgid, 'cldbid' => $cldbid]);
     }
 
     /**
      * Returns an ordered array of regular server groups available based on a pre-defined
      * set of rules.
      *
-     * @param integer $type
+     * @param int $type
      * @return array
      * @throws AdapterException
      * @throws NodeException
@@ -1332,36 +1330,36 @@ class Server extends Node
         $profiles = [];
 
         foreach ($this->serverGroupList() as $sgid => $sgroup) {
-            if ($sgroup["type"] != $type) {
+            if ($sgroup['type'] != $type) {
                 continue;
             }
 
             $profiles[$sgid] = [
-                "b_permission_modify_power_ignore" => 0,
-                "i_group_member_add_power" => 0,
-                "i_group_member_remove_power" => 0,
-                "i_needed_modify_power_count" => 0,
-                "i_needed_modify_power_total" => 0,
-                "i_permission_modify_power" => 0,
-                "i_group_modify_power" => 0,
-                "i_client_modify_power" => 0,
-                "b_virtualserver_servergroup_create" => 0,
-                "b_virtualserver_servergroup_delete" => 0,
-                "b_client_ignore_bans" => 0,
-                "b_client_ignore_antiflood" => 0,
-                "b_group_is_permanent" => 0,
-                "i_client_needed_ban_power" => 0,
-                "i_client_needed_kick_power" => 0,
-                "i_client_needed_move_power" => 0,
-                "i_client_talk_power" => 0,
-                "__sgid" => $sgid,
-                "__name" => $sgroup->toString(),
-                "__node" => $sgroup,
+                'b_permission_modify_power_ignore' => 0,
+                'i_group_member_add_power' => 0,
+                'i_group_member_remove_power' => 0,
+                'i_needed_modify_power_count' => 0,
+                'i_needed_modify_power_total' => 0,
+                'i_permission_modify_power' => 0,
+                'i_group_modify_power' => 0,
+                'i_client_modify_power' => 0,
+                'b_virtualserver_servergroup_create' => 0,
+                'b_virtualserver_servergroup_delete' => 0,
+                'b_client_ignore_bans' => 0,
+                'b_client_ignore_antiflood' => 0,
+                'b_group_is_permanent' => 0,
+                'i_client_needed_ban_power' => 0,
+                'i_client_needed_kick_power' => 0,
+                'i_client_needed_move_power' => 0,
+                'i_client_talk_power' => 0,
+                '__sgid' => $sgid,
+                '__name' => $sgroup->toString(),
+                '__node' => $sgroup,
             ];
 
             try {
                 $perms = $this->serverGroupPermList($sgid, true);
-                $grant = isset($perms["i_permission_modify_power"]) ? $perms["i_permission_modify_power"]["permvalue"] : null;
+                $grant = isset($perms['i_permission_modify_power']) ? $perms['i_permission_modify_power']['permvalue'] : null;
             } catch (ServerQueryException $e) {
                 /* ERROR_database_empty_result */
                 if ($e->getCode() != 0x501) {
@@ -1374,14 +1372,14 @@ class Server extends Node
 
             foreach ($perms as $permsid => $perm) {
                 if (in_array($permsid, array_keys($profiles[$sgid]))) {
-                    $profiles[$sgid][$permsid] = $perm["permvalue"];
-                } elseif (StringHelper::factory($permsid)->startsWith("i_needed_modify_power_")) {
-                    if (!$grant || $perm["permvalue"] > $grant) {
+                    $profiles[$sgid][$permsid] = $perm['permvalue'];
+                } elseif (StringHelper::factory($permsid)->startsWith('i_needed_modify_power_')) {
+                    if (! $grant || $perm['permvalue'] > $grant) {
                         continue;
                     }
 
-                    $profiles[$sgid]["i_needed_modify_power_total"] = $profiles[$sgid]["i_needed_modify_power_total"] + $perm["permvalue"];
-                    $profiles[$sgid]["i_needed_modify_power_count"]++;
+                    $profiles[$sgid]['i_needed_modify_power_total'] = $profiles[$sgid]['i_needed_modify_power_total'] + $perm['permvalue'];
+                    $profiles[$sgid]['i_needed_modify_power_count']++;
                 }
             }
         }
@@ -1395,8 +1393,8 @@ class Server extends Node
      * Tries to identify the post powerful/weakest server group on the virtual server and returns
      * the ID.
      *
-     * @param integer $mode
-     * @param integer $type
+     * @param int $mode
+     * @param int $type
      * @return ServerGroup
      * @throws AdapterException
      * @throws NodeException
@@ -1410,7 +1408,7 @@ class Server extends Node
 
         $best_guess_profile = ($mode == TeamSpeak3::GROUP_IDENTIFIY_STRONGEST) ? array_shift($profiles) : array_pop($profiles);
 
-        return $this->serverGroupGetById($best_guess_profile["__sgid"]);
+        return $this->serverGroupGetById($best_guess_profile['__sgid']);
     }
 
     /**
@@ -1424,13 +1422,13 @@ class Server extends Node
     public function channelGroupList(array $filter = []): array
     {
         if ($this->cgroupList === null) {
-            $this->cgroupList = $this->request("channelgrouplist")->toAssocArray("cgid");
+            $this->cgroupList = $this->request('channelgrouplist')->toAssocArray('cgid');
 
             foreach ($this->cgroupList as $cgid => $group) {
                 $this->cgroupList[$cgid] = new ChannelGroup($this, $group);
             }
 
-            uasort($this->cgroupList, [__CLASS__, "sortGroupList"]);
+            uasort($this->cgroupList, [__CLASS__, 'sortGroupList']);
         }
 
         return $this->filterList($this->cgroupList, $filter);
@@ -1450,8 +1448,8 @@ class Server extends Node
      * Creates a new channel group using the name specified with $name and returns its ID.
      *
      * @param string $name
-     * @param integer $type
-     * @return integer
+     * @param int $type
+     * @return int
      * @throws AdapterException
      * @throws ServerQueryException
      */
@@ -1459,19 +1457,19 @@ class Server extends Node
     {
         $this->channelGroupListReset();
 
-        $cgid = $this->execute("channelgroupadd", ["name" => $name, "type" => $type])->toList();
+        $cgid = $this->execute('channelgroupadd', ['name' => $name, 'type' => $type])->toList();
 
-        return $cgid["cgid"];
+        return $cgid['cgid'];
     }
 
     /**
      * Creates a copy of an existing channel group specified by $scgid and returns the new groups ID.
      *
-     * @param integer $scgid
+     * @param int $scgid
      * @param string|null $name
-     * @param integer $tcgid
-     * @param integer $type
-     * @return integer
+     * @param int $tcgid
+     * @param int $type
+     * @return int
      * @throws AdapterException
      * @throws ServerQueryException
      */
@@ -1479,20 +1477,20 @@ class Server extends Node
     {
         $this->channelGroupListReset();
 
-        $cgid = $this->execute("channelgroupcopy", ["scgid" => $scgid, "tcgid" => $tcgid, "name" => $name, "type" => $type])
+        $cgid = $this->execute('channelgroupcopy', ['scgid' => $scgid, 'tcgid' => $tcgid, 'name' => $name, 'type' => $type])
             ->toList();
 
         if ($tcgid && $name) {
             $this->channelGroupRename($tcgid, $name);
         }
 
-        return count($cgid) ? $cgid["cgid"] : $tcgid;
+        return count($cgid) ? $cgid['cgid'] : $tcgid;
     }
 
     /**
      * Renames the channel group specified with $cgid.
      *
-     * @param integer $cgid
+     * @param int $cgid
      * @param string $name
      * @return void
      * @throws AdapterException
@@ -1502,15 +1500,15 @@ class Server extends Node
     {
         $this->channelGroupListReset();
 
-        $this->execute("channelgrouprename", ["cgid" => $cgid, "name" => $name]);
+        $this->execute('channelgrouprename', ['cgid' => $cgid, 'name' => $name]);
     }
 
     /**
      * Deletes the channel group specified with $cgid. If $force is set to 1, the channel group
      * will be deleted even if there are clients within.
      *
-     * @param integer $cgid
-     * @param boolean $force
+     * @param int $cgid
+     * @param bool $force
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
@@ -1519,31 +1517,31 @@ class Server extends Node
     {
         $this->channelGroupListReset();
 
-        $this->execute("channelgroupdel", ["cgid" => $cgid, "force" => $force]);
+        $this->execute('channelgroupdel', ['cgid' => $cgid, 'force' => $force]);
     }
 
     /**
      * Returns the PlanetTeamSpeak\TeamSpeak3Framework\Node\Channelgroup object matching the given ID.
      *
-     * @param integer $cgid
+     * @param int $cgid
      * @return ChannelGroup
      * @throws AdapterException
      * @throws ServerQueryException
      */
     public function channelGroupGetById(int $cgid): ChannelGroup
     {
-        if (!array_key_exists((string)$cgid, $this->channelGroupList())) {
-            throw new ServerQueryException("invalid groupID", 0xA00);
+        if (! array_key_exists((string) $cgid, $this->channelGroupList())) {
+            throw new ServerQueryException('invalid groupID', 0xA00);
         }
 
-        return $this->cgroupList[intval((string)$cgid)];
+        return $this->cgroupList[intval((string) $cgid)];
     }
 
     /**
      * Returns the PlanetTeamSpeak\TeamSpeak3Framework\Node\Channelgroup object matching the given name.
      *
      * @param string $name
-     * @param integer $type
+     * @param int $type
      * @return ChannelGroup
      * @throws AdapterException
      * @throws ServerQueryException
@@ -1551,70 +1549,70 @@ class Server extends Node
     public function channelGroupGetByName(string $name, int $type = TeamSpeak3::GROUP_DBTYPE_REGULAR): ChannelGroup
     {
         foreach ($this->channelGroupList() as $group) {
-            if ($group["name"] == $name && $group["type"] == $type) {
+            if ($group['name'] == $name && $group['type'] == $type) {
                 return $group;
             }
         }
 
-        throw new ServerQueryException("invalid groupID", 0xA00);
+        throw new ServerQueryException('invalid groupID', 0xA00);
     }
 
     /**
      * Returns a list of permissions assigned to the channel group specified.
      *
-     * @param integer $cgid
-     * @param boolean $permsid
+     * @param int $cgid
+     * @param bool $permsid
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
      */
     public function channelGroupPermList(int $cgid, bool $permsid = false): array
     {
-        return $this->execute("channelgrouppermlist", ["cgid" => $cgid, $permsid ? "-permsid" : null])
-            ->toAssocArray($permsid ? "permsid" : "permid");
+        return $this->execute('channelgrouppermlist', ['cgid' => $cgid, $permsid ? '-permsid' : null])
+            ->toAssocArray($permsid ? 'permsid' : 'permid');
     }
 
     /**
      * Adds a set of specified permissions to the channel group specified. Multiple permissions
      * can be added by providing the two parameters of each permission in separate arrays.
      *
-     * @param integer $cgid
-     * @param integer|integer[] $permid
-     * @param integer|integer[] $permvalue
+     * @param int $cgid
+     * @param int|int[] $permid
+     * @param int|int[] $permvalue
      * @return void
      * @throws ServerQueryException
      * @throws AdapterException
      */
     public function channelGroupPermAssign(int $cgid, int|array $permid, int|array $permvalue): void
     {
-        if (!is_array($permid)) {
-            $permident = (is_numeric($permid)) ? "permid" : "permsid";
+        if (! is_array($permid)) {
+            $permident = (is_numeric($permid)) ? 'permid' : 'permsid';
         } else {
-            $permident = (is_numeric(current($permid))) ? "permid" : "permsid";
+            $permident = (is_numeric(current($permid))) ? 'permid' : 'permsid';
         }
 
-        $this->execute("channelgroupaddperm", ["cgid" => $cgid, $permident => $permid, "permvalue" => $permvalue]);
+        $this->execute('channelgroupaddperm', ['cgid' => $cgid, $permident => $permid, 'permvalue' => $permvalue]);
     }
 
     /**
      * Removes a set of specified permissions from the channel group specified with $cgid. Multiple
      * permissions can be removed at once.
      *
-     * @param integer $cgid
-     * @param integer|integer[] $permid
+     * @param int $cgid
+     * @param int|int[] $permid
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
      */
     public function channelGroupPermRemove(int $cgid, int|array $permid): void
     {
-        if (!is_array($permid)) {
-            $permident = (is_numeric($permid)) ? "permid" : "permsid";
+        if (! is_array($permid)) {
+            $permident = (is_numeric($permid)) ? 'permid' : 'permsid';
         } else {
-            $permident = (is_numeric(current($permid))) ? "permid" : "permsid";
+            $permident = (is_numeric(current($permid))) ? 'permid' : 'permsid';
         }
 
-        $this->execute("channelgroupdelperm", ["cgid" => $cgid, $permident => $permid]);
+        $this->execute('channelgroupdelperm', ['cgid' => $cgid, $permident => $permid]);
     }
 
     /**
@@ -1622,22 +1620,22 @@ class Server extends Node
      * parameters are optional so you're free to choose the most suitable combination for your
      * requirements.
      *
-     * @param integer|null $cgid
-     * @param integer|null $cid
-     * @param integer|null $cldbid
-     * @param boolean $resolve
+     * @param int|null $cgid
+     * @param int|null $cid
+     * @param int|null $cldbid
+     * @param bool $resolve
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
      */
     public function channelGroupClientList(int $cgid = null, int $cid = null, int $cldbid = null, bool $resolve = false): array
     {
-        if ($this["virtualserver_default_channel_group"] == $cgid) {
+        if ($this['virtualserver_default_channel_group'] == $cgid) {
             return [];
         }
 
         try {
-            $result = $this->execute("channelgroupclientlist", ["cgid" => $cgid, "cid" => $cid, "cldbid" => $cldbid])
+            $result = $this->execute('channelgroupclientlist', ['cgid' => $cgid, 'cid' => $cid, 'cldbid' => $cldbid])
                 ->toArray();
         } catch (ServerQueryException $e) {
             /* ERROR_database_empty_result */
@@ -1650,7 +1648,7 @@ class Server extends Node
 
         if ($resolve) {
             foreach ($result as $k => $v) {
-                $result[$k] = array_merge($v, $this->clientInfoDb($v["cldbid"]));
+                $result[$k] = array_merge($v, $this->clientInfoDb($v['cldbid']));
             }
         }
 
@@ -1667,19 +1665,19 @@ class Server extends Node
      */
     public function permReset(): StringHelper
     {
-        $token = $this->request("permreset")->toList();
+        $token = $this->request('permreset')->toList();
 
-        Signal::getInstance()->emit("notifyTokencreated", $this, $token["token"]);
+        Signal::getInstance()->emit('notifyTokencreated', $this, $token['token']);
 
-        return $token["token"];
+        return $token['token'];
     }
 
     /**
      * Removes any assignment of the permission specified with $permid on the selected virtual server
      * and returns the number of removed assignments on success.
      *
-     * @param integer $permid
-     * @return integer
+     * @param int $permid
+     * @return int
      * @throws AdapterException
      * @throws ServerQueryException
      */
@@ -1688,29 +1686,29 @@ class Server extends Node
         $assignments = $this->permissionFind($permid);
 
         foreach ($assignments as $assignment) {
-            switch ($assignment["t"]) {
+            switch ($assignment['t']) {
                 case TeamSpeak3::PERM_TYPE_SERVERGROUP:
-                    $this->serverGroupPermRemove($assignment["id1"], $assignment["p"]);
+                    $this->serverGroupPermRemove($assignment['id1'], $assignment['p']);
                     break;
 
                 case TeamSpeak3::PERM_TYPE_CLIENT:
-                    $this->clientPermRemove($assignment["id1"], $assignment["p"]);
+                    $this->clientPermRemove($assignment['id1'], $assignment['p']);
                     break;
 
                 case TeamSpeak3::PERM_TYPE_CHANNEL:
-                    $this->channelPermRemove($assignment["id1"], $assignment["p"]);
+                    $this->channelPermRemove($assignment['id1'], $assignment['p']);
                     break;
 
                 case TeamSpeak3::PERM_TYPE_CHANNELGROUP:
-                    $this->channelGroupPermRemove($assignment["id2"], $assignment["p"]);
+                    $this->channelGroupPermRemove($assignment['id2'], $assignment['p']);
                     break;
 
                 case TeamSpeak3::PERM_TYPE_CHANNELCLIENT:
-                    $this->channelClientPermRemove($assignment["id1"], $assignment["id2"], $assignment["p"]);
+                    $this->channelClientPermRemove($assignment['id1'], $assignment['id2'], $assignment['p']);
                     break;
 
                 default:
-                    throw new ServerQueryException("convert error", 0x604);
+                    throw new ServerQueryException('convert error', 0x604);
             }
         }
 
@@ -1720,44 +1718,44 @@ class Server extends Node
     /**
      * Initializes a file transfer upload. $clientftfid is an arbitrary ID to identify the file transfer on client-side.
      *
-     * @param integer $clientftfid
-     * @param integer $cid
+     * @param int $clientftfid
+     * @param int $cid
      * @param string $name
-     * @param integer $size
+     * @param int $size
      * @param string $cpw
-     * @param boolean $overwrite
-     * @param boolean $resume
+     * @param bool $overwrite
+     * @param bool $resume
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
      */
     public function transferInitUpload(
-        int    $clientftfid,
-        int    $cid,
+        int $clientftfid,
+        int $cid,
         string $name,
-        int    $size,
-        string $cpw = "",
-        bool   $overwrite = false,
-        bool   $resume = false
+        int $size,
+        string $cpw = '',
+        bool $overwrite = false,
+        bool $resume = false
     ): array {
-        $upload = $this->execute("ftinitupload", ["clientftfid" => $clientftfid, "cid" => $cid, "name" => $name, "cpw" => $cpw, "size" => $size, "overwrite" => $overwrite, "resume" => $resume])
+        $upload = $this->execute('ftinitupload', ['clientftfid' => $clientftfid, 'cid' => $cid, 'name' => $name, 'cpw' => $cpw, 'size' => $size, 'overwrite' => $overwrite, 'resume' => $resume])
             ->toList();
 
-        if (array_key_exists("status", $upload) && $upload["status"] != 0x00) {
-            throw new ServerQueryException($upload["msg"], $upload["status"]);
+        if (array_key_exists('status', $upload) && $upload['status'] != 0x00) {
+            throw new ServerQueryException($upload['msg'], $upload['status']);
         }
 
-        $upload["cid"] = $cid;
-        $upload["file"] = $name;
+        $upload['cid'] = $cid;
+        $upload['file'] = $name;
 
-        if (!array_key_exists("ip", $upload) || $upload["ip"]->startsWith("0.0.0.0")) {
-            $upload["ip"] = $this->getParent()->getAdapterHost();
+        if (! array_key_exists('ip', $upload) || $upload['ip']->startsWith('0.0.0.0')) {
+            $upload['ip'] = $this->getParent()->getAdapterHost();
         } else {
-            $upload["ip"] = $upload["ip"]->section(",");
+            $upload['ip'] = $upload['ip']->section(',');
         }
-        $upload["host"] = $upload["ip"];
+        $upload['host'] = $upload['ip'];
 
-        Signal::getInstance()->emit("filetransferUploadInit", $upload["ftkey"], $upload);
+        Signal::getInstance()->emit('filetransferUploadInit', $upload['ftkey'], $upload);
 
         return $upload;
     }
@@ -1765,35 +1763,35 @@ class Server extends Node
     /**
      * Initializes a file transfer download. $clientftfid is an arbitrary ID to identify the file transfer on client-side.
      *
-     * @param integer $clientftfid
-     * @param integer $cid
+     * @param int $clientftfid
+     * @param int $cid
      * @param string $name
      * @param string $cpw
-     * @param integer $seekpos
+     * @param int $seekpos
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
      */
-    public function transferInitDownload(int $clientftfid, int $cid, string $name, string $cpw = "", int $seekpos = 0): array
+    public function transferInitDownload(int $clientftfid, int $cid, string $name, string $cpw = '', int $seekpos = 0): array
     {
-        $download = $this->execute("ftinitdownload", ["clientftfid" => $clientftfid, "cid" => $cid, "name" => $name, "cpw" => $cpw, "seekpos" => $seekpos])
+        $download = $this->execute('ftinitdownload', ['clientftfid' => $clientftfid, 'cid' => $cid, 'name' => $name, 'cpw' => $cpw, 'seekpos' => $seekpos])
             ->toList();
 
-        if (array_key_exists("status", $download) && $download["status"] != 0x00) {
-            throw new ServerQueryException($download["msg"], $download["status"]);
+        if (array_key_exists('status', $download) && $download['status'] != 0x00) {
+            throw new ServerQueryException($download['msg'], $download['status']);
         }
 
-        $download["cid"] = $cid;
-        $download["file"] = $name;
+        $download['cid'] = $cid;
+        $download['file'] = $name;
 
-        if (!array_key_exists("ip", $download) || $download["ip"]->startsWith("0.0.0.0")) {
-            $download["ip"] = $this->getParent()->getAdapterHost();
+        if (! array_key_exists('ip', $download) || $download['ip']->startsWith('0.0.0.0')) {
+            $download['ip'] = $this->getParent()->getAdapterHost();
         } else {
-            $download["ip"] = $download["ip"]->section(",");
+            $download['ip'] = $download['ip']->section(',');
         }
-        $download["host"] = $download["ip"];
+        $download['host'] = $download['ip'];
 
-        Signal::getInstance()->emit("filetransferDownloadInit", $download["ftkey"], $download);
+        Signal::getInstance()->emit('filetransferDownloadInit', $download['ftkey'], $download);
 
         return $download;
     }
@@ -1808,21 +1806,21 @@ class Server extends Node
      */
     public function transferList(): array
     {
-        return $this->request("ftlist")->toAssocArray("serverftfid");
+        return $this->request('ftlist')->toAssocArray('serverftfid');
     }
 
     /**
      * Stops the running file transfer with server-side ID $serverftfid.
      *
-     * @param integer $serverftfid
-     * @param boolean $delete
+     * @param int $serverftfid
+     * @param bool $delete
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
      */
     public function transferStop(int $serverftfid, bool $delete = false): void
     {
-        $this->execute("ftstop", ["serverftfid" => $serverftfid, "delete" => $delete]);
+        $this->execute('ftstop', ['serverftfid' => $serverftfid, 'delete' => $delete]);
     }
 
     /**
@@ -1837,30 +1835,30 @@ class Server extends Node
     public function iconDownload(string $iconname = null)
     {
         if ($iconname) {
-            $name = new StringHelper("/" . $iconname);
+            $name = new StringHelper('/'.$iconname);
         } else {
             $iconid = $this['virtualserver_icon_id'];
-            if (!is_int($iconid)) {
+            if (! is_int($iconid)) {
                 $iconid = $iconid->toInt();
             }
 
-            if ($this->iconIsLocal("virtualserver_icon_id") || $iconid == 0) {
+            if ($this->iconIsLocal('virtualserver_icon_id') || $iconid == 0) {
                 return;
             }
-            $name = $this->iconGetName("virtualserver_icon_id");
+            $name = $this->iconGetName('virtualserver_icon_id');
         }
 
         $download = $this->transferInitDownload(rand(0x0000, 0xFFFF), 0, $name);
-        $transfer = TeamSpeak3::factory("filetransfer://" . (str_contains($download["host"], ":") ? "[" . $download["host"] . "]" : $download["host"]) . ":" . $download["port"]);
+        $transfer = TeamSpeak3::factory('filetransfer://'.(str_contains($download['host'], ':') ? '['.$download['host'].']' : $download['host']).':'.$download['port']);
 
-        return $transfer->download($download["ftkey"], $download["size"]);
+        return $transfer->download($download['ftkey'], $download['size']);
     }
 
     /**
      * Uploads a given icon file content to the server and returns the ID of the icon.
      *
      * @param string $data
-     * @return integer
+     * @return int
      * @throws AdapterException
      * @throws HelperException
      * @throws ServerQueryException
@@ -1870,10 +1868,10 @@ class Server extends Node
         $crc = crc32($data);
         $size = strlen($data);
 
-        $upload = $this->transferInitUpload(rand(0x0000, 0xFFFF), 0, "/icon_" . $crc, $size);
-        $transfer = TeamSpeak3::factory("filetransfer://" . (str_contains($upload["host"], ":") ? "[" . $upload["host"] . "]" : $upload["host"]) . ":" . $upload["port"]);
+        $upload = $this->transferInitUpload(rand(0x0000, 0xFFFF), 0, '/icon_'.$crc, $size);
+        $transfer = TeamSpeak3::factory('filetransfer://'.(str_contains($upload['host'], ':') ? '['.$upload['host'].']' : $upload['host']).':'.$upload['port']);
 
-        $transfer->upload($upload["ftkey"], $upload["seekpos"], $data);
+        $transfer->upload($upload['ftkey'], $upload['seekpos'], $data);
 
         return $crc;
     }
@@ -1888,7 +1886,7 @@ class Server extends Node
      */
     public function modify(array $properties): void
     {
-        $this->execute("serveredit", $properties);
+        $this->execute('serveredit', $properties);
         $this->resetNodeInfo();
     }
 
@@ -1902,7 +1900,7 @@ class Server extends Node
      */
     public function message(string $msg): void
     {
-        $this->execute("sendtextmessage", ["msg" => $msg, "target" => $this->getId(), "targetmode" => TeamSpeak3::TEXTMSG_SERVER]);
+        $this->execute('sendtextmessage', ['msg' => $msg, 'target' => $this->getId(), 'targetmode' => TeamSpeak3::TEXTMSG_SERVER]);
     }
 
     /**
@@ -1915,7 +1913,7 @@ class Server extends Node
      */
     public function messageList(): array
     {
-        return $this->request("messagelist")->toAssocArray("msgid");
+        return $this->request('messagelist')->toAssocArray('msgid');
     }
 
     /**
@@ -1930,37 +1928,37 @@ class Server extends Node
      */
     public function messageCreate(string $cluid, string $subject, string $message): void
     {
-        $this->execute("messageadd", ["cluid" => $cluid, "subject" => $subject, "message" => $message]);
+        $this->execute('messageadd', ['cluid' => $cluid, 'subject' => $subject, 'message' => $message]);
     }
 
     /**
      * Deletes an existing offline message with ID $msgid from your inbox.
      *
-     * @param integer $msgid
+     * @param int $msgid
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
      */
     public function messageDelete(int $msgid): void
     {
-        $this->execute("messagedel", ["msgid" => $msgid]);
+        $this->execute('messagedel', ['msgid' => $msgid]);
     }
 
     /**
      * Returns an existing offline message with ID $msgid from your inbox.
      *
-     * @param integer $msgid
-     * @param boolean $flag_read
+     * @param int $msgid
+     * @param bool $flag_read
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
      */
     public function messageRead(int $msgid, bool $flag_read = true): array
     {
-        $msg = $this->execute("messageget", ["msgid" => $msgid])->toList();
+        $msg = $this->execute('messageget', ['msgid' => $msgid])->toList();
 
         if ($flag_read) {
-            $this->execute("messageget", ["msgid" => $msgid, "flag" => $flag_read]);
+            $this->execute('messageget', ['msgid' => $msgid, 'flag' => $flag_read]);
         }
 
         return $msg;
@@ -1976,12 +1974,12 @@ class Server extends Node
      */
     public function snapshotCreate(int $mode = TeamSpeak3::SNAPSHOT_STRING): string
     {
-        $snapshot = $this->request("serversnapshotcreate")->toString(false);
+        $snapshot = $this->request('serversnapshotcreate')->toString(false);
 
         return match ($mode) {
             TeamSpeak3::SNAPSHOT_BASE64 => $snapshot->toBase64(),
             TeamSpeak3::SNAPSHOT_HEXDEC => $snapshot->toHex(),
-            default => (string)$snapshot,
+            default => (string) $snapshot,
         };
     }
 
@@ -2004,17 +2002,17 @@ class Server extends Node
             default => StringHelper::factory($data),
         };
 
-        $detail = $this->request("serversnapshotdeploy -mapping " . $data)->toList();
+        $detail = $this->request('serversnapshotdeploy -mapping '.$data)->toList();
 
-        if (isset($detail[0]["sid"])) {
-            Signal::getInstance()->emit("notifyServercreated", $this->getParent(), $detail[0]["sid"]);
+        if (isset($detail[0]['sid'])) {
+            Signal::getInstance()->emit('notifyServercreated', $this->getParent(), $detail[0]['sid']);
 
             $server = array_shift($detail);
         } else {
             $server = [];
         }
 
-        $server["mapping"] = $detail;
+        $server['mapping'] = $detail;
 
         return $server;
     }
@@ -2025,14 +2023,14 @@ class Server extends Node
      * a message on every event.
      *
      * @param string $event
-     * @param integer $id
+     * @param int $id
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
      */
     public function notifyRegister(string $event, int $id = 0): void
     {
-        $this->execute("servernotifyregister", ["event" => $event, "id" => $id]);
+        $this->execute('servernotifyregister', ['event' => $event, 'id' => $id]);
     }
 
     /**
@@ -2045,7 +2043,7 @@ class Server extends Node
      */
     public function notifyUnregister(): void
     {
-        $this->request("servernotifyunregister");
+        $this->request('servernotifyunregister');
     }
 
     /**
@@ -2068,7 +2066,7 @@ class Server extends Node
      * of token_id1 and token_id2 will be translated into the appropriate group and/or channel
      * names.
      *
-     * @param boolean $resolve
+     * @param bool $resolve
      * @return array
      * @throws AdapterException
      * @throws NodeException
@@ -2076,14 +2074,14 @@ class Server extends Node
      */
     public function privilegeKeyList(bool $resolve = false): array
     {
-        $tokens = $this->request("privilegekeylist")->toAssocArray("token");
+        $tokens = $this->request('privilegekeylist')->toAssocArray('token');
 
         if ($resolve) {
             foreach ($tokens as $token => $array) {
-                $func = $array["token_type"] ? "channelGroupGetById" : "serverGroupGetById";
+                $func = $array['token_type'] ? 'channelGroupGetById' : 'serverGroupGetById';
 
                 try {
-                    $tokens[$token]["token_id1"] = $this->$func($array["token_id1"])->name;
+                    $tokens[$token]['token_id1'] = $this->$func($array['token_id1'])->name;
                 } catch (NodeException $e) {
                     /* ERROR_channel_invalid_id */
                     if ($e->getCode() != 0xA00) {
@@ -2091,8 +2089,8 @@ class Server extends Node
                     }
                 }
 
-                if ($array["token_type"]) {
-                    $tokens[$token]["token_id2"] = $this->channelGetById($array["token_id2"])->getPathway();
+                if ($array['token_type']) {
+                    $tokens[$token]['token_id2'] = $this->channelGetById($array['token_id2'])->getPathway();
                 }
             }
         }
@@ -2125,9 +2123,9 @@ class Server extends Node
 
     /**
      * Creates a new privilege key (token) and returns the key.
-     * @param integer $id1
-     * @param integer $id2
-     * @param integer $type
+     * @param int $id1
+     * @param int $id2
+     * @param int $type
      * @param string|null $description
      * @param string|null $customset
      * @return StringHelper
@@ -2135,18 +2133,18 @@ class Server extends Node
      * @throws ServerQueryException
      */
     public function privilegeKeyCreate(
-        int    $id1,
-        int    $id2 = 0,
-        int    $type = TeamSpeak3::TOKEN_SERVERGROUP,
+        int $id1,
+        int $id2 = 0,
+        int $type = TeamSpeak3::TOKEN_SERVERGROUP,
         string $description = null,
         string $customset = null
     ): StringHelper {
-        $token = $this->execute("privilegekeyadd", ["tokentype" => $type, "tokenid1" => $id1, "tokenid2" => $id2, "tokendescription" => $description, "tokencustomset" => $customset])
+        $token = $this->execute('privilegekeyadd', ['tokentype' => $type, 'tokenid1' => $id1, 'tokenid2' => $id2, 'tokendescription' => $description, 'tokencustomset' => $customset])
             ->toList();
 
-        Signal::getInstance()->emit("notifyTokencreated", $this, $token["token"]);
+        Signal::getInstance()->emit('notifyTokencreated', $this, $token['token']);
 
-        return $token["token"];
+        return $token['token'];
     }
 
     /**
@@ -2172,7 +2170,7 @@ class Server extends Node
      */
     public function privilegeKeyDelete(string $token): void
     {
-        $this->execute("privilegekeydelete", ["token" => $token]);
+        $this->execute('privilegekeydelete', ['token' => $token]);
     }
 
     /**
@@ -2199,7 +2197,7 @@ class Server extends Node
      */
     public function privilegeKeyUse(string $token): void
     {
-        $this->execute("privilegekeyuse", ["token" => $token]);
+        $this->execute('privilegekeyuse', ['token' => $token]);
     }
 
     /**
@@ -2211,28 +2209,28 @@ class Server extends Node
      * @throws AdapterException
      * @throws ServerQueryException
      */
-    public function customSearch(string $ident, string $pattern = "%"): array
+    public function customSearch(string $ident, string $pattern = '%'): array
     {
-        return $this->execute("customsearch", ["ident" => $ident, "pattern" => $pattern])->toArray();
+        return $this->execute('customsearch', ['ident' => $ident, 'pattern' => $pattern])->toArray();
     }
 
     /**
      * Returns a list of custom properties for the client specified by $cldbid.
      *
-     * @param integer $cldbid
+     * @param int $cldbid
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
      */
     public function customInfo(int $cldbid): array
     {
-        return $this->execute("custominfo", ["cldbid" => $cldbid])->toArray();
+        return $this->execute('custominfo', ['cldbid' => $cldbid])->toArray();
     }
 
     /**
      * Creates or updates a custom property for the client specified by $cldbid.
      *
-     * @param integer $cldbid
+     * @param int $cldbid
      * @param string $ident
      * @param string $value
      * @return void
@@ -2241,13 +2239,13 @@ class Server extends Node
      */
     public function customSet(int $cldbid, string $ident, string $value): void
     {
-        $this->execute("customset", ["cldbid" => $cldbid, "ident" => $ident, "value" => $value]);
+        $this->execute('customset', ['cldbid' => $cldbid, 'ident' => $ident, 'value' => $value]);
     }
 
     /**
      * Removes a custom property from the client specified by $cldbid.
      *
-     * @param integer $cldbid
+     * @param int $cldbid
      * @param string $ident
      * @return void
      * @throws AdapterException
@@ -2255,7 +2253,7 @@ class Server extends Node
      */
     public function customDelete(int $cldbid, string $ident): void
     {
-        $this->execute("customdelete", ["cldbid" => $cldbid, "ident" => $ident]);
+        $this->execute('customdelete', ['cldbid' => $cldbid, 'ident' => $ident]);
     }
 
     /**
@@ -2269,19 +2267,19 @@ class Server extends Node
      */
     public function banList($offset = null, $limit = null): array
     {
-        return $this->execute("banlist -count", ["start" => $offset, "duration" => $limit])->toAssocArray("banid");
+        return $this->execute('banlist -count', ['start' => $offset, 'duration' => $limit])->toAssocArray('banid');
     }
 
     /**
      * Returns the number of bans on the selected virtual server.
      *
-     * @return integer
+     * @return int
      * @throws AdapterException
      * @throws ServerQueryException
      */
     public function banCount(): int
     {
-        return current($this->execute("banlist -count", ["duration" => 1])->toList("count"));
+        return current($this->execute('banlist -count', ['duration' => 1])->toList('count'));
     }
 
     /**
@@ -2293,7 +2291,7 @@ class Server extends Node
      */
     public function banListClear(): void
     {
-        $this->request("bandelall");
+        $this->request('bandelall');
     }
 
     /**
@@ -2301,66 +2299,66 @@ class Server extends Node
      * of the following rules must be set: ip, name, or uid.
      *
      * @param array $rules
-     * @param integer|null $timeseconds
+     * @param int|null $timeseconds
      * @param string|null $reason
-     * @return integer
+     * @return int
      * @throws AdapterException
      * @throws ServerQueryException
      */
     public function banCreate(array $rules, int $timeseconds = null, string $reason = null): int
     {
-        $rules["time"] = $timeseconds;
-        $rules["banreason"] = $reason;
+        $rules['time'] = $timeseconds;
+        $rules['banreason'] = $reason;
 
-        $banid = $this->execute("banadd", $rules)->toList();
+        $banid = $this->execute('banadd', $rules)->toList();
 
-        return $banid["banid"];
+        return $banid['banid'];
     }
 
     /**
      * Deletes the specified ban rule from the server.
      *
-     * @param integer $banid
+     * @param int $banid
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
      */
     public function banDelete(int $banid): void
     {
-        $this->execute("bandel", ["banid" => $banid]);
+        $this->execute('bandel', ['banid' => $banid]);
     }
 
     /**
      * Returns a list of complaints on the selected virtual server. If $tcldbid is specified, only
      * complaints about the targeted client will be shown.
      *
-     * @param integer|null $tcldbid
+     * @param int|null $tcldbid
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
      */
     public function complaintList(int $tcldbid = null): array
     {
-        return $this->execute("complainlist", ["tcldbid" => $tcldbid])->toArray();
+        return $this->execute('complainlist', ['tcldbid' => $tcldbid])->toArray();
     }
 
     /**
      * Deletes all active complaints about the client with database ID $tcldbid from the server.
      *
-     * @param integer $tcldbid
+     * @param int $tcldbid
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
      */
     public function complaintListClear(int $tcldbid): void
     {
-        $this->execute("complaindelall", ["tcldbid" => $tcldbid]);
+        $this->execute('complaindelall', ['tcldbid' => $tcldbid]);
     }
 
     /**
      * Submits a complaint about the client with database ID $tcldbid to the server.
      *
-     * @param integer $tcldbid
+     * @param int $tcldbid
      * @param string $message
      * @return void
      * @throws AdapterException
@@ -2368,41 +2366,41 @@ class Server extends Node
      */
     public function complaintCreate(int $tcldbid, string $message): void
     {
-        $this->execute("complainadd", ["tcldbid" => $tcldbid, "message" => $message]);
+        $this->execute('complainadd', ['tcldbid' => $tcldbid, 'message' => $message]);
     }
 
     /**
      * Deletes the complaint about the client with ID $tcldbid submitted by the client with ID $fcldbid from the server.
      *
-     * @param integer $tcldbid
-     * @param integer $fcldbid
+     * @param int $tcldbid
+     * @param int $fcldbid
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
      */
     public function complaintDelete(int $tcldbid, int $fcldbid): void
     {
-        $this->execute("complaindel", ["tcldbid" => $tcldbid, "fcldbid" => $fcldbid]);
+        $this->execute('complaindel', ['tcldbid' => $tcldbid, 'fcldbid' => $fcldbid]);
     }
 
     /**
      * Returns a list of temporary server passwords.
      *
-     * @param boolean $resolve
+     * @param bool $resolve
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
      */
     public function tempPasswordList(bool $resolve = false): array
     {
-        $passwords = $this->request("servertemppasswordlist")->toAssocArray("pw_clear");
+        $passwords = $this->request('servertemppasswordlist')->toAssocArray('pw_clear');
 
         if ($resolve) {
             foreach ($passwords as $password => $array) {
-                $channel = $this->channelGetById($array["tcid"]);
+                $channel = $this->channelGetById($array['tcid']);
 
-                $passwords[$password]["tcname"] = $channel->toString();
-                $passwords[$password]["tcpath"] = $channel->getPathway();
+                $passwords[$password]['tcname'] = $channel->toString();
+                $passwords[$password]['tcpath'] = $channel->getPathway();
             }
         }
 
@@ -2416,17 +2414,17 @@ class Server extends Node
      * the client will join the default channel.
      *
      * @param string $pw
-     * @param integer $duration
-     * @param integer $tcid
+     * @param int $duration
+     * @param int $tcid
      * @param string $tcpw
      * @param string $desc
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
      */
-    public function tempPasswordCreate(string $pw, int $duration, int $tcid = 0, string $tcpw = "", string $desc = ""): void
+    public function tempPasswordCreate(string $pw, int $duration, int $tcid = 0, string $tcpw = '', string $desc = ''): void
     {
-        $this->execute("servertemppasswordadd", ["pw" => $pw, "duration" => $duration, "tcid" => $tcid, "tcpw" => $tcpw, "desc" => $desc]);
+        $this->execute('servertemppasswordadd', ['pw' => $pw, 'duration' => $duration, 'tcid' => $tcid, 'tcpw' => $tcpw, 'desc' => $desc]);
     }
 
     /**
@@ -2439,23 +2437,23 @@ class Server extends Node
      */
     public function tempPasswordDelete(string $pw): void
     {
-        $this->execute("servertemppassworddel", ["pw" => $pw]);
+        $this->execute('servertemppassworddel', ['pw' => $pw]);
     }
 
     /**
      * Displays a specified number of entries (1-100) from the servers log.
      *
-     * @param integer $lines
-     * @param integer|null $begin_pos
-     * @param boolean|null $reverse
-     * @param boolean|null $instance
+     * @param int $lines
+     * @param int|null $begin_pos
+     * @param bool|null $reverse
+     * @param bool|null $instance
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
      */
     public function logView(int $lines = 30, int $begin_pos = null, bool $reverse = null, bool $instance = null): array
     {
-        return $this->execute("logview", ["lines" => $lines, "begin_pos" => $begin_pos, "instance" => $instance, "reverse" => $reverse])
+        return $this->execute('logview', ['lines' => $lines, 'begin_pos' => $begin_pos, 'instance' => $instance, 'reverse' => $reverse])
             ->toArray();
     }
 
@@ -2463,14 +2461,14 @@ class Server extends Node
      * Writes a custom entry into the virtual server log.
      *
      * @param string $logmsg
-     * @param integer $loglevel
+     * @param int $loglevel
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
      */
     public function logAdd(string $logmsg, int $loglevel = TeamSpeak3::LOGLEVEL_INFO): void
     {
-        $this->execute("logadd", ["logmsg" => $logmsg, "loglevel" => $loglevel]);
+        $this->execute('logadd', ['logmsg' => $logmsg, 'loglevel' => $loglevel]);
     }
 
     /**
@@ -2482,7 +2480,7 @@ class Server extends Node
      */
     public function connectionInfo(): array
     {
-        return $this->request("serverrequestconnectioninfo")->toList();
+        return $this->request('serverrequestconnectioninfo')->toList();
     }
 
     /**
@@ -2527,7 +2525,7 @@ class Server extends Node
      */
     public function sendPluginCmd(string $plugin, string $data): void
     {
-        $this->execute("plugincmd", ["name" => $plugin, "data" => $data, "targetmode" => TeamSpeak3::PLUGINCMD_SERVER]);
+        $this->execute('plugincmd', ['name' => $plugin, 'data' => $data, 'targetmode' => TeamSpeak3::PLUGINCMD_SERVER]);
     }
 
     /**
@@ -2540,7 +2538,7 @@ class Server extends Node
      */
     public function selfUpdate(array $properties): void
     {
-        $this->execute("clientupdate", $properties);
+        $this->execute('clientupdate', $properties);
 
         foreach ($properties as $ident => $value) {
             $this->whoamiSet($ident, $value);
@@ -2558,9 +2556,9 @@ class Server extends Node
      */
     public function selfUpdateLogin(string $username): StringHelper
     {
-        $password = $this->execute("clientsetserverquerylogin", ["client_login_name" => $username])->toList();
+        $password = $this->execute('clientsetserverquerylogin', ['client_login_name' => $username])->toList();
 
-        return $password["client_login_password"];
+        return $password['client_login_password'];
     }
 
     /**
@@ -2572,7 +2570,7 @@ class Server extends Node
      */
     public function selfPermOverview(): array
     {
-        return $this->execute("permoverview", ["cldbid" => $this->whoamiGet("client_database_id"), "cid" => $this->whoamiGet("client_channel_id"), "permid" => 0])
+        return $this->execute('permoverview', ['cldbid' => $this->whoamiGet('client_database_id'), 'cid' => $this->whoamiGet('client_channel_id'), 'permid' => 0])
             ->toArray();
     }
 
@@ -2586,7 +2584,7 @@ class Server extends Node
         $this->nodeList = [];
 
         foreach ($this->channelList() as $channel) {
-            if ($channel["pid"] == 0) {
+            if ($channel['pid'] == 0) {
                 $this->nodeList[] = $channel;
             }
         }
@@ -2599,7 +2597,7 @@ class Server extends Node
      */
     protected function fetchNodeInfo()
     {
-        $this->nodeInfo = array_merge($this->nodeInfo, $this->request("serverinfo")->toList());
+        $this->nodeInfo = array_merge($this->nodeInfo, $this->request('serverinfo')->toList());
     }
 
     /**
@@ -2607,7 +2605,7 @@ class Server extends Node
      *
      * @param Client $a
      * @param Client $b
-     * @return integer
+     * @return int
      */
     protected static function sortClientList(Client $a, Client $b): int
     {
@@ -2615,15 +2613,15 @@ class Server extends Node
             return 0;
         }
 
-        if ($a->getProperty("client_talk_power", 0) != $b->getProperty("client_talk_power", 0)) {
-            return ($a->getProperty("client_talk_power", 0) > $b->getProperty("client_talk_power", 0)) ? -1 : 1;
+        if ($a->getProperty('client_talk_power', 0) != $b->getProperty('client_talk_power', 0)) {
+            return ($a->getProperty('client_talk_power', 0) > $b->getProperty('client_talk_power', 0)) ? -1 : 1;
         }
 
-        if ($a->getProperty("client_is_talker", 0) != $b->getProperty("client_is_talker", 0)) {
-            return ($a->getProperty("client_is_talker", 0) > $b->getProperty("client_is_talker", 0)) ? -1 : 1;
+        if ($a->getProperty('client_is_talker', 0) != $b->getProperty('client_is_talker', 0)) {
+            return ($a->getProperty('client_is_talker', 0) > $b->getProperty('client_is_talker', 0)) ? -1 : 1;
         }
 
-        return strcmp(strtolower($a["client_nickname"]), strtolower($b["client_nickname"]));
+        return strcmp(strtolower($a['client_nickname']), strtolower($b['client_nickname']));
     }
 
     /**
@@ -2631,7 +2629,7 @@ class Server extends Node
      *
      * @param Node $a
      * @param Node $b
-     * @return integer
+     * @return int
      */
     protected static function sortGroupList(Node $a, Node $b): int
     {
@@ -2639,12 +2637,12 @@ class Server extends Node
             return 0;
         }
 
-        if (!$a instanceof ServerGroup && !$a instanceof ChannelGroup) {
+        if (! $a instanceof ServerGroup && ! $a instanceof ChannelGroup) {
             return 0;
         }
 
-        if ($a->getProperty("sortid", 0) != $b->getProperty("sortid", 0) && $a->getProperty("sortid", 0) != 0 && $b->getProperty("sortid", 0) != 0) {
-            return ($a->getProperty("sortid", 0) < $b->getProperty("sortid", 0)) ? -1 : 1;
+        if ($a->getProperty('sortid', 0) != $b->getProperty('sortid', 0) && $a->getProperty('sortid', 0) != 0 && $b->getProperty('sortid', 0) != 0) {
+            return ($a->getProperty('sortid', 0) < $b->getProperty('sortid', 0)) ? -1 : 1;
         }
 
         return ($a->getId() < $b->getId()) ? -1 : 1;
@@ -2655,39 +2653,39 @@ class Server extends Node
      *
      * @param array $a
      * @param array $b
-     * @return integer
+     * @return int
      */
     protected static function sortFileList(array $a, array $b): int
     {
-        if (!array_key_exists("src", $a) || !array_key_exists("src", $b) || !array_key_exists("type", $a) || !array_key_exists("type", $b)) {
+        if (! array_key_exists('src', $a) || ! array_key_exists('src', $b) || ! array_key_exists('type', $a) || ! array_key_exists('type', $b)) {
             return 0;
         }
 
-        if ($a["type"] != $b["type"]) {
-            return ($a["type"] < $b["type"]) ? -1 : 1;
+        if ($a['type'] != $b['type']) {
+            return ($a['type'] < $b['type']) ? -1 : 1;
         }
 
-        return strcmp(strtolower($a["src"]), strtolower($b["src"]));
+        return strcmp(strtolower($a['src']), strtolower($b['src']));
     }
 
     /**
      * Returns TRUE if the virtual server is online.
      *
-     * @return boolean
+     * @return bool
      */
     public function isOnline(): bool
     {
-        return $this["virtualserver_status"] == "online";
+        return $this['virtualserver_status'] == 'online';
     }
 
     /**
      * Returns TRUE if the virtual server is offline.
      *
-     * @return boolean
+     * @return bool
      */
     public function isOffline(): bool
     {
-        return $this["virtualserver_status"] == "offline";
+        return $this['virtualserver_status'] == 'offline';
     }
 
     /**
@@ -2697,7 +2695,7 @@ class Server extends Node
      */
     public function getUniqueId(): string
     {
-        return $this->getParent()->getUniqueId() . "_s" . $this->getId();
+        return $this->getParent()->getUniqueId().'_s'.$this->getId();
     }
 
     /**
@@ -2707,12 +2705,12 @@ class Server extends Node
      */
     public function getIcon(): string
     {
-        if ($this["virtualserver_clientsonline"] - $this["virtualserver_queryclientsonline"] >= $this["virtualserver_maxclients"]) {
-            return "server_full";
-        } elseif ($this["virtualserver_flag_password"]) {
-            return "server_pass";
+        if ($this['virtualserver_clientsonline'] - $this['virtualserver_queryclientsonline'] >= $this['virtualserver_maxclients']) {
+            return 'server_full';
+        } elseif ($this['virtualserver_flag_password']) {
+            return 'server_pass';
         } else {
-            return "server_open";
+            return 'server_open';
         }
     }
 
@@ -2723,7 +2721,7 @@ class Server extends Node
      */
     public function getSymbol(): string
     {
-        return "$";
+        return '$';
     }
 
     /**
@@ -2733,6 +2731,6 @@ class Server extends Node
      */
     public function __toString()
     {
-        return (string)$this["virtualserver_name"];
+        return (string) $this['virtualserver_name'];
     }
 }

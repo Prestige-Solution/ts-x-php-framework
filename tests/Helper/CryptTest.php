@@ -18,13 +18,13 @@ class CryptTest extends TestCase
     public function testSetSecretKeyWithTooFewCharacters()
     {
         $this->expectException(HelperException::class);
-        new Crypt("");
+        new Crypt('');
     }
 
     public function testSetSecretKeyWithTooManyCharacters()
     {
         $this->expectException(HelperException::class);
-        new Crypt("Lorem ipsum dolor sit amet consetetur sadipscing elitr se");
+        new Crypt('Lorem ipsum dolor sit amet consetetur sadipscing elitr se');
     }
 
     public function testEncrypt()

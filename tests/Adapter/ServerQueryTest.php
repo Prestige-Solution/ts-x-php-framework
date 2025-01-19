@@ -38,14 +38,14 @@ class ServerQueryTest extends TestCase
      */
     public function testLogin()
     {
-        $query = "login serveradmin secret";
+        $query = 'login serveradmin secret';
         $serverQuery = $this->createMockServerQuery();
         $reply = $serverQuery->request($query);
-        $this->assertEquals("ok", $reply->getErrorProperty('msg')->toString());
+        $this->assertEquals('ok', $reply->getErrorProperty('msg')->toString());
 
-        $query = "login client_login_name=serveradmin client_login_password=secret";
+        $query = 'login client_login_name=serveradmin client_login_password=secret';
         $serverQuery = $this->createMockServerQuery();
         $reply = $serverQuery->request($query);
-        $this->assertEquals("ok", $reply->getErrorProperty('msg')->toString());
+        $this->assertEquals('ok', $reply->getErrorProperty('msg')->toString());
     }
 }

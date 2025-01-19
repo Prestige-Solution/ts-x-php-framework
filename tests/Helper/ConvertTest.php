@@ -9,8 +9,9 @@ class ConvertTest extends TestCase
 {
     public function setUp(): void
     {
-        date_default_timezone_set("UTC");
+        date_default_timezone_set('UTC');
     }
+
     public function testConvertBytesToHumanReadableWithFactor1000()
     {
         $output = Convert::bytes(0);
@@ -149,7 +150,6 @@ class ConvertTest extends TestCase
         $this->assertEquals('0D 00:01:00', $output);
         $this->assertIsString($output);
 
-
         $output = Convert::seconds((59 * 60) + 59);
         $this->assertEquals('0D 00:59:59', $output);
         $this->assertIsString($output);
@@ -169,7 +169,6 @@ class ConvertTest extends TestCase
         );
         $this->assertEquals('1D 00:00:00', $output);
         $this->assertIsString($output);
-
 
         $output = Convert::seconds(
             (47 * (60 ** 2)) + (59 * 60) + 59
@@ -230,34 +229,157 @@ class ConvertTest extends TestCase
 
     public function testConvertCodecIDToHumanReadable()
     {
-        // @todo: Find logical / comprehensive test for checking codec names
+        $hexArray = [
+            strval(0x00),
+            strval(0x01),
+            strval(0x02),
+            strval(0x03),
+            strval(0x04),
+            strval(0x05),
+        ];
+
+        $this->assertEquals('Speex Narrowband', Convert::codec($hexArray[0]));
+        $this->assertEquals('Speex Wideband', Convert::codec($hexArray[1]));
+        $this->assertEquals('Speex Ultra-Wideband', Convert::codec($hexArray[2]));
+        $this->assertEquals('CELT Mono', Convert::codec($hexArray[3]));
+        $this->assertEquals('Opus Voice', Convert::codec($hexArray[4]));
+        $this->assertEquals('Opus Music', Convert::codec($hexArray[5]));
+        $this->assertEquals('Unknown', Convert::codec(hexdec(0x99)));
     }
 
     public function testConvertGroupTypeIDToHumanReadable()
     {
-        // @todo: Find logical / comprehensive test for checking codec names
+        $hexArray = [
+            strval(0x00),
+            strval(0x01),
+            strval(0x02),
+        ];
+
+        $this->assertEquals('Template', Convert::groupType($hexArray[0]));
+        $this->assertEquals('Regular', Convert::groupType($hexArray[1]));
+        $this->assertEquals('ServerQuery', Convert::groupType($hexArray[2]));
+        $this->assertEquals('Unknown', Convert::groupType(hexdec(0x99)));
     }
 
     public function testConvertPermTypeIDToHumanReadable()
     {
-        // @todo: Find logical / comprehensive test for checking codec names
+        $hexArray = [
+            strval(0x00),
+            strval(0x01),
+            strval(0x02),
+            strval(0x03),
+            strval(0x04),
+        ];
+
+        $this->assertEquals('Server Group', Convert::permissionType($hexArray[0]));
+        $this->assertEquals('Client', Convert::permissionType($hexArray[1]));
+        $this->assertEquals('Channel', Convert::permissionType($hexArray[2]));
+        $this->assertEquals('Channel Group', Convert::permissionType($hexArray[3]));
+        $this->assertEquals('Channel Client', Convert::permissionType($hexArray[4]));
+        $this->assertEquals('Unknown', Convert::permissionType(hexdec(0x99)));
     }
 
     public function testConvertPermCategoryIDToHumanReadable()
     {
-        // @todo: Find logical / comprehensive test for checking codec names
+        $hexArrayIssue = [
+            strval(0x10),
+            strval(0x11),
+            strval(0x12),
+            strval(0x13),
+            strval(0x14),
+            strval(0x20),
+            strval(0x21),
+            strval(0x22),
+            strval(0x23),
+            strval(0x30),
+            strval(0x31),
+            strval(0x32),
+            strval(0x33),
+            strval(0x34),
+            strval(0x35),
+            strval(0x40),
+            strval(0x41),
+            strval(0x42),
+            strval(0x43),
+            strval(0x44),
+            strval(0x50),
+            strval(0x51),
+            strval(0x52),
+            strval(0x53),
+            strval(0x54),
+            strval(0x60),
+            strval(0xFF),
+        ];
+
+        $this->assertEquals('Global', Convert::permissionCategory($hexArrayIssue[0]));
+        $this->assertEquals('Global / Information', Convert::permissionCategory($hexArrayIssue[1]));
+        $this->assertEquals('Global / Virtual Server Management', Convert::permissionCategory($hexArrayIssue[2]));
+        $this->assertEquals('Global / Administration', Convert::permissionCategory($hexArrayIssue[3]));
+        $this->assertEquals('Global / Settings', Convert::permissionCategory($hexArrayIssue[4]));
+        $this->assertEquals('Virtual Server', Convert::permissionCategory($hexArrayIssue[5]));
+        $this->assertEquals('Virtual Server / Information', Convert::permissionCategory($hexArrayIssue[6]));
+        $this->assertEquals('Virtual Server / Administration', Convert::permissionCategory($hexArrayIssue[7]));
+        $this->assertEquals('Virtual Server / Settings', Convert::permissionCategory($hexArrayIssue[8]));
+        $this->assertEquals('Channel', Convert::permissionCategory($hexArrayIssue[9]));
+        $this->assertEquals('Channel / Information', Convert::permissionCategory($hexArrayIssue[10]));
+        $this->assertEquals('Channel / Create', Convert::permissionCategory($hexArrayIssue[11]));
+        $this->assertEquals('Channel / Modify', Convert::permissionCategory($hexArrayIssue[12]));
+        $this->assertEquals('Channel / Delete', Convert::permissionCategory($hexArrayIssue[13]));
+        $this->assertEquals('Channel / Access', Convert::permissionCategory($hexArrayIssue[14]));
+        $this->assertEquals('Group', Convert::permissionCategory($hexArrayIssue[15]));
+        $this->assertEquals('Group / Information', Convert::permissionCategory($hexArrayIssue[16]));
+        $this->assertEquals('Group / Create', Convert::permissionCategory($hexArrayIssue[17]));
+        $this->assertEquals('Group / Modify', Convert::permissionCategory($hexArrayIssue[18]));
+        $this->assertEquals('Group / Delete', Convert::permissionCategory($hexArrayIssue[19]));
+        $this->assertEquals('Client', Convert::permissionCategory($hexArrayIssue[20]));
+        $this->assertEquals('Client / Information', Convert::permissionCategory($hexArrayIssue[21]));
+        $this->assertEquals('Client / Admin', Convert::permissionCategory($hexArrayIssue[22]));
+        $this->assertEquals('Client / Basics', Convert::permissionCategory($hexArrayIssue[23]));
+        $this->assertEquals('Client / Modify', Convert::permissionCategory($hexArrayIssue[24]));
+        $this->assertEquals('File Transfer', Convert::permissionCategory($hexArrayIssue[25]));
+        $this->assertEquals('Grant', Convert::permissionCategory($hexArrayIssue[26]));
+        $this->assertEquals('Unknown', Convert::permissionCategory(hexdec(0x99)));
     }
 
     public function testConvertLogLevelIDToHumanReadable()
     {
-        // @todo: Find logical / comprehensive test for checking codec names
+        $hexArray = [
+            strval(0x00),
+            strval(0x01),
+            strval(0x02),
+            strval(0x03),
+            strval(0x04),
+            strval(0x05),
+        ];
+
+        $this->assertEquals('CRITICAL', Convert::logLevel($hexArray[0]));
+        $this->assertEquals('ERROR', Convert::logLevel($hexArray[1]));
+        $this->assertEquals('WARNING', Convert::logLevel($hexArray[2]));
+        $this->assertEquals('DEBUG', Convert::logLevel($hexArray[3]));
+        $this->assertEquals('INFO', Convert::logLevel($hexArray[4]));
+        $this->assertEquals('DEVELOP', Convert::logLevel($hexArray[5]));
+
+        $stringArray = [
+            'critical',
+            'error',
+            'warning',
+            'debug',
+            'info',
+        ];
+
+        $this->assertEquals(0x00, Convert::logLevel($stringArray[0]));
+        $this->assertEquals(0x01, Convert::logLevel($stringArray[1]));
+        $this->assertEquals(0x02, Convert::logLevel($stringArray[2]));
+        $this->assertEquals(0x03, Convert::logLevel($stringArray[3]));
+        $this->assertEquals(0x04, Convert::logLevel($stringArray[4]));
+        $this->assertEquals(0x05, Convert::logLevel('Unknown'));
     }
 
     public function testConvertLogEntryToArray()
     {
         // @todo: Implement matching integration test for testing real log entries
         $mock_data = [
-            '2017-06-26 21:55:30.307009|INFO    |Query         |   |query from 47 [::1]:62592 issued: login with account "serveradmin"(serveradmin)'
+            '2017-06-26 21:55:30.307009|INFO    |Query         |   |query from 47 [::1]:62592 issued: login with account "serveradmin"(serveradmin)',
         ];
 
         foreach ($mock_data as $entry) {
