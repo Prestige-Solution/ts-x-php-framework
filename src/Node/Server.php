@@ -2570,7 +2570,7 @@ class Server extends Node
      */
     public function selfPermOverview(): array
     {
-        return $this->execute('permoverview', ['cldbid' => $this->whoamiGet('client_database_id'), 'cid' => $this->whoamiGet('client_channel_id'), 'permid' => 0])
+        return $this->execute('permoverview', ['cldbid' => $this->getParent()->whoamiGet('client_database_id'), 'cid' => $this->getParent()()->whoamiGet('client_channel_id'), 'permid' => 0])
             ->toArray();
     }
 
