@@ -1683,7 +1683,7 @@ class Server extends Node
      */
     public function permRemoveAny(int $permid): int
     {
-        $assignments = $this->permissionFind($permid);
+        $assignments = $this->getParent()->permissionFind($permid);
 
         foreach ($assignments as $assignment) {
             switch ($assignment['t']) {
