@@ -2157,7 +2157,7 @@ class Server extends Node
      * @throws ServerQueryException
      * @deprecated
      */
-    public function tokenDelete($token)
+    public function tokenDelete($token): void
     {
         $this->privilegeKeyDelete($token);
     }
@@ -2183,7 +2183,7 @@ class Server extends Node
      * @throws ServerQueryException
      * @deprecated
      */
-    public function tokenUse($token)
+    public function tokenUse($token): void
     {
         $this->privilegeKeyUse($token);
     }
@@ -2587,7 +2587,7 @@ class Server extends Node
      * @throws ServerQueryException
      * @ignore
      */
-    protected function fetchNodeList()
+    protected function fetchNodeList(): void
     {
         $this->nodeList = [];
 
@@ -2603,7 +2603,7 @@ class Server extends Node
      * @throws ServerQueryException
      * @ignore
      */
-    protected function fetchNodeInfo()
+    protected function fetchNodeInfo(): void
     {
         $this->nodeInfo = array_merge($this->nodeInfo, $this->request('serverinfo')->toList());
     }

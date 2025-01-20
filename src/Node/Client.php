@@ -240,7 +240,7 @@ class Client extends Node
      *
      * @deprecated
      */
-    public function permAssignByName($permname, $permvalue, $permskip = false)
+    public function permAssignByName($permname, $permvalue, $permskip = false): void
     {
         $this->permAssign($permname, $permvalue, $permskip);
     }
@@ -261,7 +261,7 @@ class Client extends Node
      *
      * @deprecated
      */
-    public function permRemoveByName($permname)
+    public function permRemoveByName($permname): void
     {
         $this->permRemove($permname);
     }
@@ -446,7 +446,7 @@ class Client extends Node
      * @throws AdapterException
      * @ignore
      */
-    protected function fetchNodeInfo()
+    protected function fetchNodeInfo(): void
     {
         if ($this->offsetExists('client_type') && $this['client_type'] == 1) {
             return;
