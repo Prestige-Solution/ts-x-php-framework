@@ -185,7 +185,7 @@ class Server extends Node
         $this->execute('channeldelete', ['cid' => $cid, 'force' => $force]);
         $this->channelListReset();
 
-        if (($cid instanceof Node ? $cid->getId() : $cid) == $this->whoamiGet('client_channel_id')) {
+        if (($cid instanceof Node ? $cid->getId() : $cid) == $this->getParent()->whoamiGet('client_channel_id')) {
             $this->getParent()->whoamiReset();
         }
     }
