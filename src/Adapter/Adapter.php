@@ -122,7 +122,7 @@ abstract class Adapter
     }
 
     /**
-     * Loads the transport object object used for the connection adapter and passes a given set
+     * Loads the transport object used for the connection adapter and passes a given set
      * of options.
      *
      * @param array $options

@@ -272,7 +272,7 @@ class Server extends Node
     }
 
     /**
-     * Returns the possible type of a channel spacer.
+     * Returns the possible type of channel spacer.
      *
      * @param int $cid
      * @return int
@@ -863,7 +863,7 @@ class Server extends Node
 
     /**
      * Returns an array containing the names and IDs of all server groups the client specified with
-     * $cldbid is is currently residing in.
+     * $cldbid is currently residing in.
      *
      * @param string $cldbid
      * @return array
@@ -1392,7 +1392,7 @@ class Server extends Node
     }
 
     /**
-     * Tries to identify the post powerful/weakest server group on the virtual server and returns
+     * Tries to identify the post powerful/the weakest server group on the virtual server and returns
      * the ID.
      *
      * @param int $mode
@@ -2699,7 +2699,7 @@ class Server extends Node
     }
 
     /**
-     * Returns a unique identifier for the node which can be used as a HTML property.
+     * Returns a unique identifier for the node which can be used as an HTML property.
      *
      * @return string
      */
