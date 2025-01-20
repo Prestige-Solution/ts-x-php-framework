@@ -2279,7 +2279,7 @@ class Server extends Node
      */
     public function banCount(): int
     {
-        return current($this->execute('banlist -count', ['duration' => 1])->toList('count'));
+        return current($this->execute('banlist -count', ['duration' => 1])->toList());
     }
 
     /**
