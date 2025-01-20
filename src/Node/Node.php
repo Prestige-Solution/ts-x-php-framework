@@ -117,7 +117,7 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
      *
      * @return ServerQuery|Node|null
      */
-    public function getParent(): ServerQuery|self|null
+    public function getParent(): ServerQuery|Node|Host|null
     {
         return $this->parent;
     }
