@@ -697,7 +697,7 @@ class Server extends Node
      */
     public function clientCountDb(): int
     {
-        return current($this->execute('clientdblist -count', ['duration' => 1])->toList('count'));
+        return current($this->execute('clientdblist -count', ['duration' => 1])->toList());
     }
 
     /**
