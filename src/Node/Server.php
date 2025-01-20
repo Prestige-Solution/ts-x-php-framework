@@ -897,7 +897,7 @@ class Server extends Node
             $cid = $cid->getId();
         }
 
-        if (! is_array($clid) && $clid == $this->whoamiGet('client_id')) {
+        if (! is_array($clid) && $clid == $this->getParent()->whoamiGet('client_id')) {
             $this->getParent()->whoamiSet('client_channel_id', $cid);
         }
     }
