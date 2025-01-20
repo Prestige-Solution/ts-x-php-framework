@@ -2541,7 +2541,7 @@ class Server extends Node
         $this->execute('clientupdate', $properties);
 
         foreach ($properties as $ident => $value) {
-            $this->whoamiSet($ident, $value);
+            $this->getParent()->whoamiSet($ident, $value);
         }
     }
 
