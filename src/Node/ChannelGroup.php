@@ -197,7 +197,7 @@ class ChannelGroup extends Group
     }
 
     /**
-     * Returns a unique identifier for the node which can be used as a HTML property.
+     * Returns a unique identifier for the node which can be used as an HTML property.
      *
      * @return string
      */

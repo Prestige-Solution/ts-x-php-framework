@@ -168,7 +168,7 @@ class Reply
     }
 
     /**
-     * Returns a multi-dimensional array containing the reply splitted in multiple rows and columns.
+     * Returns a multidimensional array containing the reply split in multiple rows and columns.
      *
      * @return array
      */
@@ -212,7 +212,7 @@ class Reply
     }
 
     /**
-     * Returns a multi-dimensional assoc array containing the reply splitted in multiple rows and columns.
+     * Returns a multidimensional assoc array containing the reply split in multiple rows and columns.
      * The identifier specified by key will be used while indexing the array.
      *
      * @param  $ident
