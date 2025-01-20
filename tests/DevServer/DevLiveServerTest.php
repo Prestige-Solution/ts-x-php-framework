@@ -145,7 +145,6 @@ class DevLiveServerTest extends TestCase
         $this->assertEquals('Play-Test', $cidTest['channel_name']);
 
         $this->unset_play_test_channel($ts3_VirtualServer);
-
         $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
     }
 
@@ -154,7 +153,7 @@ class DevLiveServerTest extends TestCase
      * @throws ServerQueryException
      * @throws HelperException
      */
-    public function test_can_create_standard_channel()
+    public function test_can_create_channels()
     {
         if ($this->active == 'false') {
             $this->markTestSkipped('DevLiveServer ist not active');
@@ -179,8 +178,51 @@ class DevLiveServerTest extends TestCase
         $this->assertEquals(0, $testCidResult['channel_flag_semi_permanent']);
         $this->assertEquals(1, $testCidResult['channel_flag_permanent']);
 
+        //increase channels
+        for($i = 0; $i <= 20; $i++) {
+            $ts3_VirtualServer->channelCreate(['channel_name' => 'Standard Channel'.$i,'channel_flag_permanent' => 1,'cpid' => $this->test_cid,]);
+        }
+
         $this->unset_play_test_channel($ts3_VirtualServer);
         $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+    }
+
+    /**
+     * @throws ServerQueryException
+     * @throws AdapterException
+     * @throws HelperException
+     */
+    public function test_can_delete_channels()
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        $this->set_play_test_channel($ts3_VirtualServer);
+
+        $testCid1 = $ts3_VirtualServer->channelCreate(['channel_name' => 'Standard Channel1','channel_flag_permanent' => 1,'cpid' => $this->test_cid,]);
+        $testCid2 = $ts3_VirtualServer->channelCreate(['channel_name' => 'Standard Channel2','channel_flag_permanent' => 1,'cpid' => $this->test_cid,]);
+        $testCid3 = $ts3_VirtualServer->channelCreate(['channel_name' => 'Standard Channel3','channel_flag_permanent' => 1,'cpid' => $this->test_cid,]);
+        $testCid4 = $ts3_VirtualServer->channelCreate(['channel_name' => 'Standard Channel4','channel_flag_permanent' => 1,'cpid' => $this->test_cid,]);
+        $testCid5 = $ts3_VirtualServer->channelCreate(['channel_name' => 'Standard Channel5','channel_flag_permanent' => 1,'cpid' => $this->test_cid,]);
+
+        $ts3_VirtualServer->channelDelete($testCid1);
+        $ts3_VirtualServer->channelDelete($testCid2);
+        $ts3_VirtualServer->channelDelete($testCid3);
+        $ts3_VirtualServer->channelDelete($testCid4);
+        $ts3_VirtualServer->channelDelete($testCid5);
+
+
+        try {
+            $ts3_VirtualServer->channelGetById($testCid1);
+        }catch (ServerQueryException $e)
+        {
+            $this->assertEquals('invalid channelID', $e->getMessage());
+        }finally{
+            $this->unset_play_test_channel($ts3_VirtualServer);
+            $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        }
     }
 
     /**
@@ -197,15 +239,7 @@ class DevLiveServerTest extends TestCase
         $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
         $this->set_play_test_channel($ts3_VirtualServer);
 
-        $testCid = $ts3_VirtualServer->channelCreate([
-            'channel_name' => 'Standard Channel',
-            'channel_codec' => 4,
-            'channel_codec_quality' => 6,
-            'channel_flag_semi_permanent' => 0,
-            'channel_flag_permanent' => 1,
-            'cpid' => $this->test_cid,
-        ]);
-
+        $testCid = $ts3_VirtualServer->channelCreate(['channel_name' => 'Standard Channel','channel_flag_permanent' => 1,'cpid' => $this->test_cid,]);
         $ts3_VirtualServer->whoamiSet('client_channel_id', $testCid);
 
         $whoami = $ts3_VirtualServer->whoami();
@@ -230,14 +264,7 @@ class DevLiveServerTest extends TestCase
         $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
         $this->set_play_test_channel($ts3_VirtualServer);
 
-        $testCid = $ts3_VirtualServer->channelCreate([
-            'channel_name' => 'Standard Channel',
-            'channel_codec' => 4,
-            'channel_codec_quality' => 6,
-            'channel_flag_semi_permanent' => 0,
-            'channel_flag_permanent' => 1,
-            'cpid' => $this->test_cid,
-        ]);
+        $testCid = $ts3_VirtualServer->channelCreate(['channel_name' => 'Standard Channel5','channel_flag_permanent' => 1,'cpid' => $this->test_cid,]);
 
         $channel = $ts3_VirtualServer->channelGetById($testCid);
         $channelPermission = $channel->permList(true);
@@ -258,11 +285,7 @@ class DevLiveServerTest extends TestCase
     {
         $cid = $ts3VirtualServer->channelGetByName($this->ts3_unit_test_channel_name)->getInfo();
 
-        $createdCID = $ts3VirtualServer->channelCreate([
-            'channel_name' => 'Play-Test',
-            'channel_flag_permanent' => 1,
-            'cpid' => $cid['cid'],
-        ]);
+        $createdCID = $ts3VirtualServer->channelCreate(['channel_name' => 'Play-Test','channel_flag_permanent' => 1,'cpid' => $cid['cid']]);
         $this->test_cid = $createdCID;
 
         return $createdCID;
