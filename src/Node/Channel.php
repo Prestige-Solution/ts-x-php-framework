@@ -197,7 +197,7 @@ class Channel extends Node
      *
      * @deprecated
      */
-    public function clientPermAssignByName($cldbid, $permname, $permvalue)
+    public function clientPermAssignByName($cldbid, $permname, $permvalue): void
     {
         $this->clientPermAssign($cldbid, $permname, $permvalue);
     }
@@ -219,7 +219,7 @@ class Channel extends Node
      *
      * @deprecated
      */
-    public function clientPermRemoveByName($cldbid, $permname)
+    public function clientPermRemoveByName($cldbid, $permname): void
     {
         $this->clientPermRemove($cldbid, $permname);
     }
@@ -253,7 +253,7 @@ class Channel extends Node
      *
      * @deprecated
      */
-    public function permAssignByName($permname, $permvalue)
+    public function permAssignByName($permname, $permvalue): void
     {
         $this->permAssign($permname, $permvalue);
     }
@@ -274,7 +274,7 @@ class Channel extends Node
      *
      * @deprecated
      */
-    public function permRemoveByName($permname)
+    public function permRemoveByName($permname): void
     {
         $this->permRemove($permname);
     }
@@ -537,7 +537,7 @@ class Channel extends Node
      * @throws AdapterException
      * @ignore
      */
-    protected function fetchNodeInfo()
+    protected function fetchNodeInfo(): void
     {
         $this->nodeInfo = array_merge($this->nodeInfo, $this->execute('channelinfo', ['cid' => $this->getId()])->toList());
     }

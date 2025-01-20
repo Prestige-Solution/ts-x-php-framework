@@ -119,7 +119,7 @@ class ServerGroup extends Group
      *
      * @deprecated
      */
-    public function permAssignByName($permname, $permvalue, $permnegated = false, $permskip = false)
+    public function permAssignByName($permname, $permvalue, $permnegated = false, $permskip = false): void
     {
         $this->permAssign($permname, $permvalue, $permnegated, $permskip);
     }
@@ -141,7 +141,7 @@ class ServerGroup extends Group
      *
      * @deprecated
      */
-    public function permRemoveByName($permname)
+    public function permRemoveByName($permname): void
     {
         $this->permRemove($permname);
     }
@@ -205,7 +205,7 @@ class ServerGroup extends Group
     /**
      * @ignore
      */
-    protected function fetchNodeList()
+    protected function fetchNodeList(): void
     {
         $this->nodeList = [];
 
@@ -217,7 +217,7 @@ class ServerGroup extends Group
     }
 
     /**
-     * Returns a unique identifier for the node which can be used as a HTML property.
+     * Returns a unique identifier for the node which can be used as an HTML property.
      *
      * @return string
      */

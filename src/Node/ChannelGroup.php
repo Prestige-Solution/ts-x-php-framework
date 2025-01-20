@@ -119,7 +119,7 @@ class ChannelGroup extends Group
      *
      * @deprecated
      */
-    public function permAssignByName($permname, $permvalue)
+    public function permAssignByName($permname, $permvalue): void
     {
         $this->permAssign($permname, $permvalue);
     }
@@ -141,7 +141,7 @@ class ChannelGroup extends Group
      *
      * @deprecated
      */
-    public function permRemoveByName($permname)
+    public function permRemoveByName($permname): void
     {
         $this->permRemove($permname);
     }
