@@ -188,6 +188,39 @@ class DevLiveServerTest extends TestCase
      * @throws ServerQueryException
      * @throws HelperException
      */
+    public function test_whoami()
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        $this->set_play_test_channel($ts3_VirtualServer);
+
+        $testCid = $ts3_VirtualServer->channelCreate([
+            'channel_name' => 'Standard Channel',
+            'channel_codec' => 4,
+            'channel_codec_quality' => 6,
+            'channel_flag_semi_permanent' => 0,
+            'channel_flag_permanent' => 1,
+            'cpid' => $this->test_cid,
+        ]);
+
+        $ts3_VirtualServer->whoamiSet('client_channel_id', $testCid);
+
+        $whoami = $ts3_VirtualServer->whoami();
+        $whoamiChannelName = $ts3_VirtualServer->channelGetById($whoami['client_channel_id'])->getInfo();
+        $this->assertEquals('Standard Channel', $whoamiChannelName['channel_name']);
+
+        $this->unset_play_test_channel($ts3_VirtualServer);
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+    }
+
+    /**
+     * @throws AdapterException
+     * @throws ServerQueryException
+     * @throws HelperException
+     */
     private function set_play_test_channel($ts3VirtualServer): int
     {
         $cid = $ts3VirtualServer->channelGetByName($this->ts3_unit_test_channel_name)->getInfo();
