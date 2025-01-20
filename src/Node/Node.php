@@ -109,15 +109,15 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
      */
     public function execute($cmd, array $params = []): Reply
     {
-        return $this->request($this->getParent()->prepare($cmd, $params));
+        return $this->request($this->prepare($cmd, $params));
     }
 
     /**
      * Returns the parent object of the current node.
      *
-     * @return ServerQuery|Server|Host|Node|null
+     * @return ServerQuery|Node|null
      */
-    public function getParent(): ServerQuery|Server|Host|self|null
+    public function getParent(): ServerQuery|Node|Host|null
     {
         return $this->parent;
     }
@@ -428,7 +428,7 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
     /**
      * @ignore
      */
-    protected function fetchNodeList(): void
+    protected function fetchNodeList()
     {
         $this->nodeList = [];
     }
@@ -443,7 +443,7 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
     /**
      * @ignore
      */
-    protected function resetNodeInfo(): void
+    protected function resetNodeInfo()
     {
         $this->nodeInfo = [];
     }
@@ -451,7 +451,7 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
     /**
      * @ignore
      */
-    protected function verifyNodeList(): void
+    protected function verifyNodeList()
     {
         if ($this->nodeList === null) {
             $this->fetchNodeList();
@@ -461,7 +461,7 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
     /**
      * @ignore
      */
-    protected function resetNodeList(): void
+    protected function resetNodeList()
     {
         $this->nodeList = null;
     }
