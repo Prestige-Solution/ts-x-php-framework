@@ -317,6 +317,8 @@ class Client extends Node
      * @throws AdapterException
      * @throws HelperException
      * @throws ServerQueryException
+     * @throws FileTransferException
+     * @throws TransportException
      */
     public function avatarDownload()
     {
@@ -404,8 +406,10 @@ class Client extends Node
      *
      * @return StringHelper|void
      * @throws AdapterException
+     * @throws FileTransferException
      * @throws HelperException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function iconDownload()
     {

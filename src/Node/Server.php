@@ -1826,11 +1826,13 @@ class Server extends Node
     /**
      * Downloads and returns the servers icon file content.
      *
-     * @param string|null $iconname
+     * @param  string|null  $iconname
      * @return StringHelper|void
      * @throws AdapterException
      * @throws HelperException
      * @throws ServerQueryException
+     * @throws FileTransferException
+     * @throws TransportException
      */
     public function iconDownload(string $iconname = null)
     {
@@ -1857,9 +1859,10 @@ class Server extends Node
     /**
      * Uploads a given icon file content to the server and returns the ID of the icon.
      *
-     * @param string $data
+     * @param  string  $data
      * @return int
      * @throws AdapterException
+     * @throws FileTransferException
      * @throws HelperException
      * @throws ServerQueryException
      */
@@ -2049,7 +2052,6 @@ class Server extends Node
     /**
      * Alias for privilegeKeyList().
      *
-     * @param bool $translate
      * @return array
      * @throws AdapterException
      * @throws NodeException
@@ -2487,6 +2489,8 @@ class Server extends Node
      * Deletes the virtual server.
      *
      * @return void
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function delete(): void
     {
@@ -2497,6 +2501,8 @@ class Server extends Node
      * Starts the virtual server.
      *
      * @return void
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function start(): void
     {
@@ -2506,8 +2512,10 @@ class Server extends Node
     /**
      * Stops the virtual server.
      *
-     * @param string|null $msg
+     * @param  string|null  $msg
      * @return void
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function stop(string $msg = null): void
     {
