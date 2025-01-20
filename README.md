@@ -20,7 +20,11 @@ The ideal is that this version can be integrated into your own project and the m
 - [ ] Readme and Documentations
 
 ### New Test Developments
-**Note:** Before you start, make sure that you have set the environment variables. You find [more information here](doc/testing-live-server.md)
+#### <u>Prepare your Environment</u>
+Before you start, make sure that you have set the environment variables. You find [more information here](doc/testing-live-server.md)
+
+#### <u>Servergroup Permissions for Query User</u>
+I have been created a [Permission Ruleset](doc/query_user_servergroup_export.csv) which the Query User can use. With this Ruleset all Live Server Tests will be running.
 
 To run all tests use `composer test`. 
 

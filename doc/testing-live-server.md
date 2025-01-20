@@ -1,13 +1,12 @@
 Testing Live Server
 ==================
 ## Setup Environment
-Set up the Environment File
 
 ```shell
 cp .env.testing.example .env.testing
 ```
 
-Replace the all `DEV_LIVE_SERVER_*` Variables with your TS3 Server Config
+Replace all `DEV_LIVE_SERVER_*` Variables with your TS3 Server Config
 
 | DEV_LIVE_SERVER_AVAILABLE=           | true enabled the test, false skipped the test                                                   |
 |--------------------------------------|-------------------------------------------------------------------------------------------------|
@@ -17,3 +16,6 @@ Replace the all `DEV_LIVE_SERVER_*` Variables with your TS3 Server Config
 | DEV_LIVE_SERVER_QUERY_USER=          | Your Query Username                                                                             |
 | DEV_LIVE_SERVER_QUERY_USER_PASSWORD= | Password for the Query User                                                                     |
 | DEV_LIVE_SERVER_UNIT_TEST_CHANNEL=   | Set a Channelname for the Tests. Live Server Tests will create channels under this channel name |
+
+## IMPORTANT
+Set your ```DEV_LIVE_SERVER_UNIT_TEST_CHANNEL=``` Change and Delete Power Permission to 75`otherwise the test with permissions will be fail.
