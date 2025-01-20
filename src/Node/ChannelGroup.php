@@ -185,7 +185,7 @@ class ChannelGroup extends Group
     /**
      * @ignore
      */
-    protected function fetchNodeList()
+    protected function fetchNodeList(): void
     {
         $this->nodeList = [];
 

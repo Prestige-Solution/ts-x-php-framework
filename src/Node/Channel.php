@@ -503,7 +503,7 @@ class Channel extends Node
     /**
      * @ignore
      */
-    protected function fetchNodeList()
+    protected function fetchNodeList(): void
     {
         $this->nodeList = [];
 
