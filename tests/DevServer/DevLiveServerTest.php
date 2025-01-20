@@ -226,6 +226,51 @@ class DevLiveServerTest extends TestCase
     }
 
     /**
+     * @throws ServerQueryException
+     * @throws AdapterException
+     * @throws HelperException
+     */
+    public function test_can_move_channels()
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        $this->set_play_test_channel($ts3_VirtualServer);
+        $stdChannel = $ts3_VirtualServer->channelCreate(['channel_name' => 'Standard Channel','channel_flag_permanent' => 1,'cpid' => $this->test_cid,]);
+
+        $testCid1 = $ts3_VirtualServer->channelCreate(['channel_name' => 'Standard Channel1','channel_flag_permanent' => 1,'cpid' => $this->test_cid,]);
+        $testCid2 = $ts3_VirtualServer->channelCreate(['channel_name' => 'Standard Channel2','channel_flag_permanent' => 1,'cpid' => $this->test_cid,]);
+        $testCid3 = $ts3_VirtualServer->channelCreate(['channel_name' => 'Standard Channel3','channel_flag_permanent' => 1,'cpid' => $this->test_cid,]);
+        $testCid4 = $ts3_VirtualServer->channelCreate(['channel_name' => 'Standard Channel4','channel_flag_permanent' => 1,'cpid' => $this->test_cid,]);
+        $testCid5 = $ts3_VirtualServer->channelCreate(['channel_name' => 'Standard Channel5','channel_flag_permanent' => 1,'cpid' => $this->test_cid,]);
+
+        $ts3_VirtualServer->channelMove($testCid1,$stdChannel);
+        $result = $ts3_VirtualServer->channelGetById($testCid1)->getInfo();
+        $this->assertEquals($stdChannel, $result['pid']);
+
+        $ts3_VirtualServer->channelMove($testCid2,$testCid1);
+        $result = $ts3_VirtualServer->channelGetById($testCid2)->getInfo();
+        $this->assertEquals($testCid1, $result['pid']);
+
+        $ts3_VirtualServer->channelMove($testCid3,$testCid2);
+        $result = $ts3_VirtualServer->channelGetById($testCid3)->getInfo();
+        $this->assertEquals($testCid2, $result['pid']);
+
+        $ts3_VirtualServer->channelMove($testCid4,$testCid3);
+        $result = $ts3_VirtualServer->channelGetById($testCid4)->getInfo();
+        $this->assertEquals($testCid3, $result['pid']);
+
+        $ts3_VirtualServer->channelMove($testCid5,$testCid4);
+        $result = $ts3_VirtualServer->channelGetById($testCid5)->getInfo();
+        $this->assertEquals($testCid4, $result['pid']);
+
+        $this->unset_play_test_channel($ts3_VirtualServer);
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+    }
+
+    /**
      * @throws AdapterException
      * @throws ServerQueryException
      * @throws HelperException
