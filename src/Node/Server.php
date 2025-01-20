@@ -2056,7 +2056,7 @@ class Server extends Node
      * @throws ServerQueryException
      * @deprecated
      */
-    public function tokenList(bool $translate = false): array
+    public function tokenList(): array
     {
         return $this->privilegeKeyList();
     }
