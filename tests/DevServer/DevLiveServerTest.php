@@ -427,6 +427,60 @@ class DevLiveServerTest extends TestCase
     }
 
     /**
+     * @throws ServerQueryException
+     * @throws AdapterException
+     * @throws HelperException
+     */
+    public function test_can_get_user_attributes()
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        $this->set_play_test_channel($ts3_VirtualServer);
+
+        $userInfo = $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->getInfo();
+
+        $this->assertIsArray($userInfo);
+        $this->assertEquals($this->ts3_unit_test_userName, $userInfo['client_nickname']);
+
+        $this->unset_play_test_channel($ts3_VirtualServer);
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+    }
+
+    /**
+     * @throws ServerQueryException
+     * @throws AdapterException
+     * @throws HelperException
+     */
+    public function test_can_set_user_attributes()
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        $this->set_play_test_channel($ts3_VirtualServer);
+
+        $userInfo = $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->getInfo();
+        $this->assertIsArray($userInfo);
+        $this->assertEquals($this->ts3_unit_test_userName, $userInfo['client_nickname']);
+        $this->assertEquals(0, $userInfo['client_is_talker']);
+
+        $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->modify(['client_is_talker'=> 1]);
+        $userInfoModified = $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->getInfo();
+        $this->assertIsArray($userInfoModified);
+        $this->assertEquals(1, $userInfoModified['client_is_talker']);
+
+        //reset user modify
+        $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->modify(['client_is_talker'=> 0]);
+
+        $this->unset_play_test_channel($ts3_VirtualServer);
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+    }
+
+    /**
      * @throws AdapterException
      * @throws ServerQueryException
      * @throws HelperException
