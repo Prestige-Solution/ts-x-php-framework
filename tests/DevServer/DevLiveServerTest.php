@@ -192,6 +192,51 @@ class DevLiveServerTest extends TestCase
      * @throws AdapterException
      * @throws HelperException
      */
+    public function test_can_edit_channel()
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        $this->set_play_test_channel($ts3_VirtualServer);
+
+        $testCid = $ts3_VirtualServer->channelCreate(['channel_name' => 'Standard Channel','channel_flag_permanent' => 1,'cpid' => $this->test_cid,]);
+
+        $channelUnmodified = $ts3_VirtualServer->channelGetById($testCid)->getInfo();
+        $this->assertEquals('Standard Channel', $channelUnmodified['channel_name']);
+        $this->assertEquals(4, $channelUnmodified['channel_codec']); // 4 = standard
+        $this->assertEquals(5, $channelUnmodified['channel_codec_quality']); // 5 = standard
+        $this->assertEquals(0, $channelUnmodified['channel_flag_semi_permanent']);
+        $this->assertEquals(1, $channelUnmodified['channel_flag_permanent']);
+
+
+        $ts3_VirtualServer->channelGetById($testCid)->modify([
+            'channel_name' => 'Standard Channel Modified',
+            'channel_codec' => 5,
+            'channel_codec_quality' => 6,
+            'channel_flag_semi_permanent' => 1,
+            'channel_flag_permanent'=>0,
+        ]);
+
+        $channelModifiedResult = $ts3_VirtualServer->channelGetById($testCid)->getInfo();
+
+        $this->assertEquals('Standard Channel Modified', $channelModifiedResult['channel_name']);
+        $this->assertEquals(5, $channelModifiedResult['channel_codec']);
+        $this->assertEquals(6, $channelModifiedResult['channel_codec_quality']);
+        $this->assertEquals(1, $channelModifiedResult['channel_flag_semi_permanent']);
+        $this->assertEquals(0, $channelModifiedResult['channel_flag_permanent']);
+
+
+        $this->unset_play_test_channel($ts3_VirtualServer);
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+    }
+
+    /**
+     * @throws ServerQueryException
+     * @throws AdapterException
+     * @throws HelperException
+     */
     public function test_can_delete_channels()
     {
         if ($this->active == 'false') {
@@ -300,7 +345,7 @@ class DevLiveServerTest extends TestCase
      * @throws ServerQueryException
      * @throws HelperException
      */
-    public function test_channel_permissions()
+    public function test_can_get_channel_permissions()
     {
         if ($this->active == 'false') {
             $this->markTestSkipped('DevLiveServer ist not active');
@@ -316,6 +361,66 @@ class DevLiveServerTest extends TestCase
 
         $this->assertEquals(75, $channelPermission['i_channel_needed_permission_modify_power']['permvalue']);
         $this->assertEquals(75, $channelPermission['i_channel_needed_delete_power']['permvalue']);
+
+        $this->unset_play_test_channel($ts3_VirtualServer);
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+    }
+
+    /**
+     * @throws ServerQueryException
+     * @throws AdapterException
+     * @throws HelperException
+     */
+    public function test_can_set_channel_permissions()
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        $this->set_play_test_channel($ts3_VirtualServer);
+
+        $testCid = $ts3_VirtualServer->channelCreate(['channel_name' => 'Standard Channel','channel_flag_permanent' => 1,'cpid' => $this->test_cid,]);
+        $ts3_VirtualServer->channelPermAssign($testCid, ['i_channel_needed_join_power'], [50]);
+        $ts3_VirtualServer->channelPermAssign($testCid, ['i_channel_needed_subscribe_power'], [50]);
+
+        $channel = $ts3_VirtualServer->channelGetById($testCid);
+        $channelPermission = $channel->permList(true);
+
+        $this->assertEquals(50, $channelPermission['i_channel_needed_join_power']['permvalue']);
+        $this->assertEquals(50, $channelPermission['i_channel_needed_subscribe_power']['permvalue']);
+
+        $this->unset_play_test_channel($ts3_VirtualServer);
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+    }
+
+    /**
+     * @throws ServerQueryException
+     * @throws AdapterException
+     * @throws HelperException
+     */
+    public function test_can_delete_channel_permissions()
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        $this->set_play_test_channel($ts3_VirtualServer);
+
+        $testCid = $ts3_VirtualServer->channelCreate(['channel_name' => 'Standard Channel','channel_flag_permanent' => 1,'cpid' => $this->test_cid,]);
+        $ts3_VirtualServer->channelPermAssign($testCid, ['i_channel_needed_join_power'], [50]);
+        $ts3_VirtualServer->channelPermAssign($testCid, ['i_channel_needed_subscribe_power'], [50]);
+
+        //Note: Delete permission result in permvalue = 0
+        $ts3_VirtualServer->channelPermRemove($testCid, ['i_channel_needed_join_power']);
+        $ts3_VirtualServer->channelPermRemove($testCid, ['i_channel_needed_subscribe_power']);
+
+        $channel = $ts3_VirtualServer->channelGetById($testCid);
+        $channelPermission = $channel->permList(true);
+
+        $this->assertEquals(0, $channelPermission['i_channel_needed_join_power']['permvalue']);
+        $this->assertEquals(0, $channelPermission['i_channel_needed_subscribe_power']['permvalue']);
 
         $this->unset_play_test_channel($ts3_VirtualServer);
         $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
