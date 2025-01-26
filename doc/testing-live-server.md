@@ -28,7 +28,7 @@ The Serveradministrator has no Anti-Flood Permissions, so maybe you as Administr
 
 ---
 
-## Setup you Bot Identity
+## Setup your Bot Identity
 ### Setup Query / Bot Servergroup
 Create a new server group with the name psbot, bot or a name of your choice.<br>
 You find a set of rights (150) at [query_user_servergroup_export](query_user_servergroup_export.csv) that the bot needs for secure operation.<br>
@@ -36,14 +36,13 @@ The easiest way to set these settings is with [YaTQA](https://yat.qa/) as server
 
 #### Import CSV with YaTQA
 Navigate with YaTQA to Servergroups **(1)**. Choose your created Servergroup for the query bot **(2)**. Right Click on Global and Click at Import Permissions **(3)**.
-Select and Import the CSV. 
+Select and Import the CSV.<br>
 ![import_permissions](img/query_import_permissions.png)
 
 ---
 
 #### Create a new Bot Identity
-Start the Teamspeak client and create a new identity. You can create this via Extras **(1)** - Identities **(2)**. To do this, click on Create and enter a name as the identity name **(4)** and nickname **(5)**. Then confirm with OK **(6)**. Now connect to your server **with this identity**. You can tell whether the identity is being used by the bold font.
-
+Start the Teamspeak client and create a new identity. You can create this via Extras **(1)** - Identities **(2)**. To do this, click on Create and enter a name as the identity name **(3)** and nickname **(4)**. Then confirm with OK. Now connect to your server **with this identity**. You can tell whether the identity is being used by the bold font.<br>
 ![setup_bot-identitaet_1](img/setup_bot-identitaet_1.png)
 
 Now assign the bot server group to the bot identity. The bot identity is now in the bot server group. Connect with the bot identity to your Server and create a new Query Login. The name you have to enter is your query login name. The password is generated automatically.<br>
