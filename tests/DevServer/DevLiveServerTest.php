@@ -419,8 +419,9 @@ class DevLiveServerTest extends TestCase
         $channel = $ts3_VirtualServer->channelGetById($testCid);
         $channelPermission = $channel->permList(true);
 
-        $this->assertEquals(0, $channelPermission['i_channel_needed_join_power']['permvalue']);
-        $this->assertEquals(0, $channelPermission['i_channel_needed_subscribe_power']['permvalue']);
+        $this->assertIsArray($channelPermission);
+        $this->assertArrayNotHasKey('i_channel_needed_join_power', $channelPermission);
+        $this->assertArrayNotHasKey('i_channel_needed_subscribe_power', $channelPermission);
 
         $this->unset_play_test_channel($ts3_VirtualServer);
         $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
