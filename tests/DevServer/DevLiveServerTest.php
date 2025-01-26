@@ -412,7 +412,6 @@ class DevLiveServerTest extends TestCase
         $ts3_VirtualServer->channelPermAssign($testCid, ['i_channel_needed_join_power'], [50]);
         $ts3_VirtualServer->channelPermAssign($testCid, ['i_channel_needed_subscribe_power'], [50]);
 
-        //Note: Delete permission result in permvalue = 0
         $ts3_VirtualServer->channelPermRemove($testCid, ['i_channel_needed_join_power']);
         $ts3_VirtualServer->channelPermRemove($testCid, ['i_channel_needed_subscribe_power']);
 
