@@ -82,6 +82,19 @@ class TCPTest extends TestCase
         $this->assertEquals($this->host, $adapter->getConfig('host'));
     }
 
+    public function testSetGetAdapter()
+    {
+        $this->markTestSkipped();
+//        $transport = new TCP(
+//            ['host' => $this->host, 'port' => $this->port]
+//        );
+//        // Mocking adaptor since `stream_socket_client()` depends on running server
+//        $adaptor = $this->createMock(ServerQuery::class);
+//        $transport->setAdapter($adaptor);
+//
+//        $this->assertSame($adaptor, $transport->getAdapter());
+    }
+
     /**
      * @throws TransportException
      */
@@ -113,6 +126,41 @@ class TCPTest extends TestCase
         $this->assertFalse($mockServerQuery->getTransport()->isConnected());
     }
 
+    public function testConnectBadHost()
+    {
+        $this->markTestSkipped();
+
+//        $transport = new TCP(
+//            ['host' => $this->host, 'port' => $this->port]
+//        );
+//        $this->expectException(TransportException::class);
+//        if (PHP_VERSION_ID < 80100) {
+//            $this->expectExceptionMessage('getaddrinfo failed');
+//        } else {
+//            //TODO Not sure how to handle different languages
+//            //TODO handle different expectExceptionMessages
+//            //$this->expectExceptionMessage("getaddrinfo for $this->host failed");
+//            $this->expectExceptionMessage('Es konnte keine Verbindung hergestellt werden, da der Zielcomputer die Verbindung verweigerte');
+//        }
+//        $transport->connect();
+    }
+
+    public function testConnectHostRefuseConnection()
+    {
+        $this->markTestSkipped();
+
+//        $transport = new TCP(
+//            ['host' => $this->host, 'port' => $this->port]
+//        );
+
+//        $this->expectException(TransportException::class);
+        //TODO Not sure how to handle different languages
+        //TODO handle different expectExceptionMessages
+        //$this->expectExceptionMessage('Connection refused');
+//        $this->expectExceptionMessage('Es konnte keine Verbindung hergestellt werden, da der Zielcomputer die Verbindung verweigerte');
+//        $transport->connect();
+    }
+
     /**
      * @throws TransportException
      */
@@ -135,5 +183,77 @@ class TCPTest extends TestCase
         );
         $this->assertNull($transport->getStream());
         $transport->disconnect();
+    }
+
+    public function testReadNoConnection()
+    {
+        $this->markTestSkipped();
+//        $transport = new TCP(
+//            ['host' => $this->host, 'port' => $this->port]
+//        );
+//        $this->expectException(TransportException::class);
+//        if (PHP_VERSION_ID < 80100) {
+//            $this->expectExceptionMessage('getaddrinfo failed');
+//        } else {
+//            //TODO Not sure how to handle different languages
+//            //TODO handle different expectExceptionMessages
+//            //$this->expectExceptionMessage("getaddrinfo for $this->port failed");
+//            $this->expectExceptionMessage('Es konnte keine Verbindung hergestellt werden, da der Zielcomputer die Verbindung verweigerte');
+//        }
+//        $transport->read();
+    }
+
+    public function testReadLineNoConnection()
+    {
+        $this->markTestSkipped();
+//        $transport = new TCP(
+//            ['host' => $this->host, 'port' => $this->port]
+//        );
+//        $this->expectException(TransportException::class);
+//        if (PHP_VERSION_ID < 80100) {
+//            $this->expectExceptionMessage('getaddrinfo failed');
+//        } else {
+//            //TODO Not sure how to handle different languages
+//            //TODO handle different expectExceptionMessages
+//            //$this->expectExceptionMessage("getaddrinfo for $this->host failed");
+//            $this->expectExceptionMessage('Es konnte keine Verbindung hergestellt werden, da der Zielcomputer die Verbindung verweigerte');
+//        }
+//        $transport->readLine();
+    }
+
+    public function testSendNoConnection()
+    {
+        $this->markTestSkipped();
+//        $transport = new TCP(
+//            ['host' => $this->host, 'port' => $this->port]
+//        );
+//        $this->expectException(TransportException::class);
+//        if (PHP_VERSION_ID < 80100) {
+//            $this->expectExceptionMessage('getaddrinfo failed');
+//        } else {
+//            //TODO Not sure how to handle different languages
+//            //TODO handle different expectExceptionMessages
+//            //$this->expectExceptionMessage("getaddrinfo for $this->host failed");
+//            $this->expectExceptionMessage('Es konnte keine Verbindung hergestellt werden, da der Zielcomputer die Verbindung verweigerte');
+//        }
+//        $transport->send('testsend');
+    }
+
+    public function testSendLineNoConnection()
+    {
+        $this->markTestSkipped();
+//        $transport = new TCP(
+//            ['host' => $this->host, 'port' => $this->port]
+//        );
+//        $this->expectException(TransportException::class);
+//        if (PHP_VERSION_ID < 80100) {
+//            $this->expectExceptionMessage('getaddrinfo failed');
+//        } else {
+//            //TODO Not sure how to handle different languages
+//            //TODO handle different expectExceptionMessages
+//            //$this->expectExceptionMessage("getaddrinfo for $this->host failed");
+//            $this->expectExceptionMessage('Es konnte keine Verbindung hergestellt werden, da der Zielcomputer die Verbindung verweigerte');
+//        }
+//        $transport->sendLine('test.sendLine');
     }
 }
