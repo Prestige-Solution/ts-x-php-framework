@@ -30,6 +30,7 @@ class DevLiveServerTest extends TestCase
     private string $ts3_server_uri_ssh;
 
     private string $ts3_unit_test_channel_name;
+    private string $ts3_unit_test_userName;
 
     private int $test_cid;
 
@@ -45,6 +46,7 @@ class DevLiveServerTest extends TestCase
             $this->user = str_replace('DEV_LIVE_SERVER_QUERY_USER=', '', preg_replace('#\n(?!\n)#', '', $env[5]));
             $this->password = str_replace('DEV_LIVE_SERVER_QUERY_USER_PASSWORD=', '', preg_replace('#\n(?!\n)#', '', $env[6]));
             $this->ts3_unit_test_channel_name = str_replace('DEV_LIVE_SERVER_UNIT_TEST_CHANNEL=', '', preg_replace('#\n(?!\n)#', '', $env[7]));
+            $this->ts3_unit_test_userName = str_replace('DEV_LIVE_SERVER_UNIT_TEST_USER=', '', preg_replace('#\n(?!\n)#', '', $env[8]));
         } else {
             $this->active = 'false';
         }
