@@ -481,6 +481,31 @@ class DevLiveServerTest extends TestCase
     }
 
     /**
+     * @throws ServerQueryException
+     * @throws AdapterException
+     * @throws HelperException
+     */
+    public function test_can_move_user()
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        $this->set_play_test_channel($ts3_VirtualServer);
+
+        $testCid = $ts3_VirtualServer->channelCreate(['channel_name' => 'Standard Channel','channel_flag_permanent' => 1,'cpid' => $this->test_cid,]);
+        $userID = $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->getId();
+        $ts3_VirtualServer->clientMove($userID, $testCid);
+
+        $userMoved = $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->getInfo();
+        $this->assertEquals($userMoved['cid'], $testCid);
+
+        $this->unset_play_test_channel($ts3_VirtualServer);
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+    }
+
+    /**
      * @throws AdapterException
      * @throws ServerQueryException
      * @throws HelperException
