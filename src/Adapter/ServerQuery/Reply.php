@@ -54,9 +54,9 @@ class Reply
     /**
      * Stores connected PlanetTeamSpeak\TeamSpeak3Framework\Node\Host object.
      *
-     * @var Host|null
+     * @var Host
      */
-    protected Host|null $con;
+    protected Host $con;
 
     /**
      * Stores an assoc array containing the error info for this reply.
@@ -104,9 +104,11 @@ class Reply
      *
      * @return StringHelper|null
      */
-    public function toString(): null|StringHelper
+    public function toString(): ?StringHelper
     {
-        if (func_get_args() > 0) {
+        //get count of arguments there passed to this function / 0 is similar to !func_num_args() but this variant results in bool(false)
+        $stringArgs = func_get_args();
+        if ($stringArgs >= 1) {
             return $this->rpl;
         } else {
             return $this->rpl->unescape();
@@ -126,7 +128,9 @@ class Reply
 
         $list = $this->toString()->split(TeamSpeak3::SEPARATOR_LIST);
 
-        if (func_num_args() > 0) {
+        //get count of arguments there passed to this function / 0 is similar to !func_num_args() but this variant results in bool(false)
+        $linesArgs = func_num_args();
+        if ($linesArgs >= 1) {
             for ($i = 0; $i < count($list); $i++) {
                 $list[$i]->unescape();
             }
@@ -147,7 +151,9 @@ class Reply
         foreach ($this->toLines() as $cells) {
             $pairs = $cells->split(TeamSpeak3::SEPARATOR_CELL);
 
-            if (func_get_args() > 0) {
+            //get count of arguments there passed to this function / 0 is similar to !func_num_args() but this variant results in bool(false)
+            $tableArgs = func_get_args();
+            if ($tableArgs >= 1) {
                 for ($i = 0; $i < count($pairs); $i++) {
                     $pairs[$i]->unescape();
                 }
