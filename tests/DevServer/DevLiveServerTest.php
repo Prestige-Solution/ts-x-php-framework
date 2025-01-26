@@ -31,6 +31,8 @@ class DevLiveServerTest extends TestCase
     private string $ts3_server_uri_ssh;
 
     private string $ts3_unit_test_channel_name;
+
+    private string $user_test_active;
     private string $ts3_unit_test_userName;
 
     private int $test_cid;
@@ -47,7 +49,8 @@ class DevLiveServerTest extends TestCase
             $this->user = str_replace('DEV_LIVE_SERVER_QUERY_USER=', '', preg_replace('#\n(?!\n)#', '', $env[5]));
             $this->password = str_replace('DEV_LIVE_SERVER_QUERY_USER_PASSWORD=', '', preg_replace('#\n(?!\n)#', '', $env[6]));
             $this->ts3_unit_test_channel_name = str_replace('DEV_LIVE_SERVER_UNIT_TEST_CHANNEL=', '', preg_replace('#\n(?!\n)#', '', $env[7]));
-            $this->ts3_unit_test_userName = str_replace('DEV_LIVE_SERVER_UNIT_TEST_USER=', '', preg_replace('#\n(?!\n)#', '', $env[8]));
+            $this->user_test_active = str_replace('DEV_LIVE_SERVER_UNIT_TEST_USER_ACTIVE=', '', preg_replace('#\n(?!\n)#', '', $env[8]));
+            $this->ts3_unit_test_userName = str_replace('DEV_LIVE_SERVER_UNIT_TEST_USER=', '', preg_replace('#\n(?!\n)#', '', $env[9]));
         } else {
             $this->active = 'false';
         }
@@ -432,7 +435,7 @@ class DevLiveServerTest extends TestCase
      */
     public function test_can_get_user_attributes()
     {
-        if ($this->active == 'false') {
+        if ($this->user_test_active == 'false' || $this->active == 'false') {
             $this->markTestSkipped('DevLiveServer ist not active');
         }
 
@@ -455,7 +458,7 @@ class DevLiveServerTest extends TestCase
      */
     public function test_can_set_user_attributes()
     {
-        if ($this->active == 'false') {
+        if ($this->user_test_active == 'false' || $this->active == 'false') {
             $this->markTestSkipped('DevLiveServer ist not active');
         }
 
@@ -486,7 +489,7 @@ class DevLiveServerTest extends TestCase
      */
     public function test_can_move_user()
     {
-        if ($this->active == 'false') {
+        if ($this->user_test_active == 'false' || $this->active == 'false') {
             $this->markTestSkipped('DevLiveServer ist not active');
         }
 
