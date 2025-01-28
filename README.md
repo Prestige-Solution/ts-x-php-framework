@@ -7,9 +7,9 @@ The ideal is that this version can be integrated into your own project and the m
 ### Current Milestones:
 - [x] Collect initial inspection and understanding of the source code
 - [x] Fix a few existing Unit Tests
-- [ ] Rewrite source code up to PHP 8.2+
-- [ ] Functionality tests of the framework
-- [ ] Functionality tests for the bot identity
+- [x] Rewrite source code up to PHP 8.2+
+- [x] Functionality tests of the framework
+- [x] Functionality tests for the bot identity
 - [x] Minimalistic testing with a Live Server or Development Server
 - [ ] Full Testing with a Live Server or Development Server
 - [x] Bug fixes
