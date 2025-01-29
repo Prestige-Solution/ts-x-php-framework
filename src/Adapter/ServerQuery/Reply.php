@@ -108,11 +108,9 @@ class Reply
     {
         //get count of arguments there passed to this function / 0 is similar to !func_num_args() but this variant results in bool(false)
         $stringArgs = func_get_args();
-        if ($stringArgs >= 1)
-        {
+        if ($stringArgs >= 1) {
             return $this->rpl;
-        }else
-        {
+        } else {
             return $this->rpl->unescape();
         }
     }
@@ -168,7 +166,7 @@ class Reply
     }
 
     /**
-     * Returns a multi-dimensional array containing the reply splitted in multiple rows and columns.
+     * Returns a multidimensional array containing the reply split in multiple rows and columns.
      *
      * @return array
      */
@@ -191,16 +189,12 @@ class Reply
                     //get count of arguments there passed to this function / 0 is similar to !func_num_args() but this variant results in bool(false)
                     //let us make the code more readable to understand what happened. Con is, there is a bit longer
                     $arrayArgs = func_get_args();
-                    if ($value->isInt() === true)
-                    {
+                    if ($value->isInt() === true) {
                         $array[$i][$ident->toString()] = $value->toInt();
-                    }else
-                    {
-                        if ($arrayArgs >= 1)
-                        {
+                    } else {
+                        if ($arrayArgs >= 1) {
                             $array[$i][$ident->toString()] = $value->unescape();
-                        }else
-                        {
+                        } else {
                             $array[$i][$ident->toString()] = $value;
                         }
                     }
@@ -212,7 +206,7 @@ class Reply
     }
 
     /**
-     * Returns a multi-dimensional assoc array containing the reply splitted in multiple rows and columns.
+     * Returns a multidimensional assoc array containing the reply split in multiple rows and columns.
      * The identifier specified by key will be used while indexing the array.
      *
      * @param  $ident

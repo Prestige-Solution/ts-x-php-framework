@@ -41,7 +41,7 @@ class Convert
      */
     public static function bytes(int $bytes, int $precision = 10): string
     {
-        // Identify if its a negative or positive number
+        // Identify if it's a negative or positive number
         $negative = str_starts_with($bytes, '-');
 
         // force calculation with positive numbers only
@@ -59,7 +59,7 @@ class Convert
             8 => ['UNIT' => 'YiB', 'VALUE' => pow(1024, 8)],
         ];
 
-        // Sort from the biggest defined unit to smallest to get the best human readable format.
+        // Sort from the biggest defined unit to smallest to get the best human-readable format.
         krsort($unit_conversions);
 
         foreach ($unit_conversions as $conversion) {
@@ -269,7 +269,7 @@ class Convert
     }
 
     /**
-     * Converts a given log level ID to a human readable name and vice versa.
+     * Converts a given log level ID to a human-readable name and vice versa.
      *
      * @param mixed $level
      * @return string

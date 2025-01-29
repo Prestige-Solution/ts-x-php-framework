@@ -24,8 +24,10 @@
 namespace PlanetTeamSpeak\TeamSpeak3Framework\Node;
 
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\FileTransferException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\HelperException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\ServerQueryException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\TransportException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Helper\StringHelper;
 use PlanetTeamSpeak\TeamSpeak3Framework\TeamSpeak3;
 
@@ -240,7 +242,7 @@ class Client extends Node
      *
      * @deprecated
      */
-    public function permAssignByName($permname, $permvalue, $permskip = false)
+    public function permAssignByName($permname, $permvalue, $permskip = false): void
     {
         $this->permAssign($permname, $permvalue, $permskip);
     }
@@ -261,7 +263,7 @@ class Client extends Node
      *
      * @deprecated
      */
-    public function permRemoveByName($permname)
+    public function permRemoveByName($permname): void
     {
         $this->permRemove($permname);
     }
@@ -317,6 +319,8 @@ class Client extends Node
      * @throws AdapterException
      * @throws HelperException
      * @throws ServerQueryException
+     * @throws FileTransferException
+     * @throws TransportException
      */
     public function avatarDownload()
     {
@@ -404,8 +408,10 @@ class Client extends Node
      *
      * @return StringHelper|void
      * @throws AdapterException
+     * @throws FileTransferException
      * @throws HelperException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function iconDownload()
     {
@@ -442,7 +448,7 @@ class Client extends Node
      * @throws AdapterException
      * @ignore
      */
-    protected function fetchNodeInfo()
+    protected function fetchNodeInfo(): void
     {
         if ($this->offsetExists('client_type') && $this['client_type'] == 1) {
             return;

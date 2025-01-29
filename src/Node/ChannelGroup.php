@@ -119,7 +119,7 @@ class ChannelGroup extends Group
      *
      * @deprecated
      */
-    public function permAssignByName($permname, $permvalue)
+    public function permAssignByName($permname, $permvalue): void
     {
         $this->permAssign($permname, $permvalue);
     }
@@ -141,7 +141,7 @@ class ChannelGroup extends Group
      *
      * @deprecated
      */
-    public function permRemoveByName($permname)
+    public function permRemoveByName($permname): void
     {
         $this->permRemove($permname);
     }
@@ -185,7 +185,7 @@ class ChannelGroup extends Group
     /**
      * @ignore
      */
-    protected function fetchNodeList()
+    protected function fetchNodeList(): void
     {
         $this->nodeList = [];
 
@@ -197,7 +197,7 @@ class ChannelGroup extends Group
     }
 
     /**
-     * Returns a unique identifier for the node which can be used as a HTML property.
+     * Returns a unique identifier for the node which can be used as an HTML property.
      *
      * @return string
      */

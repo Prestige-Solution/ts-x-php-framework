@@ -25,9 +25,11 @@ namespace PlanetTeamSpeak\TeamSpeak3Framework\Node;
 
 use PlanetTeamSpeak\TeamSpeak3Framework\Adapter\ServerQuery\Reply;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\FileTransferException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\HelperException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\NodeException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\ServerQueryException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\TransportException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Helper\Signal;
 use PlanetTeamSpeak\TeamSpeak3Framework\Helper\StringHelper;
 use PlanetTeamSpeak\TeamSpeak3Framework\TeamSpeak3;
@@ -185,7 +187,7 @@ class Server extends Node
         $this->execute('channeldelete', ['cid' => $cid, 'force' => $force]);
         $this->channelListReset();
 
-        if (($cid instanceof Node ? $cid->getId() : $cid) == $this->whoamiGet('client_channel_id')) {
+        if (($cid instanceof Node ? $cid->getId() : $cid) == $this->getParent()->whoamiGet('client_channel_id')) {
             $this->getParent()->whoamiReset();
         }
     }
@@ -270,7 +272,7 @@ class Server extends Node
     }
 
     /**
-     * Returns the possible type of a channel spacer.
+     * Returns the possible type of channel spacer.
      *
      * @param int $cid
      * @return int
@@ -697,7 +699,7 @@ class Server extends Node
      */
     public function clientCountDb(): int
     {
-        return current($this->execute('clientdblist -count', ['duration' => 1])->toList('count'));
+        return current($this->execute('clientdblist -count', ['duration' => 1])->toList());
     }
 
     /**
@@ -861,7 +863,7 @@ class Server extends Node
 
     /**
      * Returns an array containing the names and IDs of all server groups the client specified with
-     * $cldbid is is currently residing in.
+     * $cldbid is currently residing in.
      *
      * @param string $cldbid
      * @return array
@@ -897,7 +899,7 @@ class Server extends Node
             $cid = $cid->getId();
         }
 
-        if (! is_array($clid) && $clid == $this->whoamiGet('client_id')) {
+        if (! is_array($clid) && $clid == $this->getParent()->whoamiGet('client_id')) {
             $this->getParent()->whoamiSet('client_channel_id', $cid);
         }
     }
@@ -1390,7 +1392,7 @@ class Server extends Node
     }
 
     /**
-     * Tries to identify the post powerful/weakest server group on the virtual server and returns
+     * Tries to identify the post powerful/the weakest server group on the virtual server and returns
      * the ID.
      *
      * @param int $mode
@@ -1683,7 +1685,7 @@ class Server extends Node
      */
     public function permRemoveAny(int $permid): int
     {
-        $assignments = $this->permissionFind($permid);
+        $assignments = $this->getParent()->permissionFind($permid);
 
         foreach ($assignments as $assignment) {
             switch ($assignment['t']) {
@@ -1826,11 +1828,13 @@ class Server extends Node
     /**
      * Downloads and returns the servers icon file content.
      *
-     * @param string|null $iconname
+     * @param  string|null  $iconname
      * @return StringHelper|void
      * @throws AdapterException
      * @throws HelperException
      * @throws ServerQueryException
+     * @throws FileTransferException
+     * @throws TransportException
      */
     public function iconDownload(string $iconname = null)
     {
@@ -1857,9 +1861,10 @@ class Server extends Node
     /**
      * Uploads a given icon file content to the server and returns the ID of the icon.
      *
-     * @param string $data
+     * @param  string  $data
      * @return int
      * @throws AdapterException
+     * @throws FileTransferException
      * @throws HelperException
      * @throws ServerQueryException
      */
@@ -2049,14 +2054,13 @@ class Server extends Node
     /**
      * Alias for privilegeKeyList().
      *
-     * @param bool $translate
      * @return array
      * @throws AdapterException
      * @throws NodeException
      * @throws ServerQueryException
      * @deprecated
      */
-    public function tokenList(bool $translate = false): array
+    public function tokenList(): array
     {
         return $this->privilegeKeyList();
     }
@@ -2155,7 +2159,7 @@ class Server extends Node
      * @throws ServerQueryException
      * @deprecated
      */
-    public function tokenDelete($token)
+    public function tokenDelete($token): void
     {
         $this->privilegeKeyDelete($token);
     }
@@ -2181,7 +2185,7 @@ class Server extends Node
      * @throws ServerQueryException
      * @deprecated
      */
-    public function tokenUse($token)
+    public function tokenUse($token): void
     {
         $this->privilegeKeyUse($token);
     }
@@ -2279,7 +2283,7 @@ class Server extends Node
      */
     public function banCount(): int
     {
-        return current($this->execute('banlist -count', ['duration' => 1])->toList('count'));
+        return current($this->execute('banlist -count', ['duration' => 1])->toList());
     }
 
     /**
@@ -2487,6 +2491,8 @@ class Server extends Node
      * Deletes the virtual server.
      *
      * @return void
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function delete(): void
     {
@@ -2497,6 +2503,8 @@ class Server extends Node
      * Starts the virtual server.
      *
      * @return void
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function start(): void
     {
@@ -2506,8 +2514,10 @@ class Server extends Node
     /**
      * Stops the virtual server.
      *
-     * @param string|null $msg
+     * @param  string|null  $msg
      * @return void
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function stop(string $msg = null): void
     {
@@ -2541,7 +2551,7 @@ class Server extends Node
         $this->execute('clientupdate', $properties);
 
         foreach ($properties as $ident => $value) {
-            $this->whoamiSet($ident, $value);
+            $this->getParent()->whoamiSet($ident, $value);
         }
     }
 
@@ -2570,7 +2580,7 @@ class Server extends Node
      */
     public function selfPermOverview(): array
     {
-        return $this->execute('permoverview', ['cldbid' => $this->whoamiGet('client_database_id'), 'cid' => $this->whoamiGet('client_channel_id'), 'permid' => 0])
+        return $this->execute('permoverview', ['cldbid' => $this->getParent()->whoamiGet('client_database_id'), 'cid' => $this->getParent()()->whoamiGet('client_channel_id'), 'permid' => 0])
             ->toArray();
     }
 
@@ -2579,7 +2589,7 @@ class Server extends Node
      * @throws ServerQueryException
      * @ignore
      */
-    protected function fetchNodeList()
+    protected function fetchNodeList(): void
     {
         $this->nodeList = [];
 
@@ -2595,7 +2605,7 @@ class Server extends Node
      * @throws ServerQueryException
      * @ignore
      */
-    protected function fetchNodeInfo()
+    protected function fetchNodeInfo(): void
     {
         $this->nodeInfo = array_merge($this->nodeInfo, $this->request('serverinfo')->toList());
     }
@@ -2689,7 +2699,7 @@ class Server extends Node
     }
 
     /**
-     * Returns a unique identifier for the node which can be used as a HTML property.
+     * Returns a unique identifier for the node which can be used as an HTML property.
      *
      * @return string
      */

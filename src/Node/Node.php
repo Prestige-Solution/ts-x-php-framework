@@ -115,9 +115,9 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
     /**
      * Returns the parent object of the current node.
      *
-     * @return ServerQuery|Node|null
+     * @return ServerQuery|Node|Host|null
      */
-    public function getParent(): ServerQuery|self|null
+    public function getParent(): ServerQuery|self|Host|null
     {
         return $this->parent;
     }
@@ -428,7 +428,7 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
     /**
      * @ignore
      */
-    protected function fetchNodeList()
+    protected function fetchNodeList(): void
     {
         $this->nodeList = [];
     }
@@ -443,7 +443,7 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
     /**
      * @ignore
      */
-    protected function resetNodeInfo()
+    protected function resetNodeInfo(): void
     {
         $this->nodeInfo = [];
     }
@@ -451,7 +451,7 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
     /**
      * @ignore
      */
-    protected function verifyNodeList()
+    protected function verifyNodeList(): void
     {
         if ($this->nodeList === null) {
             $this->fetchNodeList();
@@ -461,7 +461,7 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
     /**
      * @ignore
      */
-    protected function resetNodeList()
+    protected function resetNodeList(): void
     {
         $this->nodeList = null;
     }
