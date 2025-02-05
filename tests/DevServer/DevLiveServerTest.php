@@ -563,6 +563,46 @@ class DevLiveServerTest extends TestCase
 
     /**
      * @throws AdapterException
+     * @throws ServerQueryException
+     * @throws HelperException
+     * @throws Exception
+     */
+    public function test_raw_signal_on_wait_timeout()
+    {
+        if ($this->active == 'false' || $this->ts3_unit_test_signals == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        //define duration
+        $this->duration = strtotime('+6 minutes');
+
+        try {
+            // Connect to the specified server, authenticate and spawn an object for the virtual server
+            $this->ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        } catch(TeamSpeak3Exception $e) {
+            //catch exception
+            echo $e->getMessage();
+        }
+
+        // Register a callback for serverqueryWaitTimeout events
+        Signal::getInstance()->subscribe('serverqueryWaitTimeout', array($this, 'onWaitTimeout'));
+
+        // Register for server events
+        $this->ts3_VirtualServer->serverGetSelected()->notifyRegister('server');
+
+        try {
+            while (true) {
+                $this->ts3_VirtualServer->getParent()->getAdapter()->wait();
+            }
+        }catch(TeamSpeak3Exception $e) {
+            //catch disconnect exception
+            $this->assertEquals("node method 'getTransport()' does not exist", $e->getMessage());
+            $this->assertEquals(0,$e->getCode());
+        }
+    }
+
+    /**
+     * @throws AdapterException
      * @throws ServerQueryException|\PlanetTeamSpeak\TeamSpeak3Framework\Exception\NodeException
      * @throws Exception
      */
