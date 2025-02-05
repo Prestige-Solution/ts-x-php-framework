@@ -121,7 +121,7 @@ class TCP extends Transport
         $this->connect();
         $this->waitForReadyRead();
 
-        $data = @stream_get_contents($this->stream, $length);
+        $data = stream_get_contents($this->stream, $length);
 
         Signal::getInstance()->emit(strtolower($this->getAdapterType()).'DataRead', $data);
 
@@ -177,7 +177,7 @@ class TCP extends Transport
     {
         $this->connect();
 
-        @fwrite($this->stream, $data);
+        fwrite($this->stream, $data);
 
         Signal::getInstance()->emit(strtolower($this->getAdapterType()).'DataSend', $data);
     }

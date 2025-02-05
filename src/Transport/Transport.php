@@ -271,6 +271,6 @@ abstract class Transport
             }
 
             $time = $time + $this->config['timeout'];
-        } while (@stream_select($read, $null, $null, $this->config['timeout']) == 0);
+        } while (stream_select($read, $null, $null, $this->config['timeout']) == 0);
     }
 }
