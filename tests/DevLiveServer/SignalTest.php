@@ -114,6 +114,7 @@ class SignalTest extends TestCase
             $this->assertEquals(0,$e->getCode());
         }
 
+        //the real Query Logout after exit the while() Loop
         $this->ts3_VirtualServer->getParent()->getAdapter()->getTransport()->disconnect();
     }
 
@@ -156,6 +157,7 @@ class SignalTest extends TestCase
             $this->assertEquals(0,$e->getCode());
         }
 
+        //the real Query Logout after exit the while() Loop
         $this->ts3_VirtualServer->getParent()->getAdapter()->getTransport()->disconnect();
     }
 
@@ -193,6 +195,7 @@ class SignalTest extends TestCase
 
         if (time() >= $this->duration)
         {
+            //set transport to null
             $this->ts3_VirtualServer->getParent()->getTransport()->disconnect();
         }
     }
