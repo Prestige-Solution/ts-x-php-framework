@@ -53,7 +53,7 @@ class ServerQuery extends Adapter
      *
      * @var int|null
      */
-    protected ?int $timer = null;
+    protected int|null $timer = null;
 
     /**
      * Number of queries executed on the server.
@@ -244,7 +244,7 @@ class ServerQuery extends Adapter
      *
      * @return int|null
      */
-    public function getQueryLastTimestamp(): ?int
+    public function getQueryLastTimestamp(): int|null
     {
         return $this->timer;
     }
