@@ -83,13 +83,11 @@ class ReplyTest extends TestCase
 
     public function testToLines()
     {
-        //TODO testToLines
         $this->markTestSkipped('todo: testToLines');
     }
 
     public function testToTable()
     {
-        //TODO testToTable
         $this->markTestSkipped('todo: testToTable');
     }
     
@@ -118,43 +116,36 @@ class ReplyTest extends TestCase
 
     public function testToAssocArray()
     {
-        //TODO testToAssocArray
         $this->markTestSkipped('todo: testToTable');
     }
 
     public function testToList()
     {
-        //TODO testToList
         $this->markTestSkipped('todo: testToTable');
     }
 
     public function testToObjectArray()
     {
-        //TODO testToObjectArray
         $this->markTestSkipped('todo: testToObjectArray');
     }
 
     public function testGetCommandString()
     {
-        //TODO testGetCommandString
         $this->markTestSkipped('todo: testGetCommandString');
     }
 
     public function testGetNotifyEvents()
     {
-        //TODO testGetNotifyEvents
         $this->markTestSkipped('todo: testGetNotifyEvents');
     }
 
     public function testGetErrorProperty()
     {
-        //TODO testGetErrorProperty
         $this->markTestSkipped('todo: testGetErrorProperty');
     }
 
     public function testFetchError()
     {
-        //TODO testFetchError
         $this->markTestSkipped('todo: testFetchError');
         //$this->assertInstanceOf(\TeamSpeak3_Adapter_ServerQuery_Reply::class, $reply);
         //$this->assertInternalType(PHPUnit_IsType::TYPE_INT, $reply->getErrorProperty('id'));
@@ -165,7 +156,6 @@ class ReplyTest extends TestCase
 
     public function testFetchReply()
     {
-        //TODO testFetchReply
         $this->markTestSkipped('todo: testFetchReply');
     }
 }
