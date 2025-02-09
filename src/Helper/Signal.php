@@ -39,7 +39,7 @@ class Signal
      *
      * @var Signal|null
      */
-    protected static ?Signal $instance = null;
+    protected static null|Signal $instance = null;
 
     /**
      * Stores subscribed signals and their slots.
@@ -54,8 +54,6 @@ class Signal
      * @param  string  $signal
      * @param  mixed|null  $params
      * @return mixed
-     * @todo: Confirm / fix $return is set to last $slot->call() return value.
-     *      It appears all previous calls before last are lost / ignored.
      */
     public function emit(string $signal, mixed $params = null): mixed
     {
@@ -73,9 +71,12 @@ class Signal
             $signals = $slot->call($params);
         }
 
-        //TODO understood the hole sigslots concept in this case the return value is probably undefined
-        //TODO but the signals are more than 1 so it musst be handled without probably undefined return
-        return $signals;
+        //TODO at this point, $signals if only null but $params has defined array elements
+        if (empty($signals)) {
+            return null;
+        }else{
+            return $signals;
+        }
     }
 
     /**
