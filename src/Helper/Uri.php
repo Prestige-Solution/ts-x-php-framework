@@ -574,7 +574,7 @@ class Uri
         }
 
         $pattern = '/^'.$this->regex['uric'].'*$/';
-        $status = @preg_match($pattern, $fragment);
+        $status = preg_match($pattern, $fragment);
 
         if ($status === false) {
             throw new HelperException('URI fragment validation failed');
