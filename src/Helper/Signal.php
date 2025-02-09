@@ -74,7 +74,7 @@ class Signal
         //TODO at this point, $signals if only null but $params has defined array elements
         if (empty($signals)) {
             return null;
-        }else{
+        } else {
             return $signals;
         }
     }

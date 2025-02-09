@@ -151,7 +151,7 @@ class TCP extends Transport
 
             $data = fgets($this->stream);
 
-            if ($this->getAdapter()->getTransport()->config["ssh"] === 1) {
+            if ($this->getAdapter()->getTransport()->config['ssh'] === 1) {
                 $data = rtrim($data, "\0");
             }
 

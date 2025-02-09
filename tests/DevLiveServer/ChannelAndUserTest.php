@@ -33,6 +33,7 @@ class ChannelAndUserTest extends TestCase
     private string $ts3_unit_test_channel_name;
 
     private string $user_test_active;
+
     private string $ts3_unit_test_userName;
 
     private int $test_cid;

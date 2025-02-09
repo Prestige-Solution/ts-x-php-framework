@@ -36,6 +36,7 @@ class SignalTest extends TestCase
     private string $ts3_server_uri;
 
     private string $ts3_server_uri_ssh;
+
     private string $ts3_unit_test_signals;
 
     private int $duration;
@@ -75,7 +76,7 @@ class SignalTest extends TestCase
             '&nickname=UnitTestBot';
 
         //set duration time
-        $this->duration = strtotime("+1 minutes", time());
+        $this->duration = strtotime('+1 minutes', time());
     }
 
     /**
@@ -99,7 +100,7 @@ class SignalTest extends TestCase
         }
 
         // Register a callback for serverqueryWaitTimeout events
-        Signal::getInstance()->subscribe('serverqueryWaitTimeout', array($this, 'onWaitTimeout'));
+        Signal::getInstance()->subscribe('serverqueryWaitTimeout', [$this, 'onWaitTimeout']);
 
         // Register for server events
         $this->ts3_VirtualServer->serverGetSelected()->notifyRegister('server');
@@ -108,10 +109,10 @@ class SignalTest extends TestCase
             while (true) {
                 $this->ts3_VirtualServer->getParent()->getAdapter()->wait();
             }
-        }catch(TeamSpeak3Exception $e) {
+        } catch(TeamSpeak3Exception $e) {
             //catch disconnect exception when getParent()->getTransport()->disconnect() -> Sounds crazy TODO what happen here?
             $this->assertEquals("node method 'getTransport()' does not exist", $e->getMessage());
-            $this->assertEquals(0,$e->getCode());
+            $this->assertEquals(0, $e->getCode());
         }
 
         //the real Query Logout after exit the while() Loop
@@ -139,7 +140,7 @@ class SignalTest extends TestCase
         }
 
         // Register a callback for serverqueryWaitTimeout events
-        Signal::getInstance()->subscribe('serverqueryWaitTimeout', array($this, 'onWaitTimeout'));
+        Signal::getInstance()->subscribe('serverqueryWaitTimeout', [$this, 'onWaitTimeout']);
 
         // Register for server events
         $this->ts3_VirtualServer->serverGetSelected()->notifyRegister('server');
@@ -148,10 +149,10 @@ class SignalTest extends TestCase
             while (true) {
                 $this->ts3_VirtualServer->getParent()->getAdapter()->wait();
             }
-        }catch(TeamSpeak3Exception $e) {
+        } catch(TeamSpeak3Exception $e) {
             //catch disconnect exception when getParent()->getTransport()->disconnect() -> Sounds crazy TODO what happen here?
             $this->assertEquals("node method 'getTransport()' does not exist", $e->getMessage());
-            $this->assertEquals(0,$e->getCode());
+            $this->assertEquals(0, $e->getCode());
         }
 
         //the real Query Logout after exit the while() Loop
@@ -162,7 +163,7 @@ class SignalTest extends TestCase
      * @throws AdapterException
      * @throws ServerQueryException|\PlanetTeamSpeak\TeamSpeak3Framework\Exception\NodeException
      */
-    function onWaitTimeout(int $idle_seconds, ServerQuery $serverquery): void
+    public function onWaitTimeout(int $idle_seconds, ServerQuery $serverquery): void
     {
         // If the timestamp on the last query is more than 300 seconds (5 minutes) in the past, send 'keepalive'
         // 'keepalive' command is just server query command 'clientupdate' which does nothing without properties. So nothing changes.
@@ -190,8 +191,7 @@ class SignalTest extends TestCase
             $this->ts3_VirtualServer->connectionInfo();
         }
 
-        if (time() >= $this->duration)
-        {
+        if (time() >= $this->duration) {
             //set transport to null
             $this->ts3_VirtualServer->getParent()->getTransport()->disconnect();
         }
