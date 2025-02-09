@@ -73,6 +73,9 @@ class SignalTest extends TestCase
             '&blocking=0'.
             '&timeout=30'.
             '&nickname=UnitTestBot';
+
+        //set duration time
+        $this->duration = strtotime("+10 minutes", time());
     }
 
     /**
@@ -86,9 +89,6 @@ class SignalTest extends TestCase
         if ($this->active == 'false' || $this->ts3_unit_test_signals == 'false') {
             $this->markTestSkipped('DevLiveServer ist not active');
         }
-
-        //define duration
-        $this->duration = strtotime('+1 minutes');
 
         try {
             // Connect to the specified server, authenticate and spawn an object for the virtual server
@@ -129,9 +129,6 @@ class SignalTest extends TestCase
         if ($this->active == 'false' || $this->ts3_unit_test_signals == 'false') {
             $this->markTestSkipped('DevLiveServer ist not active');
         }
-
-        //define duration
-        $this->duration = strtotime('+1 minutes');
 
         try {
             // Connect to the specified server, authenticate and spawn an object for the virtual server
