@@ -51,13 +51,13 @@ class Signal
     /**
      * Emits a signal with a given set of parameters.
      *
-     * @param string $signal
-     * @param mixed|null $params
-     * @return mixed
+     * @param  string  $signal
+     * @param  mixed|null  $params
+     * @return null
      * @todo: Confirm / fix $return is set to last $slot->call() return value.
      *      It appears all previous calls before last are lost / ignored.
      */
-    public function emit(string $signal, mixed $params = null): mixed
+    public function emit(string $signal, mixed $params = null): null
     {
         if (! $this->hasHandlers($signal)) {
             return null;
@@ -69,10 +69,12 @@ class Signal
         }
 
         foreach ($this->sigslots[$signal] as $slot) {
-            $return = $slot->call($params);
+            //TODO Cant find the call method
+            return $slot->call($params);
         }
 
-        return $return;
+        //TODO undefined
+        return null;
     }
 
     /**
