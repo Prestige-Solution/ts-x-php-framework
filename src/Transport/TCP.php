@@ -157,7 +157,11 @@ class TCP extends Transport
         while (! $line->endsWith($token)) {
             $this->waitForReadyRead();
 
-            $data = fgets($this->stream, 4096);
+            $data = fgets($this->stream);
+
+            if ($sshShell === true) {
+                $data = rtrim($data, "\0");
+            }
 
             Signal::getInstance()->emit(strtolower($this->getAdapterType()).'DataRead', $data);
 
