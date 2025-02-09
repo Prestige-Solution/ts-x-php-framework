@@ -75,7 +75,7 @@ class SignalTest extends TestCase
             '&nickname=UnitTestBot';
 
         //set duration time
-        $this->duration = strtotime("+10 minutes", time());
+        $this->duration = strtotime("+1 minutes", time());
     }
 
     /**
