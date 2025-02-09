@@ -70,11 +70,12 @@ class Signal
 
         foreach ($this->sigslots[$signal] as $slot) {
             //TODO Cant find the call method
-            return $slot->call($params);
+            $signals = $slot->call($params);
         }
 
-        //TODO undefined
-        return null;
+        //TODO understood the hole sigslots concept in this case the return value is probably undefined
+        //TODO but the signals are more than 1 so it musst be handled without probably undefined return
+        return $signals;
     }
 
     /**
