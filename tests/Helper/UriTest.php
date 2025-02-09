@@ -470,7 +470,4 @@ class UriTest extends TestCase
             $uri->getFragment()
         );
     }
-
-    // @todo: Implement remaining get* tests
-    // Deferring for now, since mostly web related.
 }
