@@ -53,11 +53,11 @@ class Signal
      *
      * @param  string  $signal
      * @param  mixed|null  $params
-     * @return null
+     * @return mixed
      * @todo: Confirm / fix $return is set to last $slot->call() return value.
      *      It appears all previous calls before last are lost / ignored.
      */
-    public function emit(string $signal, mixed $params = null): null
+    public function emit(string $signal, mixed $params = null): mixed
     {
         if (! $this->hasHandlers($signal)) {
             return null;
