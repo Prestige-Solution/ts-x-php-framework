@@ -146,6 +146,14 @@ class TCP extends Transport
 
         $line = StringHelper::factory('');
 
+        //get ssh mode
+        if ($this->getAdapter()->getTransport()->config["ssh"] == 1) {
+            $sshShell = true;
+        }else
+        {
+            $sshShell = false;
+        }
+
         while (! $line->endsWith($token)) {
             $this->waitForReadyRead();
 
