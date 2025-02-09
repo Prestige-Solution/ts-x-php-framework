@@ -85,7 +85,7 @@ class TCP extends Transport
         }
 
         stream_set_timeout($this->stream, $timeout);
-        stream_set_blocking($this->stream, $blocking ? 1 : 0);
+        stream_set_blocking($this->stream, $blocking);
     }
 
     /**
