@@ -53,15 +53,18 @@ class ReplyTest extends TestCase
 
     private static string $E_CLIENTLIST_EXTENDED_SINGLE_CLIENT_BADGES = 'Overwolf=1:badges=c2368518-3728-4260-bcd1-8b85e9f8984c';
 
+    /**
+     * @throws AdapterException
+     * @throws ServerQueryException
+     */
     public function testConstructor()
     {
-        $this->markTestSkipped();
-//        $reply = new Reply([
-//            new StringHelper(static::$S_SERVERLIST),
-//            new StringHelper(static::$S_ERROR_OK),
-//        ]);
-//
-//        $this->assertInstanceOf(Reply::class, $reply);
+        $reply = new Reply([
+            new StringHelper(static::$S_SERVERLIST),
+            new StringHelper(static::$S_ERROR_OK),
+        ]);
+
+        $this->assertInstanceOf(Reply::class, $reply);
     }
 
     /**
