@@ -11,8 +11,9 @@ The ideal is that this version can be integrated into your own project and the m
 - [x] Functionality tests of the framework
 - [x] Functionality tests for the bot identity
 - [x] Minimalistic testing with a Live Server or Development Server
-- [ ] Full Testing with a Live Server or Development Server
 - [x] Bug fixes
+- [ ] Search Bugs and fixes
+- [ ] Full Testing with a Live Server or Development Server
 - [ ] Readme and Documentations
 
 ---
@@ -26,8 +27,34 @@ Use the [Permissions](doc/query_user_servergroup_export.csv) which the query use
 
 **<u>Run Tests</u>**<br>
 To run all tests use `composer test`. <br>
-**NOTE:** In the current state there are not all bugs are fixed.
 
 --- 
 
-## Further information will follow
+## Build Factory URI
+### Default URI Options
+| Options  | Default Value |
+|----------|---------------|
+| timeout  | 10            |
+| blocking | 0             |
+| tls      | 0             |
+| ssh      | 0             |
+
+If you build the serverquery without above parameters then there options will be set by default. 
+**Note:** don't set timeout to 0. Further Information's at [php.net](https://www.php.net/manual/de/function.stream-select.php)
+
+### Examples
+RAW Mode (stream_socket_client)
+```php
+'serverquery://<user>:<password>@<host>:<query_port>/?server_port=<server_port>&ssh=0&no_query_clients&blocking=0&timeout=30&nickname=<bot_name>'
+```
+
+SSH Mode (ssh2_shell)
+```php
+'serverquery://<user>:<password>@<host>:<query_port>/?server_port=<server_port>&ssh=1&no_query_clients&blocking=0&timeout=30&nickname=<bot_name>'
+```
+
+Contains Username or Password special chars like ``+`` then you can use
+```php
+'serverquery://' . rawurlencode(<user>) . ':' . rawurlencode(<password>) .' @<host>:<query_port>/?server_port=<server_port>&ssh=1&no_query_clients&blocking=0&timeout=30&nickname=<bot_name>'
+```
+In my opinion you should **don't use specials chars**. Better, create a new QueryLogin Password and / or Username.
