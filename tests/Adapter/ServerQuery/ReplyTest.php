@@ -73,13 +73,12 @@ class ReplyTest extends TestCase
      */
     public function testToString()
     {
-        $this->markTestSkipped();
-//        $reply = new Reply([
-//            new StringHelper(static::$S_SERVERLIST),
-//            new StringHelper(static::$S_ERROR_OK),
-//        ]);
-//
-//        $this->assertEquals(static::$E_SERVERLIST, (string) $reply->toString());
+        $reply = new Reply([
+            new StringHelper(static::$S_SERVERLIST),
+            new StringHelper(static::$S_ERROR_OK),
+        ]);
+
+        $this->assertEquals(static::$E_SERVERLIST, (string) $reply->toString()->unescape());
     }
 
     public function testToLines()
