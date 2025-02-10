@@ -76,7 +76,7 @@ class UDPTest extends TestCase
         $this->assertEquals($this->host, $adapter->getConfig()['host']);
         $this->assertEquals($this->host, $adapter->getConfig('host'));
     }
-    
+
     /**
      * @throws TransportException
      */
@@ -99,7 +99,7 @@ class UDPTest extends TestCase
         $transport->connect();
         $this->assertIsResource($transport->getStream());
     }
-    
+
     /**
      * @throws TransportException
      */

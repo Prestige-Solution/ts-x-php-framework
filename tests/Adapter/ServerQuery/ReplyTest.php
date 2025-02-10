@@ -39,7 +39,7 @@ class ReplyTest extends TestCase
 
     private static string $E_CLIENTLIST_EXTENDED_SINGLE_CLID = '63';
 
-    private static string $E_CLIENTLIST_EXTENDED_SINGLE_CLIENT_NICKNAME = "HouseMaister-Radio Bob (Rock)";
+    private static string $E_CLIENTLIST_EXTENDED_SINGLE_CLIENT_NICKNAME = 'HouseMaister-Radio Bob (Rock)';
 
     private static string $E_CLIENTLIST_EXTENDED_SINGLE_CLIENT_AWAY_MESSAGE = '';
 
@@ -49,12 +49,12 @@ class ReplyTest extends TestCase
 
     private static string $E_CLIENTLIST_EXTENDED_SINGLE_CLIENT_SERVERGROUPS = '147,227';
 
-    private static string $E_CLIENTLIST_EXTENDED_SINGLE_CLIENT_VERSION = "3.5.6 [Build: 1606312422]";
+    private static string $E_CLIENTLIST_EXTENDED_SINGLE_CLIENT_VERSION = '3.5.6 [Build: 1606312422]';
 
     private static string $E_CLIENTLIST_EXTENDED_SINGLE_CLIENT_BADGES = 'Overwolf=1:badges=c2368518-3728-4260-bcd1-8b85e9f8984c';
 
     private static string $S_CLIENT_GROUP_LIST_LINE = 'cldbid=28 client_nickname=M client_unique_identifier=E|cldbid=24 client_nickname=A client_unique_identifier=j|cldbid=18 client_nickname=D client_unique_identifier=b|cldbid=17 client_nickname=N client_unique_identifier=Q';
-    
+
     /**
      * @throws AdapterException
      * @throws ServerQueryException
@@ -106,7 +106,7 @@ class ReplyTest extends TestCase
     {
         $this->markTestSkipped('todo: testToTable');
     }
-    
+
     /**
      * @throws AdapterException
      * @throws ServerQueryException
