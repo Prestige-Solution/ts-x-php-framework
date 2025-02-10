@@ -53,6 +53,8 @@ class ReplyTest extends TestCase
 
     private static string $E_CLIENTLIST_EXTENDED_SINGLE_CLIENT_BADGES = 'Overwolf=1:badges=c2368518-3728-4260-bcd1-8b85e9f8984c';
 
+    private static string $S_CLIENT_GROUP_LIST_LINE = 'cldbid=28 client_nickname=M client_unique_identifier=E|cldbid=24 client_nickname=A client_unique_identifier=j|cldbid=18 client_nickname=D client_unique_identifier=b|cldbid=17 client_nickname=N client_unique_identifier=Q';
+    
     /**
      * @throws AdapterException
      * @throws ServerQueryException
@@ -81,9 +83,23 @@ class ReplyTest extends TestCase
         $this->assertEquals(static::$E_SERVERLIST, (string) $reply->toString()->unescape());
     }
 
+    /**
+     * @throws AdapterException
+     * @throws ServerQueryException
+     */
     public function testToLines()
     {
-        $this->markTestSkipped('todo: testToLines');
+        $reply = new Reply([
+            new StringHelper(static::$S_CLIENT_GROUP_LIST_LINE),
+            new StringHelper(static::$S_ERROR_OK),
+        ]);
+
+        $this->assertEquals(4, count($reply->toLines()));
+        $lineResults = $reply->toLines();
+        $this->assertEquals('cldbid=28 client_nickname=M client_unique_identifier=E', $lineResults[0]);
+        $this->assertEquals('cldbid=24 client_nickname=A client_unique_identifier=j', $lineResults[1]);
+        $this->assertEquals('cldbid=18 client_nickname=D client_unique_identifier=b', $lineResults[2]);
+        $this->assertEquals('cldbid=17 client_nickname=N client_unique_identifier=Q', $lineResults[3]);
     }
 
     public function testToTable()

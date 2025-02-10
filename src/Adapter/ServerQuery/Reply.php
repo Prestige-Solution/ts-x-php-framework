@@ -128,9 +128,7 @@ class Reply
 
         $list = $this->toString()->split(TeamSpeak3::SEPARATOR_LIST);
 
-        //get count of arguments there passed to this function / 0 is similar to !func_num_args() but this variant results in bool(false)
-        $linesArgs = func_num_args();
-        if ($linesArgs >= 1) {
+        if (func_num_args() > 0) {
             for ($i = 0; $i < count($list); $i++) {
                 $list[$i]->unescape();
             }
