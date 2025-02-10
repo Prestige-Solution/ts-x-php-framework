@@ -71,7 +71,7 @@ class ReplyTest extends TestCase
      * @throws AdapterException
      * @throws ServerQueryException
      */
-    public function testToString()
+    public function testToString_can_unescape()
     {
         $reply = new Reply([
             new StringHelper(static::$S_SERVERLIST),

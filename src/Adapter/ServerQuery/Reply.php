@@ -104,7 +104,7 @@ class Reply
      *
      * @return StringHelper|null
      */
-    public function toString(): ?StringHelper
+    public function toString(): null|StringHelper
     {
         //get count of arguments there passed to this function / 0 is similar to !func_num_args() but this variant results in bool(false)
         $stringArgs = func_get_args();
