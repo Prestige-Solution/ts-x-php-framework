@@ -106,9 +106,7 @@ class Reply
      */
     public function toString(): null|StringHelper
     {
-        //get count of arguments there passed to this function / 0 is similar to !func_num_args() but this variant results in bool(false)
-        $stringArgs = func_get_args();
-        if ($stringArgs >= 1) {
+        if (func_get_args() > 0) {
             return $this->rpl;
         } else {
             return $this->rpl->unescape();
@@ -149,9 +147,7 @@ class Reply
         foreach ($this->toLines() as $cells) {
             $pairs = $cells->split(TeamSpeak3::SEPARATOR_CELL);
 
-            //get count of arguments there passed to this function / 0 is similar to !func_num_args() but this variant results in bool(false)
-            $tableArgs = func_get_args();
-            if ($tableArgs >= 1) {
+            if (func_get_args() > 0) {
                 for ($i = 0; $i < count($pairs); $i++) {
                     $pairs[$i]->unescape();
                 }
