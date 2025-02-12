@@ -159,9 +159,33 @@ class ReplyTest extends TestCase
         $this->markTestSkipped('todo: testToTable');
     }
 
+    /**
+     * @throws AdapterException
+     * @throws ServerQueryException
+     */
     public function testToList()
     {
-        $this->markTestSkipped('todo: testToTable');
+        $reply = new Reply([
+            new StringHelper(static::$S_CLIENT_GROUP_LIST_LINE),
+            new StringHelper(static::$S_ERROR_OK),
+        ]);
+
+        $this->assertEquals(4, count($reply->toList()));
+        $this->assertEquals('28', $reply->toList()[0]['cldbid']);
+        $this->assertEquals('M', $reply->toList()[0]['client_nickname']);
+        $this->assertEquals('E', $reply->toList()[0]['client_unique_identifier']);
+
+        $this->assertEquals('24', $reply->toList()[1]['cldbid']);
+        $this->assertEquals('A', $reply->toList()[1]['client_nickname']);
+        $this->assertEquals('j', $reply->toList()[1]['client_unique_identifier']);
+
+        $this->assertEquals('18', $reply->toList()[2]['cldbid']);
+        $this->assertEquals('D', $reply->toList()[2]['client_nickname']);
+        $this->assertEquals('b', $reply->toList()[2]['client_unique_identifier']);
+
+        $this->assertEquals('17', $reply->toList()[3]['cldbid']);
+        $this->assertEquals('N', $reply->toList()[3]['client_nickname']);
+        $this->assertEquals('Q', $reply->toList()[3]['client_unique_identifier']);
     }
 
     public function testToObjectArray()
