@@ -102,9 +102,33 @@ class ReplyTest extends TestCase
         $this->assertEquals('cldbid=17 client_nickname=N client_unique_identifier=Q', $lineResults[3]);
     }
 
+    /**
+     * @throws AdapterException
+     * @throws ServerQueryException
+     */
     public function testToTable()
     {
-        $this->markTestSkipped('todo: testToTable');
+        $reply = new Reply([
+            new StringHelper(static::$S_CLIENT_GROUP_LIST_LINE),
+            new StringHelper(static::$S_ERROR_OK),
+        ]);
+
+        $this->assertEquals(4, count($reply->toTable()));
+        $this->assertEquals('cldbid=28', $reply->toTable()[0][0]);
+        $this->assertEquals('client_nickname=M', $reply->toTable()[0][1]);
+        $this->assertEquals('client_unique_identifier=E', $reply->toTable()[0][2]);
+
+        $this->assertEquals('cldbid=24', $reply->toTable()[1][0]);
+        $this->assertEquals('client_nickname=A', $reply->toTable()[1][1]);
+        $this->assertEquals('client_unique_identifier=j', $reply->toTable()[1][2]);
+
+        $this->assertEquals('cldbid=18', $reply->toTable()[2][0]);
+        $this->assertEquals('client_nickname=D', $reply->toTable()[2][1]);
+        $this->assertEquals('client_unique_identifier=b', $reply->toTable()[2][2]);
+
+        $this->assertEquals('cldbid=17', $reply->toTable()[3][0]);
+        $this->assertEquals('client_nickname=N', $reply->toTable()[3][1]);
+        $this->assertEquals('client_unique_identifier=Q', $reply->toTable()[3][2]);
     }
 
     /**
