@@ -24,7 +24,7 @@ Replace all `DEV_LIVE_SERVER_*` Variables with your Teamspeak Configuration
 
 ### Important Notes
 If you run this Live Server Tests the Clients see massive Server Log entrys with Anti-Flood errors.<br>
-The test are very quickly with a lot of connections form the bot (one connection and disconnection for each test).<br>
+The test are very quickly with a lot of connections from the bot (one connection and disconnection for each test).<br>
 The Serveradministrator has no Anti-Flood Permissions, so maybe you as Administrator cant see this entrys.
 
 ---
