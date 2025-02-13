@@ -109,7 +109,7 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
      */
     public function execute($cmd, array $params = []): Reply
     {
-        return $this->request($this->prepare($cmd, $params));
+        return $this->request($this->getParent()->prepare($cmd, $params));
     }
 
     /**
