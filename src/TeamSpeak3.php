@@ -80,7 +80,7 @@ class TeamSpeak3
     /**
      * TeamSpeak 3 PHP Framework version.
      */
-    public const LIB_VERSION = '1.3.0';
+    public const LIB_VERSION = '2.0.0';
 
     /*@
      * TeamSpeak 3 protocol separators.
@@ -434,7 +434,7 @@ class TeamSpeak3
         $uri = new Uri($uri);
 
         $adapter = self::getAdapterName($uri->getScheme());
-        $options = ['host' => $uri->getHost(), 'port' => $uri->getPort(), 'timeout' => (int) $uri->getQueryVar('timeout', 10), 'blocking' => (int) $uri->getQueryVar('blocking', 1), 'tls' => (int) $uri->getQueryVar('tls', 0), 'ssh' => (int) $uri->getQueryVar('ssh', 0)];
+        $options = ['host' => $uri->getHost(), 'port' => $uri->getPort(), 'timeout' => (int) $uri->getQueryVar('timeout', 10), 'blocking' => (int) $uri->getQueryVar('blocking', 0), 'tls' => (int) $uri->getQueryVar('tls', 0), 'ssh' => (int) $uri->getQueryVar('ssh', 0)];
 
         self::loadClass($adapter);
 

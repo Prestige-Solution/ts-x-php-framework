@@ -58,8 +58,8 @@ class UDP extends Transport
             throw new TransportException(StringHelper::factory($errstr)->toUtf8()->toString(), $errno);
         }
 
-        @stream_set_timeout($this->stream, $timeout);
-        @stream_set_blocking($this->stream, $this->config['blocking'] ? 1 : 0);
+        stream_set_timeout($this->stream, $timeout);
+        stream_set_blocking($this->stream, $this->config['blocking'] ? 1 : 0);
     }
 
     /**
@@ -90,7 +90,7 @@ class UDP extends Transport
         $this->connect();
         $this->waitForReadyRead();
 
-        $data = @fread($this->stream, $length);
+        $data = fread($this->stream, $length);
 
         Signal::getInstance()->emit(strtolower($this->getAdapterType()).'DataRead', $data);
 
@@ -112,7 +112,7 @@ class UDP extends Transport
     {
         $this->connect();
 
-        @stream_socket_sendto($this->stream, $data);
+        stream_socket_sendto($this->stream, $data);
 
         Signal::getInstance()->emit(strtolower($this->getAdapterType()).'DataSend', $data);
     }

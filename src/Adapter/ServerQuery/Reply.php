@@ -54,9 +54,9 @@ class Reply
     /**
      * Stores connected PlanetTeamSpeak\TeamSpeak3Framework\Node\Host object.
      *
-     * @var Host
+     * @var Host|null
      */
-    protected Host $con;
+    protected Host|null $con;
 
     /**
      * Stores an assoc array containing the error info for this reply.

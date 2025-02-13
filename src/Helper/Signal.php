@@ -39,7 +39,7 @@ class Signal
      *
      * @var Signal|null
      */
-    protected static ?Signal $instance = null;
+    protected static null|Signal $instance = null;
 
     /**
      * Stores subscribed signals and their slots.
@@ -51,11 +51,9 @@ class Signal
     /**
      * Emits a signal with a given set of parameters.
      *
-     * @param string $signal
-     * @param mixed|null $params
+     * @param  string  $signal
+     * @param  mixed|null  $params
      * @return mixed
-     * @todo: Confirm / fix $return is set to last $slot->call() return value.
-     *      It appears all previous calls before last are lost / ignored.
      */
     public function emit(string $signal, mixed $params = null): mixed
     {
@@ -69,10 +67,16 @@ class Signal
         }
 
         foreach ($this->sigslots[$signal] as $slot) {
-            $return = $slot->call($params);
+            //TODO Cant find the call method
+            $signals = $slot->call($params);
         }
 
-        return $return;
+        //TODO at this point, $signals if only null but $params has defined array elements
+        if (empty($signals)) {
+            return null;
+        } else {
+            return $signals;
+        }
     }
 
     /**
