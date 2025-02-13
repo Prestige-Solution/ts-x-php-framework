@@ -99,7 +99,7 @@ class UriTest extends TestCase
      */
     public function testParseURI()
     {
-        $uri = 'serverquery://user:password@127.0.0.1:10022/?server_port=9987&ssh=0&no_query_clients=0&blocking=0&timeout=30&nickname=UnitTestBot';
+        $uri = 'serverquery://user:password@127.0.0.1:10022/?server_port=9987&ssh=0&no_query_clients=0&blocking=0&timeout=30&nickname=UnitTestBot#no_query_clients';
         $uriTest = new Uri($uri);
 
         $this->assertEquals('user', $uriTest->getUser());
@@ -112,6 +112,7 @@ class UriTest extends TestCase
         $this->assertEquals('0', $uriTest->getQuery()['blocking']);
         $this->assertEquals('30', $uriTest->getQuery()['timeout']);
         $this->assertEquals('UnitTestBot', $uriTest->getQuery()['nickname']);
+        $this->assertEquals('no_query_clients', $uriTest->getFragment());
     }
 
     /**
