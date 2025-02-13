@@ -45,16 +45,16 @@ If you build the serverquery without above parameters then there options will be
 ### Examples
 RAW Mode (stream_socket_client)
 ```php
-'serverquery://<user>:<password>@<host>:<query_port>/?server_port=<server_port>&ssh=0&no_query_clients&blocking=0&timeout=30&nickname=<bot_name>'
+'serverquery://<user>:<password>@<host>:<query_port>/?server_port=<server_port>&ssh=0&no_query_clients=0&blocking=0&timeout=30&nickname=<bot_name>'
 ```
 
 SSH Mode (ssh2_shell)
 ```php
-'serverquery://<user>:<password>@<host>:<query_port>/?server_port=<server_port>&ssh=1&no_query_clients&blocking=0&timeout=30&nickname=<bot_name>'
+'serverquery://<user>:<password>@<host>:<query_port>/?server_port=<server_port>&ssh=1&no_query_clients=0&blocking=0&timeout=30&nickname=<bot_name>'
 ```
 
 Contains Username or Password special chars like ``+`` then you can use
 ```php
-'serverquery://' . rawurlencode(<user>) . ':' . rawurlencode(<password>) .' @<host>:<query_port>/?server_port=<server_port>&ssh=1&no_query_clients&blocking=0&timeout=30&nickname=<bot_name>'
+'serverquery://' . rawurlencode(<user>) . ':' . rawurlencode(<password>) .' @<host>:<query_port>/?server_port=<server_port>&ssh=1&no_query_clients=0&blocking=0&timeout=30&nickname=<bot_name>'
 ```
 In my opinion you should **don't use specials chars**. Better, create a new QueryLogin Password and / or Username.
