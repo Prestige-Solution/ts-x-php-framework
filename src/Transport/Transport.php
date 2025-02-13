@@ -266,11 +266,10 @@ abstract class Transport
             $null = null;
 
             if ($time) {
-                Signal::getInstance()
-                    ->emit(strtolower($this->getAdapterType()).'WaitTimeout', $time, $this->getAdapter());
+                Signal::getInstance()->emit(strtolower($this->getAdapterType()).'WaitTimeout', $time, $this->getAdapter());
             }
 
             $time = $time + $this->config['timeout'];
-        } while (@stream_select($read, $null, $null, $this->config['timeout']) == 0);
+        } while (stream_select($read, $null, $null, $this->config['timeout']) === 0);
     }
 }

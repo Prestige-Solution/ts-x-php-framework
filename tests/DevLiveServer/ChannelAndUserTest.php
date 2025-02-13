@@ -1,6 +1,6 @@
 <?php
 
-namespace PlanetTeamSpeak\TeamSpeak3Framework\Tests\DevServer;
+namespace PlanetTeamSpeak\TeamSpeak3Framework\Tests\DevLiveServer;
 
 use PHPUnit\Framework\TestCase;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
@@ -8,7 +8,7 @@ use PlanetTeamSpeak\TeamSpeak3Framework\Exception\HelperException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\ServerQueryException;
 use PlanetTeamSpeak\TeamSpeak3Framework\TeamSpeak3;
 
-class DevLiveServerTest extends TestCase
+class ChannelAndUserTest extends TestCase
 {
     /**
      * ATTENTION
@@ -33,6 +33,7 @@ class DevLiveServerTest extends TestCase
     private string $ts3_unit_test_channel_name;
 
     private string $user_test_active;
+
     private string $ts3_unit_test_userName;
 
     private int $test_cid;
@@ -58,7 +59,7 @@ class DevLiveServerTest extends TestCase
         $this->ts3_server_uri = 'serverquery://'.$this->user.':'.$this->password.'@'.$this->host.':'.$this->queryPort.
             '/?server_port=9987'.
             '&ssh=0'.
-            '&no_query_clients'.
+            '&no_query_clients=0'.
             '&blocking=0'.
             '&timeout=30'.
             '&nickname=UnitTestBot';
@@ -66,48 +67,10 @@ class DevLiveServerTest extends TestCase
         $this->ts3_server_uri_ssh = 'serverquery://'.$this->user.':'.$this->password.'@'.$this->host.':10022'.
             '/?server_port=9987'.
             '&ssh=1'.
-            '&no_query_clients'.
+            '&no_query_clients=0'.
             '&blocking=0'.
             '&timeout=30'.
             '&nickname=UnitTestBot';
-    }
-
-    /**
-     * @throws AdapterException
-     * @throws ServerQueryException
-     * @throws HelperException
-     */
-    public function test_can_raw_connect()
-    {
-        if ($this->active == 'false') {
-            $this->markTestSkipped('DevLiveServer ist not active');
-        }
-
-        //TODO: infinity connection on connection without access or wrong port
-        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
-        $nodeInfo = $ts3_VirtualServer->getInfo();
-
-        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
-        $this->assertEquals('Linux', $nodeInfo['virtualserver_platform']);
-    }
-
-    /**
-     * @throws AdapterException
-     * @throws ServerQueryException
-     * @throws HelperException
-     */
-    public function test_can_ssh_connect()
-    {
-        if ($this->active == 'false') {
-            $this->markTestSkipped('DevLiveServer ist not active');
-        }
-
-        //TODO: infinity connection on connection without access or wrong port
-        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri_ssh);
-        $nodeInfo = $ts3_VirtualServer->getInfo();
-
-        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
-        $this->assertEquals('Linux', $nodeInfo['virtualserver_platform']);
     }
 
     /**
@@ -124,7 +87,7 @@ class DevLiveServerTest extends TestCase
         $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
         $channelInfo = $ts3_VirtualServer->channelGetByName($this->ts3_unit_test_channel_name)->getInfo();
 
-        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $ts3_VirtualServer->getParent()->getAdapter()->getTransport()->disconnect();
 
         $this->assertEquals($this->ts3_unit_test_channel_name, $channelInfo['channel_name']);
         $this->assertEquals(1, $channelInfo['channel_flag_permanent']);
@@ -151,7 +114,7 @@ class DevLiveServerTest extends TestCase
         $this->assertEquals('Play-Test', $cidTest['channel_name']);
 
         $this->unset_play_test_channel($ts3_VirtualServer);
-        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $ts3_VirtualServer->getParent()->getAdapter()->getTransport()->disconnect();
     }
 
     /**
@@ -190,7 +153,7 @@ class DevLiveServerTest extends TestCase
         }
 
         $this->unset_play_test_channel($ts3_VirtualServer);
-        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $ts3_VirtualServer->getParent()->getAdapter()->getTransport()->disconnect();
     }
 
     /**
@@ -233,7 +196,7 @@ class DevLiveServerTest extends TestCase
         $this->assertEquals(0, $channelModifiedResult['channel_flag_permanent']);
 
         $this->unset_play_test_channel($ts3_VirtualServer);
-        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $ts3_VirtualServer->getParent()->getAdapter()->getTransport()->disconnect();
     }
 
     /**
@@ -268,7 +231,7 @@ class DevLiveServerTest extends TestCase
             $this->assertEquals('invalid channelID', $e->getMessage());
         } finally {
             $this->unset_play_test_channel($ts3_VirtualServer);
-            $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+            $ts3_VirtualServer->getParent()->getAdapter()->getTransport()->disconnect();
         }
     }
 
@@ -314,7 +277,7 @@ class DevLiveServerTest extends TestCase
         $this->assertEquals($testCid4, $result['pid']);
 
         $this->unset_play_test_channel($ts3_VirtualServer);
-        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $ts3_VirtualServer->getParent()->getAdapter()->getTransport()->disconnect();
     }
 
     /**
@@ -339,7 +302,7 @@ class DevLiveServerTest extends TestCase
         $this->assertEquals('Standard Channel', $whoamiChannelName['channel_name']);
 
         $this->unset_play_test_channel($ts3_VirtualServer);
-        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $ts3_VirtualServer->getParent()->getAdapter()->getTransport()->disconnect();
     }
 
     /**
@@ -365,7 +328,7 @@ class DevLiveServerTest extends TestCase
         $this->assertEquals(75, $channelPermission['i_channel_needed_delete_power']['permvalue']);
 
         $this->unset_play_test_channel($ts3_VirtualServer);
-        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $ts3_VirtualServer->getParent()->getAdapter()->getTransport()->disconnect();
     }
 
     /**
@@ -393,7 +356,7 @@ class DevLiveServerTest extends TestCase
         $this->assertEquals(50, $channelPermission['i_channel_needed_subscribe_power']['permvalue']);
 
         $this->unset_play_test_channel($ts3_VirtualServer);
-        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $ts3_VirtualServer->getParent()->getAdapter()->getTransport()->disconnect();
     }
 
     /**
@@ -425,7 +388,7 @@ class DevLiveServerTest extends TestCase
         $this->assertArrayNotHasKey('i_channel_needed_subscribe_power', $channelPermission);
 
         $this->unset_play_test_channel($ts3_VirtualServer);
-        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $ts3_VirtualServer->getParent()->getAdapter()->getTransport()->disconnect();
     }
 
     /**
@@ -448,7 +411,7 @@ class DevLiveServerTest extends TestCase
         $this->assertEquals($this->ts3_unit_test_userName, $userInfo['client_nickname']);
 
         $this->unset_play_test_channel($ts3_VirtualServer);
-        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $ts3_VirtualServer->getParent()->getAdapter()->getTransport()->disconnect();
     }
 
     /**
@@ -479,7 +442,7 @@ class DevLiveServerTest extends TestCase
         $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->modify(['client_is_talker'=> 0]);
 
         $this->unset_play_test_channel($ts3_VirtualServer);
-        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $ts3_VirtualServer->getParent()->getAdapter()->getTransport()->disconnect();
     }
 
     /**
@@ -504,7 +467,7 @@ class DevLiveServerTest extends TestCase
         $this->assertEquals($userMoved['cid'], $testCid);
 
         $this->unset_play_test_channel($ts3_VirtualServer);
-        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $ts3_VirtualServer->getParent()->getAdapter()->getTransport()->disconnect();
     }
 
     /**

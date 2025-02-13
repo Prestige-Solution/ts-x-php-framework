@@ -17,6 +17,7 @@ Replace all `DEV_LIVE_SERVER_*` Variables with your Teamspeak Configuration
 | DEV_LIVE_SERVER_UNIT_TEST_CHANNEL=     | Setup a Channelname for Channel Tests. The Live Server Tests will create channels under this configured Channelname* |
 | DEV_LIVE_SERVER_UNIT_TEST_USER_ACTIVE= | Activate User Tests (Default = false). At false all User Tests will be skipped                                       |
 | DEV_LIVE_SERVER_UNIT_TEST_USER=        | Setup a Teamspeak Testclient. It will be use for Client Tests                                                        |
+| DEV_LIVE_SERVER_UNIT_TEST_SIGNALS=     | Test Signals. Default = false. NOTE: This Test have a very long Test duration.                                       |
 
 ### Important Configuration
 ***Set Permission Change (Modify) Power and Delete Power to 75. Otherwise, the tests with permissions will be fail.**
