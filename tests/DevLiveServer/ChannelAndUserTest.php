@@ -59,7 +59,7 @@ class ChannelAndUserTest extends TestCase
         $this->ts3_server_uri = 'serverquery://'.$this->user.':'.$this->password.'@'.$this->host.':'.$this->queryPort.
             '/?server_port=9987'.
             '&ssh=0'.
-            '&no_query_clients'.
+            '&no_query_clients=0'.
             '&blocking=0'.
             '&timeout=30'.
             '&nickname=UnitTestBot';
@@ -67,7 +67,7 @@ class ChannelAndUserTest extends TestCase
         $this->ts3_server_uri_ssh = 'serverquery://'.$this->user.':'.$this->password.'@'.$this->host.':10022'.
             '/?server_port=9987'.
             '&ssh=1'.
-            '&no_query_clients'.
+            '&no_query_clients=0'.
             '&blocking=0'.
             '&timeout=30'.
             '&nickname=UnitTestBot';

@@ -2,9 +2,7 @@
 
 namespace PlanetTeamSpeak\TeamSpeak3Framework\Tests\Transport;
 
-use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
-use PlanetTeamSpeak\TeamSpeak3Framework\Adapter\ServerQuery;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\TransportException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Transport\UDP;
 
@@ -81,23 +79,6 @@ class UDPTest extends TestCase
 
     /**
      * @throws TransportException
-     * @throws Exception
-     */
-    public function testSetGetAdapter()
-    {
-        $this->markTestSkipped();
-//        $transport = new UDP(
-//            ['host' => $this->host, 'port' => $this->port]
-//        );
-//        // Mocking adaptor since `stream_socket_client()` depends on running server
-//        $adaptor = $this->createMock(ServerQuery::class);
-//        $transport->setAdapter($adaptor);
-//
-//        $this->assertSame($adaptor, $transport->getAdapter());
-    }
-
-    /**
-     * @throws TransportException
      */
     public function testGetStream()
     {
@@ -117,24 +98,6 @@ class UDPTest extends TestCase
         );
         $transport->connect();
         $this->assertIsResource($transport->getStream());
-    }
-
-    /**
-     * @throws TransportException
-     */
-    public function testConnectBadHost()
-    {
-        $this->markTestSkipped();
-//        $transport = new UDP(
-//            ['host' => $this->host, 'port' => $this->port]
-//        );
-//        $this->expectException(TransportException::class);
-//        if (PHP_VERSION_ID < 80100) {
-//            $this->expectExceptionMessage('getaddrinfo failed');
-//        } else {
-//            $this->expectExceptionMessage("getaddrinfo for $this->host failed");
-//        }
-//        $transport->connect();
     }
 
     /**
@@ -161,41 +124,5 @@ class UDPTest extends TestCase
         );
         $this->assertNull($transport->getStream());
         $transport->disconnect();
-    }
-
-    /**
-     * @throws TransportException
-     */
-    public function testReadNoConnection()
-    {
-        $this->markTestSkipped();
-//        $transport = new UDP(
-//            ['host' => $this->host, 'port' => $this->port]
-//        );
-//        $this->expectException(TransportException::class);
-//        if (PHP_VERSION_ID < 80100) {
-//            $this->expectExceptionMessage('getaddrinfo failed');
-//        } else {
-//            $this->expectExceptionMessage("getaddrinfo for $this->host failed");
-//        }
-//        $transport->read();
-    }
-
-    /**
-     * @throws TransportException
-     */
-    public function testSendNoConnection()
-    {
-        $this->markTestSkipped();
-//        $transport = new UDP(
-//            ['host' => $this->host, 'port' => $this->port]
-//        );
-//        $this->expectException(TransportException::class);
-//        if (PHP_VERSION_ID < 80100) {
-//            $this->expectExceptionMessage('getaddrinfo failed');
-//        } else {
-//            $this->expectExceptionMessage("getaddrinfo for $this->host failed");
-//        }
-//        $transport->send('test.send');
     }
 }
