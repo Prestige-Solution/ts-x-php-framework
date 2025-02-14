@@ -5,34 +5,38 @@ on:
     branches:
       - main
       - dev
+  pull_request:
+  
 jobs:
-  code-style:
+  phpunit-tests:
     strategy:
       fail-fast: false
       matrix:
-        php_versions: [
-          '8.2',
-        ]
-    name: PHP ${{ matrix.php_versions }}
+        php_versions: ['8.2']
+        
+    name: PHPUnit (PHP ${{ matrix.php_versions }})
     runs-on: ubuntu-latest
-    steps:
-    - name: checkout repository
-      uses: actions/checkout@v3
+    steps:      
+      - name: install php ${{ matrix.php_versions }} with extensions
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php_versions }}
+          extensions: json ctype openssl ssh2
+          coverage: none
+          tools: none
+    
+      - name: checkout repository
+        uses: actions/checkout@v4.2.1
+          
+      - name: install dependencies
+        uses: php-actions/composer@v6
+        with:
+          dev: yes
+          php_version: ${{ matrix.php_versions }}
+          php_extensions: json ctype openssl ssh2
+          
+      - name: copy environment file
+        run: cp .env.testing.example .env.testing
 
-    - name: install php ${{ matrix.php_versions }} with extensions
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: ${{ matrix.php_versions }}
-        extensions: json ctype openssl ssh2
-        coverage: none
-        tools: none
-
-    - name: install dependencies
-      uses: php-actions/composer@v6
-      with:
-        dev: yes
-        php_version: ${{ matrix.php_versions }}
-        php_extensions: json ctype openssl ssh2
-
-    - name: run php-cs-fixer
-      run: ./vendor/bin/php-cs-fixer fix --config .php-cs-fixer.php --diff --dry-run
+      - name: run php-cs-fixer
+        run: ./vendor/bin/php-cs-fixer fix --config .php-cs-fixer.php --diff --dry-run
