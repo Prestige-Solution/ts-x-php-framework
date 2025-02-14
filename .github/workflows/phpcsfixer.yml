@@ -3,13 +3,8 @@ name: "PHP-CS-Fixer"
 on:
   push:
     branches:
-      - master
       - main
       - dev
-  pull_request:
-  schedule:
-    - cron: '0 15 * * 2'
-
 jobs:
   code-style:
     strategy:

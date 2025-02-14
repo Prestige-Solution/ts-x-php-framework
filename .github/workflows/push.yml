@@ -1,0 +1,39 @@
+name: "PHPUnit"
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  phpunit-tests:
+    strategy:
+      fail-fast: false
+      matrix:
+        php_versions: [
+          '8.2',
+        ]
+
+  name: PHPUnit (PHP ${{ matrix.php_versions }})
+  runs-on: ubuntu-latest
+  steps:
+    - name: install php ${{ matrix.php_versions }} with extensions
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php_versions }}
+        extensions: json ctype openssl extif
+        coverage: xdebug
+        tools: none
+
+    - name: checkout repository
+      uses: actions/checkout@v4.2.1
+
+    - name: copy environment file
+    - run: copy .env.testing.example .env.testing
+
+    - name: run unit test
+      run: ./vendor/bin/phpunit --no-coverage
