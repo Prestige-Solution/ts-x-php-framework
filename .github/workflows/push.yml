@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - dev
+  
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
@@ -14,26 +15,30 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php_versions: [
-          '8.2',
-        ]
-
-  name: PHPUnit (PHP ${{ matrix.php_versions }})
-  runs-on: ubuntu-latest
-  steps:
-    - name: install php ${{ matrix.php_versions }} with extensions
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: ${{ matrix.php_versions }}
-        extensions: json ctype openssl extif
-        coverage: xdebug
-        tools: none
-
-    - name: checkout repository
-      uses: actions/checkout@v4.2.1
-
-    - name: copy environment file
-    - run: copy .env.testing.example .env.testing
-
-    - name: run unit test
-      run: ./vendor/bin/phpunit --no-coverage
+        php_versions: ['8.2']
+        
+    name: PHPUnit (PHP ${{ matrix.php_versions }})
+    runs-on: ubuntu-latest
+    steps:      
+      - name: install php ${{ matrix.php_versions }} with extensions
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php_versions }}
+          extensions: json ctype openssl ssh2
+          coverage: none
+          tools: none
+    
+      - name: checkout repository
+        uses: actions/checkout@v4.2.1
+          
+      - name: install dependencies
+        uses: php-actions/composer@v6
+        with:
+          dev: yes
+          php_version: ${{ matrix.php_versions }}
+          php_extensions: json ctype openssl ssh2
+          
+      - name: copy environment file
+        run: cp .env.testing.example .env.testing
+      - name: run unit test
+        run: ./vendor/bin/phpunit --no-coverage
