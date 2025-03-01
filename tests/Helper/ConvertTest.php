@@ -198,7 +198,7 @@ class ConvertTest extends TestCase
         $this->assertEquals('-0D 01:00:00', $output);
         $this->assertIsString($output);
 
-        $output = Convert::seconds( strtotime('23 hours 59 minutes 59 seconds ago', 0));
+        $output = Convert::seconds(strtotime('23 hours 59 minutes 59 seconds ago', 0));
         $this->assertEquals('-0D 23:59:59', $output);
         $this->assertIsString($output);
 
