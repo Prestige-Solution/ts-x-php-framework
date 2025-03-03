@@ -26,6 +26,7 @@ namespace PlanetTeamSpeak\TeamSpeak3Framework\Node;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\FileTransferException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\HelperException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\NodeException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\ServerQueryException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\TransportException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Helper\StringHelper;
@@ -77,8 +78,10 @@ class Client extends Node
     /**
      * Changes the clients properties using given properties.
      *
-     * @param array $properties
+     * @param  array  $properties
      * @return void
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function modifyDb(array $properties): void
     {
@@ -89,6 +92,8 @@ class Client extends Node
      * Deletes the clients properties from the database.
      *
      * @return void
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function deleteDb(): void
     {
@@ -99,6 +104,8 @@ class Client extends Node
      * Returns a list of properties from the database for the client.
      *
      * @return array
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function infoDb(): array
     {
@@ -121,9 +128,11 @@ class Client extends Node
     /**
      * Moves the client to another channel.
      *
-     * @param int $cid
-     * @param string|null $cpw
+     * @param  int  $cid
+     * @param  string|null  $cpw
      * @return void
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function move(int $cid, string $cpw = null): void
     {
@@ -133,9 +142,11 @@ class Client extends Node
     /**
      * Kicks the client from his currently joined channel or from the server.
      *
-     * @param int $reasonid
-     * @param string|null $reasonmsg
+     * @param  int  $reasonid
+     * @param  string|null  $reasonmsg
      * @return void
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function kick(int $reasonid = TeamSpeak3::KICK_CHANNEL, string $reasonmsg = null): void
     {
@@ -145,8 +156,10 @@ class Client extends Node
     /**
      * Sends a poke message to the client.
      *
-     * @param string $msg
+     * @param  string  $msg
      * @return void
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function poke(string $msg): void
     {
@@ -157,9 +170,11 @@ class Client extends Node
      * Bans the client from the server. Please note that this will create two separate
      * ban rules for the targeted clients IP address and his unique identifier.
      *
-     * @param int|null $timeseconds
-     * @param string|null $reason
+     * @param  int|null  $timeseconds
+     * @param  string|null  $reason
      * @return array
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function ban(int $timeseconds = null, string $reason = null): array
     {
@@ -170,6 +185,8 @@ class Client extends Node
      * Returns a list of custom properties for the client.
      *
      * @return array
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function customInfo(): array
     {
@@ -179,9 +196,11 @@ class Client extends Node
     /**
      * Creates or updates a custom property for the client.
      *
-     * @param string $ident
-     * @param string $value
+     * @param  string  $ident
+     * @param  string  $value
      * @return void
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function customSet(string $ident, string $value): void
     {
@@ -191,8 +210,10 @@ class Client extends Node
     /**
      * Removes a custom property from the client.
      *
-     * @param string $ident
+     * @param  string  $ident
      * @return void
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function customDelete(string $ident): void
     {
@@ -215,8 +236,10 @@ class Client extends Node
     /**
      * Returns a list of permissions defined for the client.
      *
-     * @param bool $permsid
+     * @param  bool  $permsid
      * @return array
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function permList(bool $permsid = false): array
     {
@@ -227,10 +250,12 @@ class Client extends Node
      * Adds a set of specified permissions to the client. Multiple permissions can be added by providing
      * the three parameters of each permission.
      *
-     * @param int|int[] $permid
-     * @param int|int[] $permvalue
-     * @param bool|bool[] $permskip
+     * @param  int|int[]  $permid
+     * @param  int|int[]  $permvalue
+     * @param  bool|bool[]  $permskip
      * @return void
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function permAssign(int|array $permid, int|array $permvalue, array|bool $permskip = false): void
     {
@@ -241,6 +266,7 @@ class Client extends Node
      * Alias for permAssign().
      *
      * @deprecated
+     * @throws
      */
     public function permAssignByName($permname, $permvalue, $permskip = false): void
     {
@@ -250,8 +276,10 @@ class Client extends Node
     /**
      * Removes a set of specified permissions from a client. Multiple permissions can be removed at once.
      *
-     * @param int $permid
+     * @param  int  $permid
      * @return void
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function permRemove(int $permid): void
     {
@@ -262,6 +290,7 @@ class Client extends Node
      * Alias for permRemove().
      *
      * @deprecated
+     * @throws
      */
     public function permRemoveByName($permname): void
     {
@@ -271,9 +300,11 @@ class Client extends Node
     /**
      * Sets the channel group of a client to the ID specified.
      *
-     * @param int $cid
-     * @param int $cgid
+     * @param  int  $cid
+     * @param  int  $cgid
      * @return void
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function setChannelGroup(int $cid, int $cgid): void
     {
@@ -283,8 +314,10 @@ class Client extends Node
     /**
      * Adds the client to the server group specified with $sgid.
      *
-     * @param int $sgid
+     * @param  int  $sgid
      * @return void
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function addServerGroup(int $sgid): void
     {
@@ -294,8 +327,10 @@ class Client extends Node
     /**
      * Removes the client from the server group specified with $sgid.
      *
-     * @param int $sgid
+     * @param  int  $sgid
      * @return void
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function remServerGroup(int $sgid): void
     {
@@ -388,6 +423,9 @@ class Client extends Node
      * Returns all server and channel groups the client is currently residing in.
      *
      * @return array
+     * @throws AdapterException
+     * @throws ServerQueryException
+     * @throws NodeException
      */
     public function memberOf(): array
     {

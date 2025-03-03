@@ -23,6 +23,7 @@
 
 namespace PlanetTeamSpeak\TeamSpeak3Framework\Node;
 
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\ServerQueryException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Helper\StringHelper;
 use PlanetTeamSpeak\TeamSpeak3Framework\TeamSpeak3;
@@ -57,8 +58,10 @@ class ChannelGroup extends Group
     /**
      * Renames the channel group specified.
      *
-     * @param string $name
+     * @param  string  $name
      * @return void
+     * @throws ServerQueryException
+     * @throws AdapterException
      */
     public function rename(string $name): void
     {
@@ -69,8 +72,10 @@ class ChannelGroup extends Group
      * Deletes the channel group. If $force is set to TRUE, the channel group will be
      * deleted even if there are clients within.
      *
-     * @param bool $force
+     * @param  bool  $force
      * @return void
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function delete(bool $force = false): void
     {
@@ -80,10 +85,12 @@ class ChannelGroup extends Group
     /**
      * Creates a copy of the channel group and returns the new groups ID.
      *
-     * @param string|null $name
-     * @param int $tcgid
-     * @param int $type
+     * @param  string|null  $name
+     * @param  int  $tcgid
+     * @param  int  $type
      * @return int
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function copy(string $name = null, int $tcgid = 0, int $type = TeamSpeak3::GROUP_DBTYPE_REGULAR): int
     {
@@ -93,8 +100,10 @@ class ChannelGroup extends Group
     /**
      * Returns a list of permissions assigned to the channel group.
      *
-     * @param bool $permsid
+     * @param  bool  $permsid
      * @return array
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function permList(bool $permsid = false): array
     {
@@ -105,9 +114,11 @@ class ChannelGroup extends Group
      * Adds a set of specified permissions to the channel group. Multiple permissions
      * can be added by providing the two parameters of each permission in separate arrays.
      *
-     * @param int $permid
-     * @param int $permvalue
+     * @param  int  $permid
+     * @param  int  $permvalue
      * @return void
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function permAssign(int $permid, int $permvalue): void
     {
@@ -118,6 +129,7 @@ class ChannelGroup extends Group
      * Alias for permAssign().
      *
      * @deprecated
+     * @throws
      */
     public function permAssignByName($permname, $permvalue): void
     {
@@ -128,8 +140,10 @@ class ChannelGroup extends Group
      * Removes a set of specified permissions from the channel group. Multiple
      * permissions can be removed at once.
      *
-     * @param int $permid
+     * @param  int  $permid
      * @return void
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function permRemove(int $permid): void
     {
@@ -140,6 +154,7 @@ class ChannelGroup extends Group
      * Alias for permAssign().
      *
      * @deprecated
+     * @throws
      */
     public function permRemoveByName($permname): void
     {
@@ -149,10 +164,12 @@ class ChannelGroup extends Group
     /**
      * Returns a list of clients assigned to the channel group specified.
      *
-     * @param int|null $cid
-     * @param int|null $cldbid
-     * @param bool $resolve
+     * @param  int|null  $cid
+     * @param  int|null  $cldbid
+     * @param  bool  $resolve
      * @return array
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function clientList(int $cid = null, int $cldbid = null, bool $resolve = false): array
     {
@@ -163,6 +180,7 @@ class ChannelGroup extends Group
      * Alias for privilegeKeyCreate().
      *
      * @deprecated
+     * @throws
      */
     public function tokenCreate($cid, $description = null, $customset = null): StringHelper
     {
@@ -172,10 +190,12 @@ class ChannelGroup extends Group
     /**
      * Creates a new privilege key (token) for the channel group and returns the key.
      *
-     * @param int $cid
-     * @param string|null $description
-     * @param string|null $customset
+     * @param  int  $cid
+     * @param  string|null  $description
+     * @param  string|null  $customset
      * @return StringHelper
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function privilegeKeyCreate(int $cid, string $description = null, string $customset = null): StringHelper
     {
@@ -184,6 +204,7 @@ class ChannelGroup extends Group
 
     /**
      * @ignore
+     * @throws
      */
     protected function fetchNodeList(): void
     {

@@ -23,7 +23,9 @@
 
 namespace PlanetTeamSpeak\TeamSpeak3Framework\Node;
 
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\NodeException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\ServerQueryException;
 use PlanetTeamSpeak\TeamSpeak3Framework\TeamSpeak3;
 
 /**
@@ -55,8 +57,10 @@ class ServerGroup extends Group
     /**
      * Renames the server group specified.
      *
-     * @param string $name
+     * @param  string  $name
      * @return void
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function rename(string $name): void
     {
@@ -67,8 +71,10 @@ class ServerGroup extends Group
      * Deletes the server group. If $force is set to 1, the server group will be
      * deleted even if there are clients within.
      *
-     * @param bool $force
+     * @param  bool  $force
      * @return void
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function delete(bool $force = false): void
     {
@@ -78,10 +84,12 @@ class ServerGroup extends Group
     /**
      * Creates a copy of the server group and returns the new groups ID.
      *
-     * @param string|null $name
-     * @param int $tsgid
-     * @param int $type
+     * @param  string|null  $name
+     * @param  int  $tsgid
+     * @param  int  $type
      * @return int
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function copy(string $name = null, int $tsgid = 0, int $type = TeamSpeak3::GROUP_DBTYPE_REGULAR): int
     {
@@ -91,8 +99,10 @@ class ServerGroup extends Group
     /**
      * Returns a list of permissions assigned to the server group.
      *
-     * @param bool $permsid
+     * @param  bool  $permsid
      * @return array
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function permList(bool $permsid = false): array
     {
@@ -103,11 +113,13 @@ class ServerGroup extends Group
      * Adds a set of specified permissions to the server group. Multiple permissions
      * can be added by providing the four parameters of each permission in separate arrays.
      *
-     * @param int $permid
-     * @param int $permvalue
-     * @param int $permnegated
-     * @param int $permskip
+     * @param  int  $permid
+     * @param  int  $permvalue
+     * @param  int  $permnegated
+     * @param  int  $permskip
      * @return void
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function permAssign(int $permid, int $permvalue, int $permnegated = 0, int $permskip = 0): void
     {
@@ -118,6 +130,7 @@ class ServerGroup extends Group
      * Alias for permAssign().
      *
      * @deprecated
+     * @throws
      */
     public function permAssignByName($permname, $permvalue, $permnegated = false, $permskip = false): void
     {
@@ -128,8 +141,10 @@ class ServerGroup extends Group
      * Removes a set of specified permissions from the server group. Multiple
      * permissions can be removed at once.
      *
-     * @param int $permid
+     * @param  int  $permid
      * @return void
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function permRemove(int $permid): void
     {
@@ -140,6 +155,7 @@ class ServerGroup extends Group
      * Alias for permRemove().
      *
      * @deprecated
+     * @throws
      */
     public function permRemoveByName($permname): void
     {
@@ -150,6 +166,8 @@ class ServerGroup extends Group
      * Returns a list of clients assigned to the server group specified.
      *
      * @return array
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function clientList(): array
     {
@@ -160,8 +178,10 @@ class ServerGroup extends Group
      * Adds a client to the server group specified. Please note that a client cannot be
      * added to default groups or template groups.
      *
-     * @param int $cldbid
+     * @param  int  $cldbid
      * @return void
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function clientAdd(int $cldbid): void
     {
@@ -171,8 +191,10 @@ class ServerGroup extends Group
     /**
      * Removes a client from the server group.
      *
-     * @param int $cldbid
+     * @param  int  $cldbid
      * @return void
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function clientDel(int $cldbid): void
     {
@@ -183,6 +205,7 @@ class ServerGroup extends Group
      * Alias for privilegeKeyCreate().
      *
      * @deprecated
+     * @throws
      */
     public function tokenCreate($description = null, $customset = null): string
     {
@@ -192,9 +215,11 @@ class ServerGroup extends Group
     /**
      * Creates a new privilege key (token) for the server group and returns the key.
      *
-     * @param string|null $description
-     * @param string|null $customset
+     * @param  string|null  $description
+     * @param  string|null  $customset
      * @return string
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function privilegeKeyCreate(string $description = null, string $customset = null): string
     {
@@ -204,6 +229,7 @@ class ServerGroup extends Group
 
     /**
      * @ignore
+     * @throws
      */
     protected function fetchNodeList(): void
     {
