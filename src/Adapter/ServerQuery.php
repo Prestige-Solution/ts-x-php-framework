@@ -46,7 +46,7 @@ class ServerQuery extends Adapter
      *
      * @var Host|null
      */
-    protected ?Host $host = null;
+    protected null|Host $host = null;
 
     /**
      * Stores the timestamp of the last command.
@@ -274,7 +274,7 @@ class ServerQuery extends Adapter
      *
      * @return Host|null
      */
-    public function getHost(): ?Host
+    public function getHost(): null|Host
     {
         if ($this->host === null) {
             $this->host = new Host($this);

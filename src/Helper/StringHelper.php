@@ -261,7 +261,7 @@ class StringHelper implements ArrayAccess, Iterator, Countable, JsonSerializable
      * @param int $last
      * @return StringHelper|null
      */
-    public function section(string $separator, int $first = 0, int $last = 0): ?self
+    public function section(string $separator, int $first = 0, int $last = 0): null|self
     {
         $sections = explode($separator, $this->string);
 
@@ -906,7 +906,7 @@ class StringHelper implements ArrayAccess, Iterator, Countable, JsonSerializable
      * @throws HelperException
      * @ignore
      */
-    public function offsetGet($offset): ?Char
+    public function offsetGet($offset): null|Char
     {
         return ($this->offsetExists($offset)) ? new Char($this->string[$offset]) : null;
     }

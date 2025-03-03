@@ -199,7 +199,7 @@ class Signal
      *
      * @return Signal|null
      */
-    public static function getInstance(): ?self
+    public static function getInstance(): null|self
     {
         if (self::$instance === null) {
             self::$instance = new self();

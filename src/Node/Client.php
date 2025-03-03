@@ -379,7 +379,7 @@ class Client extends Node
      *
      * @return int|null
      */
-    public function getRev(): ?int
+    public function getRev(): null|int
     {
         return $this['client_type'] ? null : $this['client_version']->section('[', 1)->filterDigits();
     }
