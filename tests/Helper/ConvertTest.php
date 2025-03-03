@@ -150,11 +150,11 @@ class ConvertTest extends TestCase
         $this->assertEquals('0D 00:01:00', $output);
         $this->assertIsString($output);
 
-        $output = Convert::seconds((59 * 60) + 59);
+        $output = Convert::seconds(strtotime('59 minutes 59 seconds',0));
         $this->assertEquals('0D 00:59:59', $output);
         $this->assertIsString($output);
 
-        $output = Convert::seconds((59 * 60) + 60);
+        $output = Convert::seconds(strtotime('1 hours',0));
         $this->assertEquals('0D 01:00:00', $output);
         $this->assertIsString($output);
 
