@@ -69,7 +69,7 @@ If you build the serverquery without above parameters then there options will be
 ```
 In my opinion you should **don't use specials chars**. Better, create a new QueryLogin Password and / or Username.
 
-- You can use IPv4, IPv6 or DNS. Implement following Example in you Project.
+- You can use IPv4, IPv6 or DNS. Implement following Example in your Project.
 ```php
 if (filter_var($host, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) || filter_var(gethostbyname($host), FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
     $validatedHost = $host;
@@ -97,4 +97,4 @@ if (filter_var($host, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) || filter_var(gethos
 ---
 
 # Important note
-We have no intention of abandoning the original repository altogether. We will keep the namespace so that an update to the original PlanetTeamspeak repository can be considered as far as possible. 
+We have no intention of abandoning the original repository altogether. We will keep the namespace so that an update to the original PlanetTeamspeak repository can be considered as far as possible and the Support from the Maintainer is back.
