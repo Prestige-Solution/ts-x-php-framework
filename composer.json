@@ -1,8 +1,8 @@
 {
-  "name": "majoroli/ts3-php-framework",
+  "name": "prestige-solution/ts-x-php-framework",
   "type": "library",
-  "description": "Modern use-at-will framework that provides individual components to manage TeamSpeak 3 Server instances",
-  "keywords": ["ts3", "teamspeak","server","query","filetransfer","management","interface","api"],
+  "description": "Modern use-at-will framework that provides individual components to manage Teamspeak Server Instances",
+  "keywords": ["ts", "teamspeak","server","query","filetransfer","management","interface","api"],
   "license": "GPL-3.0",
   "authors": [
     {
@@ -12,7 +12,7 @@
   ],
   "support": {
     "email": "contact@prestige-solutions.de",
-    "issues": "https://github.com/MajorOli/ts3-php-framework/issues"
+    "issues": "https://github.com/Prestige-Solution/ts-x-php-framework/issues"
   },
   "config": {
     "sort-packages": true
