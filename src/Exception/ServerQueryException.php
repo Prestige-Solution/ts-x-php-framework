@@ -66,7 +66,7 @@ class ServerQueryException extends AdapterException
      *
      * @return string|null
      */
-    public function getReturnCode(): ?string
+    public function getReturnCode(): null|string
     {
         return $this->return_code;
     }

@@ -85,7 +85,7 @@ class TCP extends Transport
         }
 
         stream_set_timeout($this->stream, $timeout);
-        stream_set_blocking($this->stream, $blocking ? 1 : 0);
+        stream_set_blocking($this->stream, $blocking);
     }
 
     /**
@@ -121,7 +121,7 @@ class TCP extends Transport
         $this->connect();
         $this->waitForReadyRead();
 
-        $data = @stream_get_contents($this->stream, $length);
+        $data = stream_get_contents($this->stream, $length);
 
         Signal::getInstance()->emit(strtolower($this->getAdapterType()).'DataRead', $data);
 
@@ -149,7 +149,11 @@ class TCP extends Transport
         while (! $line->endsWith($token)) {
             $this->waitForReadyRead();
 
-            $data = fgets($this->stream, 4096);
+            $data = fgets($this->stream);
+
+            if ($this->getAdapter()->getTransport()->config['ssh'] === 1) {
+                $data = rtrim($data, "\0");
+            }
 
             Signal::getInstance()->emit(strtolower($this->getAdapterType()).'DataRead', $data);
 
@@ -177,7 +181,7 @@ class TCP extends Transport
     {
         $this->connect();
 
-        @fwrite($this->stream, $data);
+        fwrite($this->stream, $data);
 
         Signal::getInstance()->emit(strtolower($this->getAdapterType()).'DataSend', $data);
     }

@@ -298,7 +298,7 @@ class Html implements ViewerInterface
      *
      * @return string|null
      */
-    protected function getCorpusTitle(): ?string
+    protected function getCorpusTitle(): null|string
     {
         if ($this->currObj instanceof Server) {
             return 'ID: '.$this->currObj->getId().' | Clients: '.$this->currObj->clientCount().'/'.$this->currObj['virtualserver_maxclients'].' | Uptime: '.Convert::seconds($this->currObj['virtualserver_uptime']);

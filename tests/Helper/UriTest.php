@@ -94,10 +94,25 @@ class UriTest extends TestCase
         ));
     }
 
+    /**
+     * @throws HelperException
+     */
     public function testParseURI()
     {
-        // @todo: No reachable path results in error. Implement if found.
-        $this->markTestSkipped();
+        $uri = 'serverquery://user:password@127.0.0.1:10022/?server_port=9987&ssh=0&no_query_clients=0&blocking=0&timeout=30&nickname=UnitTestBot#no_query_clients';
+        $uriTest = new Uri($uri);
+
+        $this->assertEquals('user', $uriTest->getUser());
+        $this->assertEquals('password', $uriTest->getPass());
+        $this->assertEquals('127.0.0.1', $uriTest->getHost());
+        $this->assertEquals('10022', $uriTest->getPort());
+        $this->assertEquals('9987', $uriTest->getQuery()['server_port']);
+        $this->assertEquals('0', $uriTest->getQuery()['ssh']);
+        $this->assertEquals('0', $uriTest->getQuery()['no_query_clients']);
+        $this->assertEquals('0', $uriTest->getQuery()['blocking']);
+        $this->assertEquals('30', $uriTest->getQuery()['timeout']);
+        $this->assertEquals('UnitTestBot', $uriTest->getQuery()['nickname']);
+        $this->assertEquals('no_query_clients', $uriTest->getFragment());
     }
 
     /**
@@ -470,7 +485,4 @@ class UriTest extends TestCase
             $uri->getFragment()
         );
     }
-
-    // @todo: Implement remaining get* tests
-    // Deferring for now, since mostly web related.
 }

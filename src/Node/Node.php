@@ -109,15 +109,15 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
      */
     public function execute($cmd, array $params = []): Reply
     {
-        return $this->request($this->prepare($cmd, $params));
+        return $this->request($this->getParent()->prepare($cmd, $params));
     }
 
     /**
      * Returns the parent object of the current node.
      *
-     * @return ServerQuery|Node|Host|null
+     * @return ServerQuery|Server|Host|Node|null
      */
-    public function getParent(): ServerQuery|self|Host|null
+    public function getParent(): ServerQuery|Server|Host|self|null
     {
         return $this->parent;
     }

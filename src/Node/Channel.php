@@ -65,8 +65,10 @@ class Channel extends Node
     /**
      * Returns an array filled with PlanetTeamSpeak\TeamSpeak3Framework\Node\Channel objects.
      *
-     * @param array $filter
+     * @param  array  $filter
      * @return array|Channel[]
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function subChannelList(array $filter = []): array
     {
@@ -84,8 +86,9 @@ class Channel extends Node
     /**
      * Returns the PlanetTeamSpeak\TeamSpeak3Framework\Node\Channel object matching the given ID.
      *
-     * @param int $cid
+     * @param  int  $cid
      * @return Channel
+     * @throws AdapterException
      * @throws ServerQueryException
      */
     public function subChannelGetById(int $cid): self
@@ -100,8 +103,9 @@ class Channel extends Node
     /**
      * Returns the PlanetTeamSpeak\TeamSpeak3Framework\Node\Channel object matching the given name.
      *
-     * @param int $name
+     * @param  int  $name
      * @return Channel
+     * @throws AdapterException
      * @throws ServerQueryException
      */
     public function subChannelGetByName(int $name): self
@@ -118,8 +122,10 @@ class Channel extends Node
     /**
      * Returns an array filled with PlanetTeamSpeak\TeamSpeak3Framework\Node\Client objects.
      *
-     * @param array $filter
+     * @param  array  $filter
      * @return array | Client[]
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function clientList(array $filter = []): array
     {
@@ -137,8 +143,9 @@ class Channel extends Node
     /**
      * Returns the PlanetTeamSpeak\TeamSpeak3Framework\Node\Client object matching the given ID.
      *
-     * @param int $clid
+     * @param  int  $clid
      * @return Client
+     * @throws AdapterException
      * @throws ServerQueryException
      */
     public function clientGetById(int $clid): Client
@@ -153,8 +160,9 @@ class Channel extends Node
     /**
      * Returns the PlanetTeamSpeak\TeamSpeak3Framework\Node\Client object matching the given name.
      *
-     * @param int $name
+     * @param  int  $name
      * @return Client
+     * @throws AdapterException
      * @throws ServerQueryException
      */
     public function clientGetByName(int $name): Client
@@ -171,9 +179,11 @@ class Channel extends Node
     /**
      * Returns a list of permissions defined for a client in the channel.
      *
-     * @param int $cldbid
-     * @param bool $permsid
+     * @param  int  $cldbid
+     * @param  bool  $permsid
      * @return array
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function clientPermList(int $cldbid, bool $permsid = false): array
     {
@@ -184,10 +194,12 @@ class Channel extends Node
      * Adds a set of specified permissions to a client in a specific channel. Multiple permissions can be added by
      * providing the two parameters of each permission.
      *
-     * @param int $cldbid
-     * @param int|int[] $permid
-     * @param int|int[] $permvalue
+     * @param  int  $cldbid
+     * @param  int|int[]  $permid
+     * @param  int|int[]  $permvalue
      * @return void
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function clientPermAssign(int $cldbid, int|array $permid, int|array $permvalue): void
     {
@@ -198,6 +210,7 @@ class Channel extends Node
      * Alias for clientPermAssign().
      *
      * @deprecated
+     * @throws
      */
     public function clientPermAssignByName($cldbid, $permname, $permvalue): void
     {
@@ -207,9 +220,11 @@ class Channel extends Node
     /**
      * Removes a set of specified permissions from a client in the channel. Multiple permissions can be removed at once.
      *
-     * @param int $cldbid
-     * @param int|int[] $permid
+     * @param  int  $cldbid
+     * @param  int|int[]  $permid
      * @return void
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function clientPermRemove(int $cldbid, int|array $permid): void
     {
@@ -220,6 +235,7 @@ class Channel extends Node
      * Alias for clientPermRemove().
      *
      * @deprecated
+     * @throws
      */
     public function clientPermRemoveByName($cldbid, $permname): void
     {
@@ -229,8 +245,10 @@ class Channel extends Node
     /**
      * Returns a list of permissions defined for the channel.
      *
-     * @param bool $permsid
+     * @param  bool  $permsid
      * @return array
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function permList(bool $permsid = false): array
     {
@@ -241,9 +259,11 @@ class Channel extends Node
      * Adds a set of specified permissions to the channel. Multiple permissions can be added by
      * providing the two parameters of each permission.
      *
-     * @param int|int[] $permid
-     * @param int|int[] $permvalue
+     * @param  int|int[]  $permid
+     * @param  int|int[]  $permvalue
      * @return void
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function permAssign(int|array $permid, int|array $permvalue): void
     {
@@ -254,6 +274,7 @@ class Channel extends Node
      * Alias for permAssign().
      *
      * @deprecated
+     * @throws
      */
     public function permAssignByName($permname, $permvalue): void
     {
@@ -263,8 +284,10 @@ class Channel extends Node
     /**
      * Removes a set of specified permissions from the channel. Multiple permissions can be removed at once.
      *
-     * @param int|int[] $permid
+     * @param  int|int[]  $permid
      * @return void
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function permRemove(int|array $permid): void
     {
@@ -275,6 +298,7 @@ class Channel extends Node
      * Alias for permRemove().
      *
      * @deprecated
+     * @throws
      */
     public function permRemoveByName($permname): void
     {
@@ -284,10 +308,12 @@ class Channel extends Node
     /**
      * Returns a list of files and directories stored in the channels file repository.
      *
-     * @param string $cpw
-     * @param string $path
-     * @param bool $recursive
+     * @param  string  $cpw
+     * @param  string  $path
+     * @param  bool  $recursive
      * @return array
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function fileList(string $cpw = '', string $path = '/', bool $recursive = false): array
     {
@@ -297,9 +323,11 @@ class Channel extends Node
     /**
      * Returns detailed information about the specified file stored in the channels file repository.
      *
-     * @param string $cpw
-     * @param string $name
+     * @param  string  $cpw
+     * @param  string  $name
      * @return array
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function fileInfo(string $cpw = '', string $name = '/'): array
     {
@@ -310,12 +338,14 @@ class Channel extends Node
      * Renames a file in the channels file repository. If the two parameters $tcid and $tcpw are specified, the file
      * will be moved into another channels file repository.
      *
-     * @param string $cpw
-     * @param string $oldname
-     * @param string $newname
-     * @param int|null $tcid
-     * @param string|null $tcpw
+     * @param  string  $cpw
+     * @param  string  $oldname
+     * @param  string  $newname
+     * @param  int|null  $tcid
+     * @param  string|null  $tcpw
      * @return void
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function fileRename(string $cpw = '', string $oldname = '/', string $newname = '/', int $tcid = null, string $tcpw = null): void
     {
@@ -325,9 +355,11 @@ class Channel extends Node
     /**
      * Deletes one or more files stored in the channels file repository.
      *
-     * @param string $cpw
-     * @param string $name
+     * @param  string  $cpw
+     * @param  string  $name
      * @return void
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function fileDelete(string $cpw = '', string $name = '/'): void
     {
@@ -337,9 +369,11 @@ class Channel extends Node
     /**
      * Creates new directory in a channels file repository.
      *
-     * @param string $cpw
-     * @param string $dirname
+     * @param  string  $cpw
+     * @param  string  $dirname
      * @return void
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function dirCreate(string $cpw = '', string $dirname = '/'): void
     {
@@ -350,6 +384,8 @@ class Channel extends Node
      * Returns the level of the channel.
      *
      * @return int
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function getLevel(): int
     {
@@ -360,6 +396,8 @@ class Channel extends Node
      * Returns the pathway of the channel which can be used as a clients default channel.
      *
      * @return string
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function getPathway(): string
     {
@@ -370,6 +408,8 @@ class Channel extends Node
      * Returns the possible spacer type of the channel.
      *
      * @return int
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function spacerGetType(): int
     {
@@ -380,6 +420,8 @@ class Channel extends Node
      * Returns the possible spacer alignment of the channel.
      *
      * @return int
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function spacerGetAlign(): int
     {
@@ -460,8 +502,10 @@ class Channel extends Node
     /**
      * Deletes the channel.
      *
-     * @param bool $force
+     * @param  bool  $force
      * @return void
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function delete(bool $force = false): void
     {
@@ -471,9 +515,11 @@ class Channel extends Node
     /**
      * Moves the channel to the parent channel specified with $pid.
      *
-     * @param int $pid
-     * @param int|null $order
+     * @param  int  $pid
+     * @param  int|null  $order
      * @return void
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     public function move(int $pid, int $order = null): void
     {
@@ -502,6 +548,7 @@ class Channel extends Node
 
     /**
      * @ignore
+     * @throws
      */
     protected function fetchNodeList(): void
     {

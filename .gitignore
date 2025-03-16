@@ -11,6 +11,10 @@ build/
 .php-cs-fixer.cache
 php-cs-fixer.cache
 
+#test-db
+ts3server.sqlitedb
+ts3server.sqlitedb-shm
+ts3server.sqlitedb-wal
 # OS-specific
 .DS_Store
 

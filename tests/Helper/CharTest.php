@@ -259,35 +259,6 @@ class CharTest extends TestCase
     }
 
     /**
-     * @throws HelperException
-     */
-    // @ToDo: Enable tests after updating TeamSpeak3_Helper_Char Unicode Support
-    /*
-    public function testUnicode2Bytes() {
-      // Arbitrary value: first lowercase letter from English alphabet
-      // (hex) "\x61": (ASCII) 'a'
-      $this->assertEquals(
-        static::calculateUTF8Ordinal("\xC2\x80"),
-        (new \TeamSpeak3_Helper_Char("\xC2\x80"))->toUnicode()
-      );
-
-      // Lower bound: first available character
-      // (hex) "\x00": (ASCII) 'NUL' (non-printable control character)
-      $this->assertEquals(
-        static::calculateUTF8Ordinal("\xC2\x80"),
-        (new \TeamSpeak3_Helper_Char("\xC2\x80"))->toUnicode()
-      );
-
-      // Upper bound: last available character
-      // (hex) "\x7F": (ASCII) 'DEL'
-      $this->assertEquals(
-        static::calculateUTF8Ordinal("\xC2\x80"),
-        (new \TeamSpeak3_Helper_Char("\xC2\x80"))->toUnicode()
-      );
-    }
-    */
-
-    /**
      * Return integer value of a string, specifically for UTF8 strings.
      *
      * @param string $char

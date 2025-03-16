@@ -61,7 +61,7 @@ abstract class Transport
      *
      * @var Adapter|null
      */
-    protected ?Adapter $adapter = null;
+    protected null|Adapter $adapter = null;
 
     /**
      * The PlanetTeamSpeak\TeamSpeak3Framework\Transport\Transport constructor.
@@ -202,7 +202,7 @@ abstract class Transport
      *
      * @return Adapter|null
      */
-    public function getAdapter(): ?Adapter
+    public function getAdapter(): null|Adapter
     {
         return $this->adapter;
     }
@@ -266,11 +266,10 @@ abstract class Transport
             $null = null;
 
             if ($time) {
-                Signal::getInstance()
-                    ->emit(strtolower($this->getAdapterType()).'WaitTimeout', $time, $this->getAdapter());
+                Signal::getInstance()->emit(strtolower($this->getAdapterType()).'WaitTimeout', $time, $this->getAdapter());
             }
 
             $time = $time + $this->config['timeout'];
-        } while (@stream_select($read, $null, $null, $this->config['timeout']) == 0);
+        } while (stream_select($read, $null, $null, $this->config['timeout']) === 0);
     }
 }

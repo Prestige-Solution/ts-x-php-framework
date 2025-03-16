@@ -1183,7 +1183,7 @@ class Host extends Node
      *
      * @return string|null
      */
-    public function getPredefinedQueryName(): ?string
+    public function getPredefinedQueryName(): null|string
     {
         return $this->predefined_query_name;
     }

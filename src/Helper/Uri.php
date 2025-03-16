@@ -44,49 +44,49 @@ class Uri
      *
      * @var StringHelper|null
      */
-    protected ?StringHelper $user = null;
+    protected null|StringHelper $user = null;
 
     /**
      * Stores the URI password.
      *
      * @var StringHelper|null
      */
-    protected ?StringHelper $pass = null;
+    protected null|StringHelper $pass = null;
 
     /**
      * Stores the URI host.
      *
      * @var StringHelper|null
      */
-    protected ?StringHelper $host = null;
+    protected null|StringHelper $host = null;
 
     /**
      * Stores the URI port.
      *
      * @var StringHelper|null
      */
-    protected ?StringHelper $port = null;
+    protected null|StringHelper $port = null;
 
     /**
      * Stores the URI path.
      *
      * @var StringHelper|null
      */
-    protected ?StringHelper $path = null;
+    protected null|StringHelper $path = null;
 
     /**
      * Stores the URI query string.
      *
      * @var StringHelper|null
      */
-    protected ?StringHelper $query = null;
+    protected null|StringHelper $query = null;
 
     /**
      * Stores the URI fragment string.
      *
      * @var StringHelper|null
      */
-    protected ?StringHelper $fragment = null;
+    protected null|StringHelper $fragment = null;
 
     /**
      * Stores grammar rules for validation via regex.
@@ -205,7 +205,7 @@ class Uri
      * @param mixed|null $default
      * @return StringHelper|null
      */
-    public function getScheme(mixed $default = null): ?StringHelper
+    public function getScheme(mixed $default = null): null|StringHelper
     {
         return ($this->hasScheme()) ? new StringHelper($this->scheme) : $default;
     }
@@ -253,7 +253,7 @@ class Uri
      * @param mixed|null $default
      * @return StringHelper|null
      */
-    public function getUser(mixed $default = null): ?StringHelper
+    public function getUser(mixed $default = null): null|StringHelper
     {
         return ($this->hasUser()) ? new StringHelper(urldecode($this->user)) : $default;
     }
@@ -301,7 +301,7 @@ class Uri
      * @param mixed|null $default default
      * @return StringHelper|null
      */
-    public function getPass(mixed $default = null): ?StringHelper
+    public function getPass(mixed $default = null): null|StringHelper
     {
         return ($this->hasPass()) ? new StringHelper(urldecode($this->pass)) : $default;
     }
@@ -352,7 +352,7 @@ class Uri
      * @param mixed|null $default
      * @return StringHelper|null
      */
-    public function getHost(mixed $default = null): ?StringHelper
+    public function getHost(mixed $default = null): null|StringHelper
     {
         return ($this->hasHost()) ? new StringHelper(rawurldecode($this->host)) : $default;
     }
@@ -574,7 +574,7 @@ class Uri
         }
 
         $pattern = '/^'.$this->regex['uric'].'*$/';
-        $status = @preg_match($pattern, $fragment);
+        $status = preg_match($pattern, $fragment);
 
         if ($status === false) {
             throw new HelperException('URI fragment validation failed');
@@ -599,7 +599,7 @@ class Uri
      * @param mixed|null $default
      * @return StringHelper|null
      */
-    public function getFragment(mixed $default = null): ?StringHelper
+    public function getFragment(mixed $default = null): null|StringHelper
     {
         return ($this->hasFragment()) ? new StringHelper(rawurldecode($this->fragment)) : $default;
     }

@@ -150,29 +150,23 @@ class ConvertTest extends TestCase
         $this->assertEquals('0D 00:01:00', $output);
         $this->assertIsString($output);
 
-        $output = Convert::seconds((59 * 60) + 59);
+        $output = Convert::seconds(strtotime('59 minutes 59 seconds', 0));
         $this->assertEquals('0D 00:59:59', $output);
         $this->assertIsString($output);
 
-        $output = Convert::seconds((59 * 60) + 60);
+        $output = Convert::seconds(strtotime('1 hours', 0));
         $this->assertEquals('0D 01:00:00', $output);
         $this->assertIsString($output);
 
-        $output = Convert::seconds(
-            (23 * (60 ** 2)) + (59 * 60) + 59
-        );
+        $output = Convert::seconds(strtotime('23 hours 59 minutes 59 seconds', 0));
         $this->assertEquals('0D 23:59:59', $output);
         $this->assertIsString($output);
 
-        $output = Convert::seconds(
-            (23 * (60 ** 2)) + (59 * 60) + 60
-        );
+        $output = Convert::seconds(strtotime('1 day', 0));
         $this->assertEquals('1D 00:00:00', $output);
         $this->assertIsString($output);
 
-        $output = Convert::seconds(
-            (47 * (60 ** 2)) + (59 * 60) + 59
-        );
+        $output = Convert::seconds(strtotime('1 day 23 hours 59 minutes 59 seconds', 0));
         $this->assertEquals('1D 23:59:59', $output);
         $this->assertIsString($output);
 
@@ -196,29 +190,23 @@ class ConvertTest extends TestCase
         $this->assertEquals('-0D 00:01:00', $output);
         $this->assertIsString($output);
 
-        $output = Convert::seconds(((59 * 60) + 59) * -1);
+        $output = Convert::seconds(strtotime('59 minutes 59 seconds ago', 0));
         $this->assertEquals('-0D 00:59:59', $output);
         $this->assertIsString($output);
 
-        $output = Convert::seconds(((59 * 60) + 60) * -1);
+        $output = Convert::seconds(strtotime('1 hour ago', 0));
         $this->assertEquals('-0D 01:00:00', $output);
         $this->assertIsString($output);
 
-        $output = Convert::seconds(
-            ((23 * (60 ** 2)) + (59 * 60) + 59) * -1
-        );
+        $output = Convert::seconds(strtotime('23 hours 59 minutes 59 seconds ago', 0));
         $this->assertEquals('-0D 23:59:59', $output);
         $this->assertIsString($output);
 
-        $output = Convert::seconds(
-            ((23 * (60 ** 2)) + (59 * 60) + 60) * -1
-        );
+        $output = Convert::seconds(strtotime('1 day ago', 0));
         $this->assertEquals('-1D 00:00:00', $output);
         $this->assertIsString($output);
 
-        $output = Convert::seconds(
-            ((47 * (60 ** 2)) + (59 * 60) + 59) * -1
-        );
+        $output = Convert::seconds(strtotime('1 day 23 hours 59 minutes 59 seconds ago', 0));
         $this->assertEquals('-1D 23:59:59', $output);
         $this->assertIsString($output);
 

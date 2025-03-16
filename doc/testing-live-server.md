@@ -1,4 +1,4 @@
-Testing Live Server
+Testing with Live or Development Server
 ==================
 ## Setup Environment
 
@@ -10,20 +10,21 @@ Replace all `DEV_LIVE_SERVER_*` Variables with your Teamspeak Configuration
 | Environment Variable                   | Description                                                                                                          |
 |----------------------------------------|----------------------------------------------------------------------------------------------------------------------|
 | DEV_LIVE_SERVER_AVAILABLE=             | Activate Channel Tests (Default =  false). At false all Channel Tests will be skipped                                |
-| DEV_LIVE_SERVER_HOST=                  | Your IP or Host Address                                                                                              |
-| DEV_LIVE_SERVER_QUERY_PORT=            | Raw = 10011 / ssh = 10022                                                                                            |
+| DEV_LIVE_SERVER_HOST=                  | Your Host Address (Recommended: IPv4)                                                                                |
+| DEV_LIVE_SERVER_QUERY_PORT=            | Raw = 10011 / ssh = 10022 (Recommended: Raw Mode)                                                                    |
 | DEV_LIVE_SERVER_QUERY_USER=            | Your Query Username                                                                                                  |
 | DEV_LIVE_SERVER_QUERY_USER_PASSWORD=   | Password for the Query User                                                                                          |
 | DEV_LIVE_SERVER_UNIT_TEST_CHANNEL=     | Setup a Channelname for Channel Tests. The Live Server Tests will create channels under this configured Channelname* |
 | DEV_LIVE_SERVER_UNIT_TEST_USER_ACTIVE= | Activate User Tests (Default = false). At false all User Tests will be skipped                                       |
 | DEV_LIVE_SERVER_UNIT_TEST_USER=        | Setup a Teamspeak Testclient. It will be use for Client Tests                                                        |
+| DEV_LIVE_SERVER_UNIT_TEST_SIGNALS=     | Test Signals. Default = false. NOTE: This Test has a very long Test duration.                                        |
 
 ### Important Configuration
-***Set Permission Change (Modify) Power and Delete Power to 75. Otherwise, the tests with permissions will be fail.**
+*Set Permission Change (Modify) Power and Delete Power to 75. Otherwise, the tests with channel permissions will be fail.
 
 ### Important Notes
 If you run this Live Server Tests the Clients see massive Server Log entrys with Anti-Flood errors.<br>
-The test are very quickly with a lot of connections form the bot (one connection and disconnection for each test).<br>
+The test are very quickly with a lot of connections from the bot (one connection and disconnection for each test).<br>
 The Serveradministrator has no Anti-Flood Permissions, so maybe you as Administrator cant see this entrys.
 
 ---
@@ -31,7 +32,7 @@ The Serveradministrator has no Anti-Flood Permissions, so maybe you as Administr
 ## Setup your Bot Identity
 ### Setup Query / Bot Servergroup
 Create a new server group with the name psbot, bot or a name of your choice.<br>
-You find a set of rights (150) at [query_user_servergroup_export](query_user_servergroup_export.csv) that the bot needs for secure operation.<br>
+You find a set of rights (150) at [doc/query_user_servergroup_export](query_user_servergroup_export.csv) that the bot needs for secure operation.<br>
 The easiest way to set these settings is with [YaTQA](https://yat.qa/) as serveradmin.
 
 #### Import CSV with YaTQA

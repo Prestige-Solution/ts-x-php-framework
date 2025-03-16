@@ -40,14 +40,14 @@ abstract class Adapter
      *
      * @var array|null
      */
-    protected ?array $options = null;
+    protected null|array $options = null;
 
     /**
      * Stores an PlanetTeamSpeak\TeamSpeak3Framework\Transport\Transport object.
      *
      * @var Transport|null
      */
-    protected ?Transport $transport = null;
+    protected null|Transport $transport = null;
 
     /**
      * The PlanetTeamSpeak\TeamSpeak3Framework\Adapter\Adapter constructor.
@@ -116,7 +116,7 @@ abstract class Adapter
      *
      * @return Transport|null
      */
-    public function getTransport(): ?Transport
+    public function getTransport(): null|Transport
     {
         return $this->transport;
     }
