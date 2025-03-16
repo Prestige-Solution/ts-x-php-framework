@@ -592,7 +592,7 @@ class TeamSpeak3
      */
     public static function init(): void
     {
-        if (version_compare(phpversion(), '8.0.0', '>=') == false) {
+        if (version_compare(phpversion(), '8.2.0', '>=') == false) {
             throw new Exception('this particular software cannot be used with the installed version of PHP');
         }
 
