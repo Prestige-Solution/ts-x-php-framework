@@ -26,6 +26,7 @@ namespace PlanetTeamSpeak\TeamSpeak3Framework\Viewer;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\NodeException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\ServerQueryException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\TransportException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Helper\Convert;
 use PlanetTeamSpeak\TeamSpeak3Framework\Node\Channel;
 use PlanetTeamSpeak\TeamSpeak3Framework\Node\ChannelGroup;
@@ -95,6 +96,7 @@ class Json implements ViewerInterface
      * @throws AdapterException
      * @throws NodeException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function fetchObject(Node $node, array $siblings = []): string
     {
@@ -325,6 +327,7 @@ class Json implements ViewerInterface
      * @throws AdapterException
      * @throws NodeException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     protected function getProps(): stdClass
     {
@@ -333,8 +336,8 @@ class Json implements ViewerInterface
         if (is_a($this->currObj, Node::class)) {
             $this->id = 0;
             $this->icon = 0;
-            $props->version = $this->currObj->version('version')->toString();
-            $props->platform = $this->currObj->version('platform')->toString();
+            $props->version = $this->currObj->getParent()->getAdapter()->getHost()->version('version')->toString();
+            $props->platform = $this->currObj->getParent()->getAdapter()->getHost()->version('platform')->toString();
             $props->users = $this->currObj->virtualservers_total_clients_online;
             $props->slots = $this->currObj->virtualservers_total_maxclients;
             $props->flags = 0;
