@@ -30,6 +30,7 @@ use PlanetTeamSpeak\TeamSpeak3Framework\Adapter\ServerQuery\Reply;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\NodeException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\ServerQueryException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\TransportException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Helper\Convert;
 use PlanetTeamSpeak\TeamSpeak3Framework\Helper\StringHelper;
 use PlanetTeamSpeak\TeamSpeak3Framework\Viewer\ViewerInterface;
@@ -76,10 +77,12 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
     /**
      * Sends a prepared command to the server and returns the result.
      *
-     * @param string $cmd
-     * @param bool $throw
+     * @param  string  $cmd
+     * @param  bool  $throw
      * @return Reply
-     * @throws AdapterException|ServerQueryException
+     * @throws AdapterException
+     * @throws ServerQueryException
+     * @throws TransportException
      */
     public function request(string $cmd, bool $throw = true): Reply
     {
@@ -102,10 +105,11 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
      * Prepares and executes a ServerQuery command and returns the result.
      *
      * @param $cmd
-     * @param array $params
+     * @param  array  $params
      * @return Reply
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function execute($cmd, array $params = []): Reply
     {
