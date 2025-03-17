@@ -58,7 +58,7 @@ class Html implements ViewerInterface
      *
      * @var Node|null
      */
-    protected ?Node $currObj = null;
+    protected null|Node $currObj = null;
 
     /**
      * An array filled with siblings for the PlanetTeamSpeak\TeamSpeak3Framework\Node\Node object which is currently
@@ -66,7 +66,7 @@ class Html implements ViewerInterface
      *
      * @var array|null
      */
-    protected ?array $currSib = null;
+    protected null|array $currSib = null;
 
     /**
      * An internal counter indicating the number of fetched PlanetTeamSpeak\TeamSpeak3Framework\Node\Node objects.
@@ -87,14 +87,14 @@ class Html implements ViewerInterface
      *
      * @var string|null
      */
-    protected ?string $flagpath;
+    protected null|string $flagpath;
 
     /**
      * The relative path of the file transter client script on the server.
      *
      * @var string|null
      */
-    protected ?string $ftclient;
+    protected null|string $ftclient;
 
     /**
      * Stores an array of local icon IDs.
