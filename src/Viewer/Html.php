@@ -24,8 +24,11 @@
 namespace PlanetTeamSpeak\TeamSpeak3Framework\Viewer;
 
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\FileTransferException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\HelperException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\NodeException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\ServerQueryException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\TransportException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Helper\Convert;
 use PlanetTeamSpeak\TeamSpeak3Framework\Helper\StringHelper;
 use PlanetTeamSpeak\TeamSpeak3Framework\Node\Channel;
@@ -130,12 +133,15 @@ class Html implements ViewerInterface
     /**
      * Returns the code needed to display a node in a TeamSpeak 3 viewer.
      *
-     * @param Node $node
-     * @param array $siblings
+     * @param  Node  $node
+     * @param  array  $siblings
      * @return string
      * @throws AdapterException
+     * @throws FileTransferException
      * @throws HelperException
+     * @throws NodeException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function fetchObject(Node $node, array $siblings = []): string
     {
@@ -244,6 +250,8 @@ class Html implements ViewerInterface
      * additional class names to allow further customization of the content via CSS.
      *
      * @return string
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     protected function getCorpusClass(): string
     {
@@ -333,6 +341,9 @@ class Html implements ViewerInterface
      * for the current TeamSpeak_Node_Abstract object.
      *
      * @return string
+     * @throws AdapterException
+     * @throws ServerQueryException
+     * @throws NodeException
      */
     protected function getCorpusName(): string
     {
@@ -390,8 +401,10 @@ class Html implements ViewerInterface
      *
      * @return string
      * @throws AdapterException
+     * @throws FileTransferException
      * @throws HelperException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     protected function getSuffixIcon(): string
     {
@@ -414,6 +427,8 @@ class Html implements ViewerInterface
      * @throws AdapterException
      * @throws HelperException
      * @throws ServerQueryException
+     * @throws FileTransferException
+     * @throws TransportException
      */
     protected function getSuffixIconServer(): string
     {
@@ -452,8 +467,10 @@ class Html implements ViewerInterface
      *
      * @return string
      * @throws AdapterException
+     * @throws FileTransferException
      * @throws HelperException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     protected function getSuffixIconChannel(): string
     {
@@ -512,8 +529,10 @@ class Html implements ViewerInterface
      *
      * @return string
      * @throws AdapterException
+     * @throws FileTransferException
      * @throws HelperException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     protected function getSuffixIconClient(): string
     {

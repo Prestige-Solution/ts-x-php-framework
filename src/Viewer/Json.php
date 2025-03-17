@@ -23,6 +23,9 @@
 
 namespace PlanetTeamSpeak\TeamSpeak3Framework\Viewer;
 
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\NodeException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\ServerQueryException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Helper\Convert;
 use PlanetTeamSpeak\TeamSpeak3Framework\Node\Channel;
 use PlanetTeamSpeak\TeamSpeak3Framework\Node\ChannelGroup;
@@ -86,9 +89,12 @@ class Json implements ViewerInterface
     /**
      * Assembles an stdClass object for the current element.
      *
-     * @param Node $node
-     * @param array $siblings
+     * @param  Node  $node
+     * @param  array  $siblings
      * @return string
+     * @throws AdapterException
+     * @throws NodeException
+     * @throws ServerQueryException
      */
     public function fetchObject(Node $node, array $siblings = []): string
     {
@@ -153,6 +159,8 @@ class Json implements ViewerInterface
      * Returns the level of the current element.
      *
      * @return int
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     protected function getLevel(): int
     {
@@ -191,6 +199,8 @@ class Json implements ViewerInterface
      * additional class names to allow further customization of the content via CSS.
      *
      * @return string
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     protected function getClass(): string
     {
@@ -245,6 +255,8 @@ class Json implements ViewerInterface
      * Returns an individual type for a spacer.
      *
      * @return string
+     * @throws AdapterException
+     * @throws ServerQueryException
      */
     protected function getSpacerType(): string
     {
@@ -280,6 +292,9 @@ class Json implements ViewerInterface
      * for the current TeamSpeak_Node_Abstract object.
      *
      * @return string
+     * @throws AdapterException
+     * @throws ServerQueryException
+     * @throws NodeException
      */
     protected function getName(): string
     {
@@ -307,6 +322,9 @@ class Json implements ViewerInterface
      * Returns the parent ID of the current element.
      *
      * @return stdClass
+     * @throws AdapterException
+     * @throws NodeException
+     * @throws ServerQueryException
      */
     protected function getProps(): stdClass
     {

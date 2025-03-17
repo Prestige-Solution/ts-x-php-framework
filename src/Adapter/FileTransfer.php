@@ -24,6 +24,7 @@
 namespace PlanetTeamSpeak\TeamSpeak3Framework\Adapter;
 
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\FileTransferException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\ServerQueryException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\TransportException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Helper\Profiler;
 use PlanetTeamSpeak\TeamSpeak3Framework\Helper\Signal;
@@ -63,9 +64,11 @@ class FileTransfer extends Adapter
     /**
      * Sends a valid file transfer key to the server to initialize the file transfer.
      *
-     * @param string $ftkey
+     * @param  string  $ftkey
      * @return void
      * @throws FileTransferException
+     * @throws TransportException
+     * @throws ServerQueryException
      */
     protected function init(string $ftkey): void
     {
@@ -82,11 +85,13 @@ class FileTransfer extends Adapter
     /**
      * Sends the content of a file to the server.
      *
-     * @param string $ftkey
-     * @param int $seek
-     * @param string $data
+     * @param  string  $ftkey
+     * @param  int  $seek
+     * @param  string  $data
      * @return void
      * @throws FileTransferException
+     * @throws ServerQueryException
+     * @throws TransportException
      */
     public function upload(string $ftkey, int $seek, string $data): void
     {
@@ -116,11 +121,12 @@ class FileTransfer extends Adapter
     /**
      * Returns the content of a downloaded file as a PlanetTeamSpeak\TeamSpeak3Framework\Helper\StringHelper object.
      *
-     * @param string $ftkey
-     * @param int $size
-     * @param bool $passthru
+     * @param  string  $ftkey
+     * @param  int  $size
+     * @param  bool  $passthru
      * @return StringHelper|void
      * @throws FileTransferException
+     * @throws ServerQueryException
      * @throws TransportException
      */
     public function download(string $ftkey, int $size, bool $passthru = false)

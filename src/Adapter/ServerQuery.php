@@ -27,6 +27,7 @@ use PlanetTeamSpeak\TeamSpeak3Framework\Adapter\ServerQuery\Event;
 use PlanetTeamSpeak\TeamSpeak3Framework\Adapter\ServerQuery\Reply;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\ServerQueryException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\TransportException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Helper\Profiler;
 use PlanetTeamSpeak\TeamSpeak3Framework\Helper\Signal;
 use PlanetTeamSpeak\TeamSpeak3Framework\Helper\StringHelper;
@@ -75,6 +76,8 @@ class ServerQuery extends Adapter
      *
      * @return void
      * @throws AdapterException
+     * @throws ServerQueryException
+     * @throws TransportException
      */
     protected function syn(): void
     {
@@ -96,6 +99,7 @@ class ServerQuery extends Adapter
      * The ServerQuery destructor.
      *
      * @return void
+     * @throws TransportException
      */
     public function __destruct()
     {
@@ -116,10 +120,12 @@ class ServerQuery extends Adapter
     /**
      * Sends a prepared command to the server and returns the result.
      *
-     * @param string $cmd
-     * @param bool $throw
+     * @param  string  $cmd
+     * @param  bool  $throw
      * @return Reply
-     * @throws AdapterException|ServerQueryException
+     * @throws AdapterException
+     * @throws ServerQueryException
+     * @throws TransportException
      */
     public function request(string $cmd, bool $throw = true): Reply
     {
@@ -162,6 +168,8 @@ class ServerQuery extends Adapter
      *
      * @return Event
      * @throws AdapterException
+     * @throws ServerQueryException
+     * @throws TransportException
      */
     public function wait(): Event
     {
