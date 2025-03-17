@@ -252,6 +252,7 @@ class Html implements ViewerInterface
      * @return string
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     protected function getCorpusClass(): string
     {
@@ -342,8 +343,9 @@ class Html implements ViewerInterface
      *
      * @return string
      * @throws AdapterException
-     * @throws ServerQueryException
      * @throws NodeException
+     * @throws ServerQueryException
+     * @throws TransportException
      */
     protected function getCorpusName(): string
     {

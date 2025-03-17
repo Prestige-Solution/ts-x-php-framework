@@ -75,7 +75,7 @@ class Json implements ViewerInterface
     protected int $lastLvl = 0;
 
     protected int $id = 0;
-    
+
     protected int $icon = 0;
 
     /**
@@ -167,6 +167,7 @@ class Json implements ViewerInterface
      * @return int
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     protected function getLevel(): int
     {
@@ -207,6 +208,7 @@ class Json implements ViewerInterface
      * @return string
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     protected function getClass(): string
     {
@@ -263,6 +265,7 @@ class Json implements ViewerInterface
      * @return string
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     protected function getSpacerType(): string
     {
@@ -299,8 +302,9 @@ class Json implements ViewerInterface
      *
      * @return string
      * @throws AdapterException
-     * @throws ServerQueryException
      * @throws NodeException
+     * @throws ServerQueryException
+     * @throws TransportException
      */
     protected function getName(): string
     {

@@ -69,6 +69,7 @@ class Channel extends Node
      * @return array|Channel[]
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function subChannelList(array $filter = []): array
     {
@@ -90,6 +91,7 @@ class Channel extends Node
      * @return Channel
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function subChannelGetById(int $cid): self
     {
@@ -107,6 +109,7 @@ class Channel extends Node
      * @return Channel
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function subChannelGetByName(int $name): self
     {
@@ -126,6 +129,7 @@ class Channel extends Node
      * @return array | Client[]
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function clientList(array $filter = []): array
     {
@@ -147,6 +151,7 @@ class Channel extends Node
      * @return Client
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function clientGetById(int $clid): Client
     {
@@ -164,6 +169,7 @@ class Channel extends Node
      * @return Client
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function clientGetByName(int $name): Client
     {
@@ -184,6 +190,7 @@ class Channel extends Node
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function clientPermList(int $cldbid, bool $permsid = false): array
     {
@@ -200,6 +207,7 @@ class Channel extends Node
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function clientPermAssign(int $cldbid, int|array $permid, int|array $permvalue): void
     {
@@ -225,6 +233,7 @@ class Channel extends Node
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function clientPermRemove(int $cldbid, int|array $permid): void
     {
@@ -249,6 +258,7 @@ class Channel extends Node
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function permList(bool $permsid = false): array
     {
@@ -264,6 +274,7 @@ class Channel extends Node
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function permAssign(int|array $permid, int|array $permvalue): void
     {
@@ -288,6 +299,7 @@ class Channel extends Node
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function permRemove(int|array $permid): void
     {
@@ -314,6 +326,7 @@ class Channel extends Node
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function fileList(string $cpw = '', string $path = '/', bool $recursive = false): array
     {
@@ -328,6 +341,7 @@ class Channel extends Node
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function fileInfo(string $cpw = '', string $name = '/'): array
     {
@@ -346,6 +360,7 @@ class Channel extends Node
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function fileRename(string $cpw = '', string $oldname = '/', string $newname = '/', int $tcid = null, string $tcpw = null): void
     {
@@ -360,6 +375,7 @@ class Channel extends Node
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function fileDelete(string $cpw = '', string $name = '/'): void
     {
@@ -374,6 +390,7 @@ class Channel extends Node
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function dirCreate(string $cpw = '', string $dirname = '/'): void
     {
@@ -386,6 +403,7 @@ class Channel extends Node
      * @return int
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function getLevel(): int
     {
@@ -398,6 +416,7 @@ class Channel extends Node
      * @return string
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function getPathway(): string
     {
@@ -410,6 +429,7 @@ class Channel extends Node
      * @return int
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function spacerGetType(): int
     {
@@ -422,6 +442,7 @@ class Channel extends Node
      * @return int
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function spacerGetAlign(): int
     {
@@ -468,10 +489,11 @@ class Channel extends Node
     /**
      * Changes the channel configuration using given properties.
      *
-     * @param array $properties
+     * @param  array  $properties
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function modify(array $properties): void
     {
@@ -484,11 +506,12 @@ class Channel extends Node
     /**
      * Sends a text message to all clients in the channel.
      *
-     * @param string $msg
-     * @param string|null $cpw
+     * @param  string  $msg
+     * @param  string|null  $cpw
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function message(string $msg, string $cpw = null): void
     {
@@ -506,6 +529,7 @@ class Channel extends Node
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function delete(bool $force = false): void
     {
@@ -520,6 +544,7 @@ class Channel extends Node
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function move(int $pid, int $order = null): void
     {
@@ -529,13 +554,14 @@ class Channel extends Node
     /**
      * Sends a plugin command to all clients in the channel.
      *
-     * @param string $plugin
-     * @param string $data
-     * @param string|null $cpw
-     * @param bool $subscribed
+     * @param  string  $plugin
+     * @param  string  $data
+     * @param  string|null  $cpw
+     * @param  bool  $subscribed
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function sendPluginCmd(string $plugin, string $data, string $cpw = null, bool $subscribed = false): void
     {
@@ -582,8 +608,9 @@ class Channel extends Node
     }
 
     /**
-     * @throws ServerQueryException
      * @throws AdapterException
+     * @throws ServerQueryException
+     * @throws TransportException
      * @ignore
      */
     protected function fetchNodeInfo(): void
