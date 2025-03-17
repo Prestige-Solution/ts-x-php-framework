@@ -167,7 +167,7 @@ class Json implements ViewerInterface
         if ($this->currObj instanceof Channel) {
             return $this->currObj->getLevel() + 2;
         } elseif ($this->currObj instanceof Client) {
-            return $this->currObj->channelGetById($this->currObj->cid)->getLevel() + 3;
+            return $this->currObj->getParent()->channelGetById($this->currObj->cid)->getLevel() + 3;
         }
 
         return 1;
@@ -411,7 +411,7 @@ class Json implements ViewerInterface
             $props->flags += $this->currObj->client_is_channel_commander ? 4 : 0;
             $props->flags += $this->currObj->client_is_priority_speaker ? 8 : 0;
             $props->flags += $this->currObj->client_is_talker ? 16 : 0;
-            $props->flags += $this->currObj->channelGetById($this->currObj->cid)->channel_needed_talk_power > $this->currObj->client_talk_power && ! $this->currObj->client_is_talker ? 32 : 0;
+            $props->flags += $this->currObj->getParent()->channelGetById($this->currObj->cid)->channel_needed_talk_power > $this->currObj->client_talk_power && ! $this->currObj->client_is_talker ? 32 : 0;
             $props->flags += $this->currObj->client_input_muted || ! $this->currObj->client_input_hardware ? 64 : 0;
             $props->flags += $this->currObj->client_output_muted || ! $this->currObj->client_output_hardware ? 128 : 0;
         } elseif (is_a($this->currObj, ServerGroup::class) || is_a($this->currObj, ChannelGroup::class)) {
