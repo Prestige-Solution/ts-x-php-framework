@@ -51,7 +51,7 @@ class Html implements ViewerInterface
      *
      * @var string
      */
-    protected string $pattern = "<table id='%0' class='%1' summary='%2'><tr class='%3'><td class='%4'>%5</td><td class='%6' title='%7'>%8 %9</td><td class='%10'>%11%12</td></tr></table>\n";
+    protected string $pattern = "<table id='%0' class='%1'><tr class='%3'><td class='%4'>%5</td><td class='%6' title='%7'>%8 %9</td><td class='%10'>%11%12</td></tr></table>\n";
 
     /**
      * The PlanetTeamSpeak\TeamSpeak3Framework\Node\Node object which is currently processed.
