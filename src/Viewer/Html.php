@@ -437,7 +437,7 @@ class Html implements ViewerInterface
         if ($this->currObj['virtualserver_icon_id']) {
             if (! $this->currObj->iconIsLocal('virtualserver_icon_id') && $this->ftclient) {
                 if (! isset($this->cacheIcon[$this->currObj['virtualserver_icon_id']])) {
-                    $download = $this->currObj->transferInitDownload(rand(0x0000, 0xFFFF), 0, $this->currObj->iconGetName('virtualserver_icon_id'));
+                    $download = $this->currObj->getParent()->transferInitDownload(rand(0x0000, 0xFFFF), 0, $this->currObj->iconGetName('virtualserver_icon_id'));
 
                     if ($this->ftclient == 'data:image') {
                         $download = TeamSpeak3::factory('filetransfer://'.(str_contains($download['host'], ':') ? '['.$download['host'].']' : $download['host']).':'.$download['port'])->download($download['ftkey'], $download['size']);
