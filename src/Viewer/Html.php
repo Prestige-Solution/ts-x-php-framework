@@ -449,9 +449,9 @@ class Html implements ViewerInterface
                 }
 
                 if ($this->ftclient == 'data:image') {
-                    $html .= $this->getImage('data:'.Convert::imageMimeType($download).';base64,'.base64_encode($download), 'Server Icon', null, false);
+                    $html .= $this->getImage('data:'.Convert::imageMimeType($download).';base64,'.base64_encode($download), 'Server Icon',false);
                 } else {
-                    $html .= $this->getImage($this->ftclient.'?ftdata='.base64_encode(serialize($download)), 'Server Icon', null, false);
+                    $html .= $this->getImage($this->ftclient.'?ftdata='.base64_encode(serialize($download)), 'Server Icon',false);
                 }
             } elseif (in_array($this->currObj['virtualserver_icon_id'], $this->cachedIcons)) {
                 $html .= $this->getImage('group_icon_'.$this->currObj['virtualserver_icon_id'].'.png', 'Server Icon');
@@ -511,9 +511,9 @@ class Html implements ViewerInterface
                 }
 
                 if ($this->ftclient == 'data:image') {
-                    $html .= $this->getImage('data:'.Convert::imageMimeType($download).';base64,'.base64_encode($download), 'Channel Icon', null, false);
+                    $html .= $this->getImage('data:'.Convert::imageMimeType($download).';base64,'.base64_encode($download), 'Channel Icon',false);
                 } else {
-                    $html .= $this->getImage($this->ftclient.'?ftdata='.base64_encode(serialize($download)), 'Channel Icon', null, false);
+                    $html .= $this->getImage($this->ftclient.'?ftdata='.base64_encode(serialize($download)), 'Channel Icon',false);
                 }
             } elseif (in_array($this->currObj['channel_icon_id'], $this->cachedIcons)) {
                 $html .= $this->getImage('group_icon_'.$this->currObj['channel_icon_id'].'.png', 'Channel Icon');
@@ -575,9 +575,9 @@ class Html implements ViewerInterface
                 }
 
                 if ($this->ftclient == 'data:image') {
-                    $html .= $this->getImage('data:'.Convert::imageMimeType($download).';base64,'.base64_encode($download), $group.' ['.$type.']', null, false);
+                    $html .= $this->getImage('data:'.Convert::imageMimeType($download).';base64,'.base64_encode($download), $group.' ['.$type.']',false);
                 } else {
-                    $html .= $this->getImage($this->ftclient.'?ftdata='.base64_encode(serialize($download)), $group.' ['.$type.']', null, false);
+                    $html .= $this->getImage($this->ftclient.'?ftdata='.base64_encode(serialize($download)), $group.' ['.$type.']',false);
                 }
             } elseif (in_array($group['iconid'], $this->cachedIcons)) {
                 $html .= $this->getImage('group_icon_'.$group['iconid'].'.png', $group.' ['.$type.']');
@@ -599,9 +599,9 @@ class Html implements ViewerInterface
                 }
 
                 if ($this->ftclient == 'data:image') {
-                    $html .= $this->getImage('data:'.Convert::imageMimeType($download).';base64,'.base64_encode($download), 'Client Icon', null, false);
+                    $html .= $this->getImage('data:'.Convert::imageMimeType($download).';base64,'.base64_encode($download), 'Client Icon',false);
                 } else {
-                    $html .= $this->getImage($this->ftclient.'?ftdata='.base64_encode(serialize($download)), 'Client Icon', null, false);
+                    $html .= $this->getImage($this->ftclient.'?ftdata='.base64_encode(serialize($download)), 'Client Icon',false);
                 }
             } elseif (in_array($this->currObj['client_icon_id'], $this->cachedIcons)) {
                 $html .= $this->getImage('group_icon_'.$this->currObj['client_icon_id'].'.png', 'Client Icon');
@@ -624,7 +624,7 @@ class Html implements ViewerInterface
         }
 
         if ($this->flagpath && $this->currObj['client_country']) {
-            return $this->getImage($this->currObj['client_country']->toLower().'.png', $this->currObj['client_country'], null, false, true);
+            return $this->getImage($this->currObj['client_country']->toLower().'.png', $this->currObj['client_country'], false, true);
         }
 
         return '';
@@ -633,14 +633,13 @@ class Html implements ViewerInterface
     /**
      * Returns the code to display a custom HTML img tag.
      *
-     * @param string $name
-     * @param string $text
-     * @param string|null $class
-     * @param bool $iconpath
-     * @param bool $flagpath
+     * @param  string  $name
+     * @param  string  $text
+     * @param  bool  $iconpath
+     * @param  bool  $flagpath
      * @return string
      */
-    protected function getImage(string $name, string $text = '', string $class = null, bool $iconpath = true, bool $flagpath = false): string
+    protected function getImage(string $name, string $text = '', bool $iconpath = true, bool $flagpath = false): string
     {
         $src = '';
 
