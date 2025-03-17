@@ -74,6 +74,10 @@ class Json implements ViewerInterface
      */
     protected int $lastLvl = 0;
 
+    protected int $id = 0;
+    
+    protected int $icon = 0;
+
     /**
      * The Json constructor.
      *
