@@ -12,7 +12,10 @@ The ideal is that this version can be integrated into your own project and the m
 We **DON'T** change the original Namespace from PlanetTeamspeak. So the replacement should not be affected your current Project.
 
 **Via Composer**<br>
-``composer require prestige-solution/ts-x-php-framework:latest`` or with a specific release ``composer require prestige-solution/ts-x-php-framework:2.0.0-beta-2``
+Current Version:<br>
+``composer require prestige-solution/ts-x-php-framework``<br><br>
+or with a specific release<br> 
+``composer require prestige-solution/ts-x-php-framework:2.0.0-beta-2``
 
 **Via Git**<br>
 Add to your ``composer.json`` following options
