@@ -403,6 +403,7 @@ class Html implements ViewerInterface
      * @throws AdapterException
      * @throws FileTransferException
      * @throws HelperException
+     * @throws NodeException
      * @throws ServerQueryException
      * @throws TransportException
      */
@@ -531,6 +532,7 @@ class Html implements ViewerInterface
      * @throws AdapterException
      * @throws FileTransferException
      * @throws HelperException
+     * @throws NodeException
      * @throws ServerQueryException
      * @throws TransportException
      */
@@ -554,7 +556,7 @@ class Html implements ViewerInterface
             }
         }
 
-        foreach ($this->currObj->memberOf() as $group) {
+        foreach ($this->currObj->getParent()->memberOf() as $group) {
             if (! $group['iconid']) {
                 continue;
             }

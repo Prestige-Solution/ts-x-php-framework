@@ -62,10 +62,11 @@ class Client extends Node
     /**
      * Changes the clients properties using given properties.
      *
-     * @param array $properties
+     * @param  array  $properties
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function modify(array $properties): void
     {
@@ -115,10 +116,11 @@ class Client extends Node
     /**
      * Sends a text message to the client.
      *
-     * @param string $msg
+     * @param  string  $msg
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function message(string $msg): void
     {
@@ -223,10 +225,11 @@ class Client extends Node
     /**
      * Returns an array containing the permission overview of the client.
      *
-     * @param int $cid
+     * @param  int  $cid
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function permOverview(int $cid): array
     {
@@ -375,6 +378,7 @@ class Client extends Node
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function getClones(): array
     {
@@ -471,11 +475,12 @@ class Client extends Node
     /**
      * Sends a plugin command to the client.
      *
-     * @param string $plugin
-     * @param string $data
+     * @param  string  $plugin
+     * @param  string  $data
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function sendPluginCmd(string $plugin, string $data): void
     {
@@ -484,6 +489,8 @@ class Client extends Node
 
     /**
      * @throws AdapterException
+     * @throws ServerQueryException
+     * @throws TransportException
      * @ignore
      */
     protected function fetchNodeInfo(): void
