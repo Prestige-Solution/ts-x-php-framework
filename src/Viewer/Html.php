@@ -452,9 +452,9 @@ class Html implements ViewerInterface
                 }
 
                 if ($this->ftclient == 'data:image') {
-                    $html .= $this->getImage('data:'.Convert::imageMimeType($download).';base64,'.base64_encode($download), 'Server Icon',false);
+                    $html .= $this->getImage('data:'.Convert::imageMimeType($download).';base64,'.base64_encode($download), 'Server Icon', false);
                 } else {
-                    $html .= $this->getImage($this->ftclient.'?ftdata='.base64_encode(serialize($download)), 'Server Icon',false);
+                    $html .= $this->getImage($this->ftclient.'?ftdata='.base64_encode(serialize($download)), 'Server Icon', false);
                 }
             } elseif (in_array($this->currObj['virtualserver_icon_id'], $this->cachedIcons)) {
                 $html .= $this->getImage('group_icon_'.$this->currObj['virtualserver_icon_id'].'.png', 'Server Icon');
@@ -514,9 +514,9 @@ class Html implements ViewerInterface
                 }
 
                 if ($this->ftclient == 'data:image') {
-                    $html .= $this->getImage('data:'.Convert::imageMimeType($download).';base64,'.base64_encode($download), 'Channel Icon',false);
+                    $html .= $this->getImage('data:'.Convert::imageMimeType($download).';base64,'.base64_encode($download), 'Channel Icon', false);
                 } else {
-                    $html .= $this->getImage($this->ftclient.'?ftdata='.base64_encode(serialize($download)), 'Channel Icon',false);
+                    $html .= $this->getImage($this->ftclient.'?ftdata='.base64_encode(serialize($download)), 'Channel Icon', false);
                 }
             } elseif (in_array($this->currObj['channel_icon_id'], $this->cachedIcons)) {
                 $html .= $this->getImage('group_icon_'.$this->currObj['channel_icon_id'].'.png', 'Channel Icon');
@@ -579,9 +579,9 @@ class Html implements ViewerInterface
                 }
 
                 if ($this->ftclient == 'data:image') {
-                    $html .= $this->getImage('data:'.Convert::imageMimeType($download).';base64,'.base64_encode($download), $group.' ['.$type.']',false);
+                    $html .= $this->getImage('data:'.Convert::imageMimeType($download).';base64,'.base64_encode($download), $group.' ['.$type.']', false);
                 } else {
-                    $html .= $this->getImage($this->ftclient.'?ftdata='.base64_encode(serialize($download)), $group.' ['.$type.']',false);
+                    $html .= $this->getImage($this->ftclient.'?ftdata='.base64_encode(serialize($download)), $group.' ['.$type.']', false);
                 }
             } elseif (in_array($group['iconid'], $this->cachedIcons)) {
                 $html .= $this->getImage('group_icon_'.$group['iconid'].'.png', $group.' ['.$type.']');
@@ -603,9 +603,9 @@ class Html implements ViewerInterface
                 }
 
                 if ($this->ftclient == 'data:image') {
-                    $html .= $this->getImage('data:'.Convert::imageMimeType($download).';base64,'.base64_encode($download), 'Client Icon',false);
+                    $html .= $this->getImage('data:'.Convert::imageMimeType($download).';base64,'.base64_encode($download), 'Client Icon', false);
                 } else {
-                    $html .= $this->getImage($this->ftclient.'?ftdata='.base64_encode(serialize($download)), 'Client Icon',false);
+                    $html .= $this->getImage($this->ftclient.'?ftdata='.base64_encode(serialize($download)), 'Client Icon', false);
                 }
             } elseif (in_array($this->currObj['client_icon_id'], $this->cachedIcons)) {
                 $html .= $this->getImage('group_icon_'.$this->currObj['client_icon_id'].'.png', 'Client Icon');

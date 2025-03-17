@@ -38,7 +38,9 @@ class Text implements ViewerInterface
      * @var string
      */
     protected string $pattern = "%0%1 %2\n";
+
     protected null|Node $currObj = null;
+
     protected null|array $currSib = null;
 
     /**
