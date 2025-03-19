@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 use PlanetTeamSpeak\TeamSpeak3Framework\Adapter\ServerQuery\Reply;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\ServerQueryException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\TransportException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Helper\StringHelper;
 
 /**
@@ -58,6 +59,7 @@ class ReplyTest extends TestCase
     /**
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function testConstructor()
     {
@@ -72,6 +74,7 @@ class ReplyTest extends TestCase
     /**
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function testToString_can_unescape()
     {
@@ -86,6 +89,7 @@ class ReplyTest extends TestCase
     /**
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function testToLines()
     {
@@ -105,6 +109,7 @@ class ReplyTest extends TestCase
     /**
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function testToTable()
     {
@@ -134,6 +139,7 @@ class ReplyTest extends TestCase
     /**
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function testToArray()
     {
@@ -162,6 +168,7 @@ class ReplyTest extends TestCase
     /**
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function testToList()
     {

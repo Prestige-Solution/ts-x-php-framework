@@ -3,11 +3,13 @@
                           Copyright Planet TeamSpeak
                         http://www.planetteamspeak.com
 ===============================================================================
-   + Added feature or noticable improvement
+   + Added feature or noticeable improvement
    - Bug fix or something removed
    * Changed or Information
    ! Important - Take note!
 ===============================================================================
+== Release 2.0.0 ===
+changelog: https://github.com/Prestige-Solution/ts-x-php-framework/releases/tag/2.0.0
 
 === Release 1.2.1 - 17 Aug 2023 ===
  + Add further PHPUnit tests

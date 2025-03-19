@@ -27,6 +27,7 @@ use ArrayAccess;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\NodeException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\ServerQueryException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\TransportException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Helper\Signal;
 use PlanetTeamSpeak\TeamSpeak3Framework\Helper\StringHelper;
 use PlanetTeamSpeak\TeamSpeak3Framework\Node\Host;
@@ -63,10 +64,11 @@ class Event implements ArrayAccess
     /**
      * Creates a new PlanetTeamSpeak\TeamSpeak3Framework\Adapter\ServerQuery\Event object.
      *
-     * @param StringHelper $evt
-     * @param Host|null $con
+     * @param  StringHelper  $evt
+     * @param  Host|null  $con
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function __construct(StringHelper $evt, Host $con = null)
     {

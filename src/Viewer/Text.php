@@ -39,6 +39,10 @@ class Text implements ViewerInterface
      */
     protected string $pattern = "%0%1 %2\n";
 
+    protected null|Node $currObj = null;
+
+    protected null|array $currSib = null;
+
     /**
      * Returns the code needed to display a node in a TeamSpeak 3 viewer.
      *

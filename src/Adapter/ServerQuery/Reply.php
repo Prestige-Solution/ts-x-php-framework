@@ -25,6 +25,7 @@ namespace PlanetTeamSpeak\TeamSpeak3Framework\Adapter\ServerQuery;
 
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\ServerQueryException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\TransportException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Helper\Signal;
 use PlanetTeamSpeak\TeamSpeak3Framework\Helper\StringHelper;
 use PlanetTeamSpeak\TeamSpeak3Framework\Node\Host;
@@ -88,6 +89,7 @@ class Reply
      * @param  bool  $exp
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function __construct(array $rpl, string $cmd = '', Host $con = null, bool $exp = true)
     {
@@ -295,10 +297,11 @@ class Reply
      * Parses a ServerQuery error and throws a PlanetTeamSpeak\TeamSpeak3Framework\Exception\ServerQueryException object if
      * there's an error.
      *
-     * @param StringHelper $err
+     * @param  StringHelper  $err
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     protected function fetchError(StringHelper $err): void
     {
@@ -332,9 +335,11 @@ class Reply
     /**
      * Parses a ServerQuery reply and creates a PlanetTeamSpeak\TeamSpeak3Framework\Helper\StringHelper object.
      *
-     * @param array $rpl
+     * @param  array  $rpl
      * @return void
      * @throws AdapterException
+     * @throws ServerQueryException
+     * @throws TransportException
      */
     protected function fetchReply(array $rpl): void
     {
