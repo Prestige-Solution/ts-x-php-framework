@@ -7,8 +7,10 @@ use PlanetTeamSpeak\TeamSpeak3Framework\Adapter\Adapter;
 use PlanetTeamSpeak\TeamSpeak3Framework\Adapter\ServerQuery;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\HelperException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\NodeException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\ServerQueryException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\TeamSpeak3Exception;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\TransportException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Helper\Signal;
 use PlanetTeamSpeak\TeamSpeak3Framework\Node\Host;
 use PlanetTeamSpeak\TeamSpeak3Framework\Node\Node;
@@ -160,8 +162,12 @@ class SignalTest extends TestCase
     }
 
     /**
+     * @param  int  $idle_seconds
+     * @param  ServerQuery  $serverquery
      * @throws AdapterException
-     * @throws ServerQueryException|\PlanetTeamSpeak\TeamSpeak3Framework\Exception\NodeException
+     * @throws ServerQueryException
+     * @throws NodeException
+     * @throws TransportException
      */
     public function onWaitTimeout(int $idle_seconds, ServerQuery $serverquery): void
     {

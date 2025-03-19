@@ -62,10 +62,11 @@ class Client extends Node
     /**
      * Changes the clients properties using given properties.
      *
-     * @param array $properties
+     * @param  array  $properties
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function modify(array $properties): void
     {
@@ -82,6 +83,7 @@ class Client extends Node
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function modifyDb(array $properties): void
     {
@@ -94,6 +96,7 @@ class Client extends Node
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function deleteDb(): void
     {
@@ -106,6 +109,7 @@ class Client extends Node
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function infoDb(): array
     {
@@ -115,10 +119,11 @@ class Client extends Node
     /**
      * Sends a text message to the client.
      *
-     * @param string $msg
+     * @param  string  $msg
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function message(string $msg): void
     {
@@ -133,6 +138,7 @@ class Client extends Node
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function move(int $cid, string $cpw = null): void
     {
@@ -147,6 +153,7 @@ class Client extends Node
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function kick(int $reasonid = TeamSpeak3::KICK_CHANNEL, string $reasonmsg = null): void
     {
@@ -160,6 +167,7 @@ class Client extends Node
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function poke(string $msg): void
     {
@@ -175,6 +183,7 @@ class Client extends Node
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function ban(int $timeseconds = null, string $reason = null): array
     {
@@ -187,6 +196,7 @@ class Client extends Node
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function customInfo(): array
     {
@@ -201,6 +211,7 @@ class Client extends Node
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function customSet(string $ident, string $value): void
     {
@@ -214,6 +225,7 @@ class Client extends Node
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function customDelete(string $ident): void
     {
@@ -223,10 +235,11 @@ class Client extends Node
     /**
      * Returns an array containing the permission overview of the client.
      *
-     * @param int $cid
+     * @param  int  $cid
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function permOverview(int $cid): array
     {
@@ -240,6 +253,7 @@ class Client extends Node
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function permList(bool $permsid = false): array
     {
@@ -256,6 +270,7 @@ class Client extends Node
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function permAssign(int|array $permid, int|array $permvalue, array|bool $permskip = false): void
     {
@@ -280,6 +295,7 @@ class Client extends Node
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function permRemove(int $permid): void
     {
@@ -305,6 +321,7 @@ class Client extends Node
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function setChannelGroup(int $cid, int $cgid): void
     {
@@ -318,6 +335,7 @@ class Client extends Node
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function addServerGroup(int $sgid): void
     {
@@ -331,6 +349,7 @@ class Client extends Node
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function remServerGroup(int $sgid): void
     {
@@ -375,6 +394,7 @@ class Client extends Node
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function getClones(): array
     {
@@ -424,8 +444,9 @@ class Client extends Node
      *
      * @return array
      * @throws AdapterException
-     * @throws ServerQueryException
      * @throws NodeException
+     * @throws ServerQueryException
+     * @throws TransportException
      */
     public function memberOf(): array
     {
@@ -471,11 +492,12 @@ class Client extends Node
     /**
      * Sends a plugin command to the client.
      *
-     * @param string $plugin
-     * @param string $data
+     * @param  string  $plugin
+     * @param  string  $data
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function sendPluginCmd(string $plugin, string $data): void
     {
@@ -484,6 +506,8 @@ class Client extends Node
 
     /**
      * @throws AdapterException
+     * @throws ServerQueryException
+     * @throws TransportException
      * @ignore
      */
     protected function fetchNodeInfo(): void

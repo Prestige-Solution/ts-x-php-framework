@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\HelperException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\ServerQueryException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\TransportException;
 use PlanetTeamSpeak\TeamSpeak3Framework\TeamSpeak3;
 
 class ChannelAndUserTest extends TestCase
@@ -75,8 +76,9 @@ class ChannelAndUserTest extends TestCase
 
     /**
      * @throws AdapterException
-     * @throws ServerQueryException
      * @throws HelperException
+     * @throws ServerQueryException
+     * @throws TransportException
      */
     public function test_can_get_channel_info()
     {
@@ -97,8 +99,9 @@ class ChannelAndUserTest extends TestCase
 
     /**
      * @throws AdapterException
-     * @throws ServerQueryException
      * @throws HelperException
+     * @throws ServerQueryException
+     * @throws TransportException
      */
     public function test_can_create_play_test_channel()
     {
@@ -119,8 +122,9 @@ class ChannelAndUserTest extends TestCase
 
     /**
      * @throws AdapterException
-     * @throws ServerQueryException
      * @throws HelperException
+     * @throws ServerQueryException
+     * @throws TransportException
      */
     public function test_can_create_channels()
     {
@@ -157,9 +161,10 @@ class ChannelAndUserTest extends TestCase
     }
 
     /**
-     * @throws ServerQueryException
      * @throws AdapterException
      * @throws HelperException
+     * @throws ServerQueryException
+     * @throws TransportException
      */
     public function test_can_edit_channel()
     {
@@ -200,9 +205,10 @@ class ChannelAndUserTest extends TestCase
     }
 
     /**
-     * @throws ServerQueryException
      * @throws AdapterException
      * @throws HelperException
+     * @throws ServerQueryException
+     * @throws TransportException
      */
     public function test_can_delete_channels()
     {
@@ -236,9 +242,10 @@ class ChannelAndUserTest extends TestCase
     }
 
     /**
-     * @throws ServerQueryException
      * @throws AdapterException
      * @throws HelperException
+     * @throws ServerQueryException
+     * @throws TransportException
      */
     public function test_can_move_channels()
     {
@@ -282,8 +289,9 @@ class ChannelAndUserTest extends TestCase
 
     /**
      * @throws AdapterException
-     * @throws ServerQueryException
      * @throws HelperException
+     * @throws ServerQueryException
+     * @throws TransportException
      */
     public function test_whoami()
     {
@@ -307,8 +315,9 @@ class ChannelAndUserTest extends TestCase
 
     /**
      * @throws AdapterException
-     * @throws ServerQueryException
      * @throws HelperException
+     * @throws ServerQueryException
+     * @throws TransportException
      */
     public function test_can_get_channel_permissions()
     {
@@ -332,9 +341,10 @@ class ChannelAndUserTest extends TestCase
     }
 
     /**
-     * @throws ServerQueryException
      * @throws AdapterException
      * @throws HelperException
+     * @throws ServerQueryException
+     * @throws TransportException
      */
     public function test_can_set_channel_permissions()
     {
@@ -360,9 +370,10 @@ class ChannelAndUserTest extends TestCase
     }
 
     /**
-     * @throws ServerQueryException
      * @throws AdapterException
      * @throws HelperException
+     * @throws ServerQueryException
+     * @throws TransportException
      */
     public function test_can_delete_channel_permissions()
     {
@@ -392,9 +403,10 @@ class ChannelAndUserTest extends TestCase
     }
 
     /**
-     * @throws ServerQueryException
      * @throws AdapterException
      * @throws HelperException
+     * @throws ServerQueryException
+     * @throws TransportException
      */
     public function test_can_get_user_attributes()
     {
@@ -415,9 +427,10 @@ class ChannelAndUserTest extends TestCase
     }
 
     /**
-     * @throws ServerQueryException
      * @throws AdapterException
      * @throws HelperException
+     * @throws ServerQueryException
+     * @throws TransportException
      */
     public function test_can_set_user_attributes()
     {
@@ -446,9 +459,10 @@ class ChannelAndUserTest extends TestCase
     }
 
     /**
-     * @throws ServerQueryException
      * @throws AdapterException
      * @throws HelperException
+     * @throws ServerQueryException
+     * @throws TransportException
      */
     public function test_can_move_user()
     {

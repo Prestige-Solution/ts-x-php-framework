@@ -2,8 +2,7 @@ name: "PHPUnit"
 
 on:
   pull_request:
-    types: [opened, edited, reopened, ready_for_review]
-  
+
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
@@ -13,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php_versions: ['8.2']
+        php_versions: ['8.2', '8.3']
         
     name: PHPUnit (PHP ${{ matrix.php_versions }})
     runs-on: ubuntu-latest

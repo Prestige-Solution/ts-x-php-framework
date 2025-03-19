@@ -24,8 +24,11 @@
 namespace PlanetTeamSpeak\TeamSpeak3Framework\Viewer;
 
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\FileTransferException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\HelperException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\NodeException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\ServerQueryException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\TransportException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Helper\Convert;
 use PlanetTeamSpeak\TeamSpeak3Framework\Helper\StringHelper;
 use PlanetTeamSpeak\TeamSpeak3Framework\Node\Channel;
@@ -48,14 +51,14 @@ class Html implements ViewerInterface
      *
      * @var string
      */
-    protected string $pattern = "<table id='%0' class='%1' summary='%2'><tr class='%3'><td class='%4'>%5</td><td class='%6' title='%7'>%8 %9</td><td class='%10'>%11%12</td></tr></table>\n";
+    protected string $pattern = "<table id='%0' class='%1'><tr class='%3'><td class='%4'>%5</td><td class='%6' title='%7'>%8 %9</td><td class='%10'>%11%12</td></tr></table>\n";
 
     /**
      * The PlanetTeamSpeak\TeamSpeak3Framework\Node\Node object which is currently processed.
      *
      * @var Node|null
      */
-    protected ?Node $currObj = null;
+    protected null|Node $currObj = null;
 
     /**
      * An array filled with siblings for the PlanetTeamSpeak\TeamSpeak3Framework\Node\Node object which is currently
@@ -63,7 +66,7 @@ class Html implements ViewerInterface
      *
      * @var array|null
      */
-    protected ?array $currSib = null;
+    protected null|array $currSib = null;
 
     /**
      * An internal counter indicating the number of fetched PlanetTeamSpeak\TeamSpeak3Framework\Node\Node objects.
@@ -84,14 +87,14 @@ class Html implements ViewerInterface
      *
      * @var string|null
      */
-    protected ?string $flagpath;
+    protected null|string $flagpath;
 
     /**
      * The relative path of the file transter client script on the server.
      *
      * @var string|null
      */
-    protected ?string $ftclient;
+    protected null|string $ftclient;
 
     /**
      * Stores an array of local icon IDs.
@@ -130,12 +133,15 @@ class Html implements ViewerInterface
     /**
      * Returns the code needed to display a node in a TeamSpeak 3 viewer.
      *
-     * @param Node $node
-     * @param array $siblings
+     * @param  Node  $node
+     * @param  array  $siblings
      * @return string
      * @throws AdapterException
+     * @throws FileTransferException
      * @throws HelperException
+     * @throws NodeException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function fetchObject(Node $node, array $siblings = []): string
     {
@@ -244,6 +250,9 @@ class Html implements ViewerInterface
      * additional class names to allow further customization of the content via CSS.
      *
      * @return string
+     * @throws AdapterException
+     * @throws ServerQueryException
+     * @throws TransportException
      */
     protected function getCorpusClass(): string
     {
@@ -333,6 +342,10 @@ class Html implements ViewerInterface
      * for the current TeamSpeak_Node_Abstract object.
      *
      * @return string
+     * @throws AdapterException
+     * @throws NodeException
+     * @throws ServerQueryException
+     * @throws TransportException
      */
     protected function getCorpusName(): string
     {
@@ -390,8 +403,11 @@ class Html implements ViewerInterface
      *
      * @return string
      * @throws AdapterException
+     * @throws FileTransferException
      * @throws HelperException
+     * @throws NodeException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     protected function getSuffixIcon(): string
     {
@@ -414,6 +430,8 @@ class Html implements ViewerInterface
      * @throws AdapterException
      * @throws HelperException
      * @throws ServerQueryException
+     * @throws FileTransferException
+     * @throws TransportException
      */
     protected function getSuffixIconServer(): string
     {
@@ -422,7 +440,7 @@ class Html implements ViewerInterface
         if ($this->currObj['virtualserver_icon_id']) {
             if (! $this->currObj->iconIsLocal('virtualserver_icon_id') && $this->ftclient) {
                 if (! isset($this->cacheIcon[$this->currObj['virtualserver_icon_id']])) {
-                    $download = $this->currObj->transferInitDownload(rand(0x0000, 0xFFFF), 0, $this->currObj->iconGetName('virtualserver_icon_id'));
+                    $download = $this->currObj->getParent()->transferInitDownload(rand(0x0000, 0xFFFF), 0, $this->currObj->iconGetName('virtualserver_icon_id'));
 
                     if ($this->ftclient == 'data:image') {
                         $download = TeamSpeak3::factory('filetransfer://'.(str_contains($download['host'], ':') ? '['.$download['host'].']' : $download['host']).':'.$download['port'])->download($download['ftkey'], $download['size']);
@@ -434,9 +452,9 @@ class Html implements ViewerInterface
                 }
 
                 if ($this->ftclient == 'data:image') {
-                    $html .= $this->getImage('data:'.Convert::imageMimeType($download).';base64,'.base64_encode($download), 'Server Icon', null, false);
+                    $html .= $this->getImage('data:'.Convert::imageMimeType($download).';base64,'.base64_encode($download), 'Server Icon', false);
                 } else {
-                    $html .= $this->getImage($this->ftclient.'?ftdata='.base64_encode(serialize($download)), 'Server Icon', null, false);
+                    $html .= $this->getImage($this->ftclient.'?ftdata='.base64_encode(serialize($download)), 'Server Icon', false);
                 }
             } elseif (in_array($this->currObj['virtualserver_icon_id'], $this->cachedIcons)) {
                 $html .= $this->getImage('group_icon_'.$this->currObj['virtualserver_icon_id'].'.png', 'Server Icon');
@@ -452,8 +470,10 @@ class Html implements ViewerInterface
      *
      * @return string
      * @throws AdapterException
+     * @throws FileTransferException
      * @throws HelperException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     protected function getSuffixIconChannel(): string
     {
@@ -494,9 +514,9 @@ class Html implements ViewerInterface
                 }
 
                 if ($this->ftclient == 'data:image') {
-                    $html .= $this->getImage('data:'.Convert::imageMimeType($download).';base64,'.base64_encode($download), 'Channel Icon', null, false);
+                    $html .= $this->getImage('data:'.Convert::imageMimeType($download).';base64,'.base64_encode($download), 'Channel Icon', false);
                 } else {
-                    $html .= $this->getImage($this->ftclient.'?ftdata='.base64_encode(serialize($download)), 'Channel Icon', null, false);
+                    $html .= $this->getImage($this->ftclient.'?ftdata='.base64_encode(serialize($download)), 'Channel Icon', false);
                 }
             } elseif (in_array($this->currObj['channel_icon_id'], $this->cachedIcons)) {
                 $html .= $this->getImage('group_icon_'.$this->currObj['channel_icon_id'].'.png', 'Channel Icon');
@@ -512,8 +532,11 @@ class Html implements ViewerInterface
      *
      * @return string
      * @throws AdapterException
+     * @throws FileTransferException
      * @throws HelperException
+     * @throws NodeException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     protected function getSuffixIconClient(): string
     {
@@ -535,7 +558,7 @@ class Html implements ViewerInterface
             }
         }
 
-        foreach ($this->currObj->memberOf() as $group) {
+        foreach ($this->currObj->getParent()->memberOf() as $group) {
             if (! $group['iconid']) {
                 continue;
             }
@@ -556,9 +579,9 @@ class Html implements ViewerInterface
                 }
 
                 if ($this->ftclient == 'data:image') {
-                    $html .= $this->getImage('data:'.Convert::imageMimeType($download).';base64,'.base64_encode($download), $group.' ['.$type.']', null, false);
+                    $html .= $this->getImage('data:'.Convert::imageMimeType($download).';base64,'.base64_encode($download), $group.' ['.$type.']', false);
                 } else {
-                    $html .= $this->getImage($this->ftclient.'?ftdata='.base64_encode(serialize($download)), $group.' ['.$type.']', null, false);
+                    $html .= $this->getImage($this->ftclient.'?ftdata='.base64_encode(serialize($download)), $group.' ['.$type.']', false);
                 }
             } elseif (in_array($group['iconid'], $this->cachedIcons)) {
                 $html .= $this->getImage('group_icon_'.$group['iconid'].'.png', $group.' ['.$type.']');
@@ -580,9 +603,9 @@ class Html implements ViewerInterface
                 }
 
                 if ($this->ftclient == 'data:image') {
-                    $html .= $this->getImage('data:'.Convert::imageMimeType($download).';base64,'.base64_encode($download), 'Client Icon', null, false);
+                    $html .= $this->getImage('data:'.Convert::imageMimeType($download).';base64,'.base64_encode($download), 'Client Icon', false);
                 } else {
-                    $html .= $this->getImage($this->ftclient.'?ftdata='.base64_encode(serialize($download)), 'Client Icon', null, false);
+                    $html .= $this->getImage($this->ftclient.'?ftdata='.base64_encode(serialize($download)), 'Client Icon', false);
                 }
             } elseif (in_array($this->currObj['client_icon_id'], $this->cachedIcons)) {
                 $html .= $this->getImage('group_icon_'.$this->currObj['client_icon_id'].'.png', 'Client Icon');
@@ -605,7 +628,7 @@ class Html implements ViewerInterface
         }
 
         if ($this->flagpath && $this->currObj['client_country']) {
-            return $this->getImage($this->currObj['client_country']->toLower().'.png', $this->currObj['client_country'], null, false, true);
+            return $this->getImage($this->currObj['client_country']->toLower().'.png', $this->currObj['client_country'], false, true);
         }
 
         return '';
@@ -614,14 +637,13 @@ class Html implements ViewerInterface
     /**
      * Returns the code to display a custom HTML img tag.
      *
-     * @param string $name
-     * @param string $text
-     * @param string|null $class
-     * @param bool $iconpath
-     * @param bool $flagpath
+     * @param  string  $name
+     * @param  string  $text
+     * @param  bool  $iconpath
+     * @param  bool  $flagpath
      * @return string
      */
-    protected function getImage(string $name, string $text = '', string $class = null, bool $iconpath = true, bool $flagpath = false): string
+    protected function getImage(string $name, string $text = '', bool $iconpath = true, bool $flagpath = false): string
     {
         $src = '';
 

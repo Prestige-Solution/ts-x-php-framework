@@ -25,6 +25,7 @@ namespace PlanetTeamSpeak\TeamSpeak3Framework\Node;
 
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\ServerQueryException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\TransportException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Helper\StringHelper;
 use PlanetTeamSpeak\TeamSpeak3Framework\TeamSpeak3;
 
@@ -60,8 +61,9 @@ class ChannelGroup extends Group
      *
      * @param  string  $name
      * @return void
-     * @throws ServerQueryException
      * @throws AdapterException
+     * @throws ServerQueryException
+     * @throws TransportException
      */
     public function rename(string $name): void
     {
@@ -76,6 +78,7 @@ class ChannelGroup extends Group
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function delete(bool $force = false): void
     {
@@ -91,6 +94,7 @@ class ChannelGroup extends Group
      * @return int
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function copy(string $name = null, int $tcgid = 0, int $type = TeamSpeak3::GROUP_DBTYPE_REGULAR): int
     {
@@ -104,6 +108,7 @@ class ChannelGroup extends Group
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function permList(bool $permsid = false): array
     {
@@ -119,6 +124,7 @@ class ChannelGroup extends Group
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function permAssign(int $permid, int $permvalue): void
     {
@@ -144,6 +150,7 @@ class ChannelGroup extends Group
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function permRemove(int $permid): void
     {
@@ -170,6 +177,7 @@ class ChannelGroup extends Group
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function clientList(int $cid = null, int $cldbid = null, bool $resolve = false): array
     {
@@ -196,6 +204,7 @@ class ChannelGroup extends Group
      * @return StringHelper
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function privilegeKeyCreate(int $cid, string $description = null, string $customset = null): StringHelper
     {

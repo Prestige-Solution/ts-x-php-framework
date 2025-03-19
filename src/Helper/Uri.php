@@ -375,14 +375,10 @@ class Uri
             $port = intval($port);
         }
 
-        switch ($port) {
-            case str_starts_with($port, '-'):
-            case $port < 0:
-            case ! is_int($port):
-            case ! filter_var($port, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 65535]]):
-                return false;
-            default:
-                return true;
+        if ($port == str_starts_with($port, '-') || $port == $port < 0 || $port == ! is_int($port) || $port == ! filter_var($port, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 65535]])) {
+            return false;
+        } else {
+            return true;
         }
     }
 

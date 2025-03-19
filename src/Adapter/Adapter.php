@@ -114,9 +114,9 @@ abstract class Adapter
     /**
      * Returns the transport object used for this connection adapter.
      *
-     * @return Transport|null
+     * @return Transport|TCP|null
      */
-    public function getTransport(): null|Transport
+    public function getTransport(): null|Transport|TCP
     {
         return $this->transport;
     }
