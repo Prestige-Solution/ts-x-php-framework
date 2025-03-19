@@ -2,7 +2,7 @@ name: "PHPUnit"
 
 on:
   pull_request:
-    types: [opened, edited, reopened, ready_for_review]
+    types: [opened, edited, reopened, ready_for_review, synchronize]
   
 concurrency:
   group: ci-${{ github.ref }}
