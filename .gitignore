@@ -19,7 +19,6 @@ ts3server.sqlitedb-wal
 .DS_Store
 
 # Composer libraries
-composer.lock 
 vendor/
 
 # Intellij project files

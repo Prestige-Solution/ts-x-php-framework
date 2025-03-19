@@ -84,11 +84,12 @@ class Server extends Node
     /**
      * Sends a prepared command to the server and returns the result.
      *
-     * @param string $cmd
-     * @param bool $throw
+     * @param  string  $cmd
+     * @param  bool  $throw
      * @return Reply
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function request(string $cmd, bool $throw = true): Reply
     {
@@ -102,10 +103,11 @@ class Server extends Node
     /**
      * Returns an array filled with PlanetTeamSpeak\TeamSpeak3Framework\Node\Channel objects.
      *
-     * @param array $filter
+     * @param  array  $filter
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function channelList(array $filter = []): array
     {
@@ -141,6 +143,7 @@ class Server extends Node
      * @return Channel
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function channelGetDefault(): Channel
     {
@@ -156,10 +159,11 @@ class Server extends Node
     /**
      * Creates a new channel using given properties and returns the new ID.
      *
-     * @param array $properties
+     * @param  array  $properties
      * @return int
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function channelCreate(array $properties): int
     {
@@ -176,11 +180,12 @@ class Server extends Node
     /**
      * Deletes the channel specified by $cid.
      *
-     * @param int|Node $cid
-     * @param bool $force
+     * @param  int|Node  $cid
+     * @param  bool  $force
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function channelDelete(int|Node $cid, bool $force = false): void
     {
@@ -195,12 +200,13 @@ class Server extends Node
     /**
      * Moves the channel specified by $cid to the parent channel specified with $pid.
      *
-     * @param int $cid
-     * @param int $pid
-     * @param int|null $order
+     * @param  int  $cid
+     * @param  int  $pid
+     * @param  int|null  $order
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function channelMove(int $cid, int $pid, int $order = null): void
     {
@@ -223,14 +229,15 @@ class Server extends Node
      * Creates a new channel spacer and returns the new ID. The first parameter $ident is used to create a
      * unique spacer name on the virtual server.
      *
-     * @param string $ident
-     * @param mixed|int $type
-     * @param int $align
-     * @param int|null $order
-     * @param int $maxclients
+     * @param  string  $ident
+     * @param  mixed|int  $type
+     * @param  int  $align
+     * @param  int|null  $order
+     * @param  int  $maxclients
      * @return int
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function channelSpacerCreate(
         string $ident,
@@ -274,10 +281,11 @@ class Server extends Node
     /**
      * Returns the possible type of channel spacer.
      *
-     * @param int $cid
+     * @param  int  $cid
      * @return int
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function channelSpacerGetType(int $cid): int
     {
@@ -300,10 +308,11 @@ class Server extends Node
     /**
      * Returns the possible alignment of a channel spacer.
      *
-     * @param int $cid
+     * @param  int  $cid
      * @return int
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function channelSpacerGetAlign(int $cid): int
     {
@@ -324,11 +333,12 @@ class Server extends Node
     /**
      * Returns a list of permissions defined for a specific channel.
      *
-     * @param int $cid
-     * @param bool $permsid
+     * @param  int  $cid
+     * @param  bool  $permsid
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function channelPermList(int $cid, bool $permsid = false): array
     {
@@ -340,12 +350,13 @@ class Server extends Node
      * Adds a set of specified permissions to a channel. Multiple permissions can be added by
      * providing the two parameters of each permission.
      *
-     * @param int $cid
-     * @param int|int[] $permid
-     * @param int|int[] $permvalue
+     * @param  int  $cid
+     * @param  int|int[]  $permid
+     * @param  int|int[]  $permvalue
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function channelPermAssign(int $cid, int|array $permid, int|array $permvalue): void
     {
@@ -361,11 +372,12 @@ class Server extends Node
     /**
      * Removes a set of specified permissions from a channel. Multiple permissions can be removed at once.
      *
-     * @param int $cid
-     * @param int|int[] $permid
+     * @param  int  $cid
+     * @param  int|int[]  $permid
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function channelPermRemove(int $cid, int|array $permid): void
     {
@@ -381,12 +393,13 @@ class Server extends Node
     /**
      * Returns a list of permissions defined for a client in a specific channel.
      *
-     * @param int $cid
-     * @param int $cldbid
-     * @param bool $permsid
+     * @param  int  $cid
+     * @param  int  $cldbid
+     * @param  bool  $permsid
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function channelClientPermList(int $cid, int $cldbid, bool $permsid = false): array
     {
@@ -398,13 +411,14 @@ class Server extends Node
      * Adds a set of specified permissions to a client in a specific channel. Multiple permissions can be added by
      * providing the two parameters of each permission.
      *
-     * @param int $cid
-     * @param int $cldbid
-     * @param int|int[] $permid
-     * @param int|int[] $permvalue
+     * @param  int  $cid
+     * @param  int  $cldbid
+     * @param  int|int[]  $permid
+     * @param  int|int[]  $permvalue
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function channelClientPermAssign(int $cid, int $cldbid, int|array $permid, int|array $permvalue): void
     {
@@ -420,12 +434,13 @@ class Server extends Node
     /**
      * Removes a set of specified permissions from a client in a specific channel. Multiple permissions can be removed at once.
      *
-     * @param int $cid
-     * @param int $cldbid
-     * @param int|int[] $permid
+     * @param  int  $cid
+     * @param  int  $cldbid
+     * @param  int|int[]  $permid
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function channelClientPermRemove(int $cid, int $cldbid, int|array $permid): void
     {
@@ -441,13 +456,14 @@ class Server extends Node
     /**
      * Returns a list of files and directories stored in the specified channels file repository.
      *
-     * @param int $cid
-     * @param string $cpw
-     * @param string $path
-     * @param bool $recursive
+     * @param  int  $cid
+     * @param  string  $cpw
+     * @param  string  $path
+     * @param  bool  $recursive
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function channelFileList(int $cid, string $cpw = '', string $path = '/', bool $recursive = false): array
     {
@@ -479,12 +495,13 @@ class Server extends Node
     /**
      * Returns detailed information about the specified file stored in a channels file repository.
      *
-     * @param int $cid
-     * @param string $cpw
-     * @param string $name
+     * @param  int  $cid
+     * @param  string  $cpw
+     * @param  string  $name
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function channelFileInfo(int $cid, string $cpw = '', string $name = '/'): array
     {
@@ -497,15 +514,16 @@ class Server extends Node
      * Renames a file in a channels file repository. If the two parameters $tcid and $tcpw are specified, the file
      * will be moved into another channels file repository.
      *
-     * @param int $cid
-     * @param string $cpw
-     * @param string $oldname
-     * @param string $newname
-     * @param int|null $tcid
-     * @param string|null $tcpw
+     * @param  int  $cid
+     * @param  string  $cpw
+     * @param  string  $oldname
+     * @param  string  $newname
+     * @param  int|null  $tcid
+     * @param  string|null  $tcpw
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function channelFileRename(int $cid, string $cpw = '', string $oldname = '/', string $newname = '/', int $tcid = null, string $tcpw = null): void
     {
@@ -515,12 +533,13 @@ class Server extends Node
     /**
      * Deletes one or more files stored in a channels file repository.
      *
-     * @param int $cid
-     * @param string $cpw
-     * @param string $name
+     * @param  int  $cid
+     * @param  string  $cpw
+     * @param  string  $name
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function channelFileDelete(int $cid, string $cpw = '', string $name = '/'): void
     {
@@ -530,12 +549,13 @@ class Server extends Node
     /**
      * Creates new directory in a channels file repository.
      *
-     * @param int $cid
-     * @param string $cpw
-     * @param string $dirname
+     * @param  int  $cid
+     * @param  string  $cpw
+     * @param  string  $dirname
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function channelDirCreate(int $cid, string $cpw = '', string $dirname = '/'): void
     {
@@ -545,10 +565,11 @@ class Server extends Node
     /**
      * Returns the level of a channel.
      *
-     * @param int $cid
+     * @param  int  $cid
      * @return int
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function channelGetLevel(int $cid): int
     {
@@ -565,10 +586,11 @@ class Server extends Node
     /**
      * Returns the pathway of a channel which can be used as a clients default channel.
      *
-     * @param int $cid
+     * @param  int  $cid
      * @return string
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function channelGetPathway(int $cid): string
     {
@@ -585,10 +607,11 @@ class Server extends Node
     /**
      * Returns the PlanetTeamSpeak\TeamSpeak3Framework\Node\Channel object matching the given ID.
      *
-     * @param int $cid
+     * @param  int  $cid
      * @return Channel
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function channelGetById(int $cid): Channel
     {
@@ -602,10 +625,11 @@ class Server extends Node
     /**
      * Returns the PlanetTeamSpeak\TeamSpeak3Framework\Node\Channel object matching the given name.
      *
-     * @param string $name
+     * @param  string  $name
      * @return Channel
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function channelGetByName(string $name): Channel
     {
@@ -621,10 +645,11 @@ class Server extends Node
     /**
      * Returns an array filled with PlanetTeamSpeak\TeamSpeak3Framework\Node\Client objects.
      *
-     * @param array $filter
+     * @param  array  $filter
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function clientList(array $filter = []): array
     {
@@ -664,10 +689,11 @@ class Server extends Node
     /**
      * Returns a list of clients matching a given name pattern.
      *
-     * @param string $pattern
+     * @param  string  $pattern
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function clientFind(string $pattern): array
     {
@@ -678,11 +704,12 @@ class Server extends Node
      * Returns a list of client identities known by the virtual server. By default, the server spits out 25 entries
      * at once.
      *
-     * @param int|null $offset
-     * @param int|null $limit
+     * @param  int|null  $offset
+     * @param  int|null  $limit
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function clientListDb(int $offset = null, int $limit = null): array
     {
@@ -696,6 +723,7 @@ class Server extends Node
      * @return int
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function clientCountDb(): int
     {
@@ -705,10 +733,11 @@ class Server extends Node
     /**
      * Returns a list of properties from the database for the client specified by $cldbid.
      *
-     * @param int $cldbid
+     * @param  int  $cldbid
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function clientInfoDb(int $cldbid): array
     {
@@ -719,11 +748,12 @@ class Server extends Node
      * Returns a list of client database information matching a given pattern. You can either search for a clients
      * last known nickname or his unique identity by using the $uid option.
      *
-     * @param string $pattern
-     * @param bool $uid
+     * @param  string  $pattern
+     * @param  bool  $uid
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function clientFindDb(string $pattern, bool $uid = false): array
     {
@@ -748,10 +778,11 @@ class Server extends Node
     /**
      * Returns the PlanetTeamSpeak\TeamSpeak3Framework\Node\Client object matching the given ID.
      *
-     * @param int $clid
+     * @param  int  $clid
      * @return Client
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function clientGetById(int $clid): Client
     {
@@ -765,10 +796,11 @@ class Server extends Node
     /**
      * Returns the PlanetTeamSpeak\TeamSpeak3Framework\Node\Client object matching the given name.
      *
-     * @param string $name
+     * @param  string  $name
      * @return Client
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function clientGetByName(string $name): Client
     {
@@ -784,10 +816,11 @@ class Server extends Node
     /**
      * Returns the PlanetTeamSpeak\TeamSpeak3Framework\Node\Client object matching the given unique identifier.
      *
-     * @param string $uid
+     * @param  string  $uid
      * @return Client
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function clientGetByUid(string $uid): Client
     {
@@ -803,10 +836,11 @@ class Server extends Node
     /**
      * Returns the PlanetTeamSpeak\TeamSpeak3Framework\Node\Client object matching the given database ID.
      *
-     * @param int $dbid
+     * @param  int  $dbid
      * @return Client
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function clientGetByDbid(int $dbid): Client
     {
@@ -823,10 +857,11 @@ class Server extends Node
      * Returns an array containing the last known nickname and the database ID of the client matching
      * the unique identifier specified with $cluid.
      *
-     * @param string $cluid
+     * @param  string  $cluid
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function clientGetNameByUid(string $cluid): array
     {
@@ -837,10 +872,11 @@ class Server extends Node
      * Returns an array containing a list of active client connections using the unique identifier
      * specified with $cluid.
      *
-     * @param string $cluid
+     * @param  string  $cluid
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function clientGetIdsByUid(string $cluid): array
     {
@@ -851,10 +887,11 @@ class Server extends Node
      * Returns an array containing the last known nickname and the unique identifier of the client
      * matching the database ID specified with $cldbid.
      *
-     * @param string $cldbid
+     * @param  string  $cldbid
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function clientGetNameByDbid(string $cldbid): array
     {
@@ -865,10 +902,11 @@ class Server extends Node
      * Returns an array containing the names and IDs of all server groups the client specified with
      * $cldbid is currently residing in.
      *
-     * @param string $cldbid
+     * @param  string  $cldbid
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function clientGetServerGroupsByDbid(string $cldbid): array
     {
@@ -878,12 +916,13 @@ class Server extends Node
     /**
      * Moves a client to another channel.
      *
-     * @param int|Node $clid
-     * @param int|Node $cid
-     * @param null $cpw
+     * @param  int|Node  $clid
+     * @param  int|Node  $cid
+     * @param  null  $cpw
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function clientMove(int|Node $clid, int|Node $cid, $cpw = null): void
     {
@@ -907,12 +946,13 @@ class Server extends Node
     /**
      * Kicks one or more clients from their currently joined channel or from the server.
      *
-     * @param int $clid
-     * @param int $reasonid
-     * @param null $reasonmsg
+     * @param  int  $clid
+     * @param  int  $reasonid
+     * @param  null  $reasonmsg
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function clientKick(int $clid, int $reasonid = TeamSpeak3::KICK_CHANNEL, $reasonmsg = null): void
     {
@@ -924,11 +964,12 @@ class Server extends Node
     /**
      * Sends a poke message to a client.
      *
-     * @param int $clid
-     * @param string $msg
+     * @param  int  $clid
+     * @param  string  $msg
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function clientPoke(int $clid, string $msg): void
     {
@@ -939,12 +980,13 @@ class Server extends Node
      * Bans the client specified with ID $clid from the server. Please note that this will create three separate
      * ban rules for the targeted clients IP address, the unique identifier and the myTeamSpeak ID (if available).
      *
-     * @param int $clid
-     * @param int|null $timeseconds
-     * @param string|null $reason
+     * @param  int  $clid
+     * @param  int|null  $timeseconds
+     * @param  string|null  $reason
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function clientBan(int $clid, int $timeseconds = null, string $reason = null): array
     {
@@ -959,11 +1001,12 @@ class Server extends Node
     /**
      * Changes the clients properties using given properties.
      *
-     * @param string $cldbid
-     * @param array $properties
+     * @param  string  $cldbid
+     * @param  array  $properties
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function clientModifyDb(string $cldbid, array $properties): void
     {
@@ -975,10 +1018,11 @@ class Server extends Node
     /**
      * Deletes a clients properties from the database.
      *
-     * @param string $cldbid
+     * @param  string  $cldbid
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function clientDeleteDb(string $cldbid): void
     {
@@ -988,12 +1032,13 @@ class Server extends Node
     /**
      * Sets the channel group of a client to the ID specified.
      *
-     * @param int $cldbid
-     * @param int $cid
-     * @param int $cgid
+     * @param  int  $cldbid
+     * @param  int  $cid
+     * @param  int  $cgid
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function clientSetChannelGroup(int $cldbid, int $cid, int $cgid): void
     {
@@ -1003,11 +1048,12 @@ class Server extends Node
     /**
      * Returns a list of permissions defined for a client.
      *
-     * @param int $cldbid
-     * @param bool $permsid
+     * @param  int  $cldbid
+     * @param  bool  $permsid
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function clientPermList(int $cldbid, bool $permsid = false): array
     {
@@ -1021,13 +1067,14 @@ class Server extends Node
      * Adds a set of specified permissions to a client. Multiple permissions can be added by providing
      * the three parameters of each permission.
      *
-     * @param int $cldbid
-     * @param int|int[] $permid
-     * @param int|int[] $permvalue
-     * @param bool|bool[] $permskip
+     * @param  int  $cldbid
+     * @param  int|int[]  $permid
+     * @param  int|int[]  $permvalue
+     * @param  bool|bool[]  $permskip
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function clientPermAssign(int $cldbid, int|array $permid, int|array $permvalue, bool|array $permskip = false): void
     {
@@ -1043,11 +1090,12 @@ class Server extends Node
     /**
      * Removes a set of specified permissions from a client. Multiple permissions can be removed at once.
      *
-     * @param int $cldbid
-     * @param int|int[] $permid
+     * @param  int  $cldbid
+     * @param  int|int[]  $permid
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function clientPermRemove(int $cldbid, int|array $permid): void
     {
@@ -1063,11 +1111,12 @@ class Server extends Node
     /**
      * Returns a list of server groups available.
      *
-     * @param array $filter
+     * @param  array  $filter
      * @return array
      * @throws AdapterException
      * @throws NodeException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function serverGroupList(array $filter = []): array
     {
@@ -1097,11 +1146,12 @@ class Server extends Node
     /**
      * Creates a new server group using the name specified with $name and returns its ID.
      *
-     * @param string $name
-     * @param int $type
+     * @param  string  $name
+     * @param  int  $type
      * @return int
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function serverGroupCreate(string $name, int $type = TeamSpeak3::GROUP_DBTYPE_REGULAR): int
     {
@@ -1115,13 +1165,14 @@ class Server extends Node
     /**
      * Creates a copy of an existing server group specified by $ssgid and returns the new groups ID.
      *
-     * @param int $ssgid
-     * @param string|null $name
-     * @param int $tsgid
-     * @param int $type
+     * @param  int  $ssgid
+     * @param  string|null  $name
+     * @param  int  $tsgid
+     * @param  int  $type
      * @return int
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function serverGroupCopy(int $ssgid, string $name = null, int $tsgid = 0, int $type = TeamSpeak3::GROUP_DBTYPE_REGULAR): int
     {
@@ -1140,11 +1191,12 @@ class Server extends Node
     /**
      * Renames the server group specified with $sgid.
      *
-     * @param int $sgid
-     * @param string $name
+     * @param  int  $sgid
+     * @param  string  $name
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function serverGroupRename(int $sgid, string $name): void
     {
@@ -1157,11 +1209,12 @@ class Server extends Node
      * Deletes the server group specified with $sgid. If $force is set to 1, the server group
      * will be deleted even if there are clients within.
      *
-     * @param int $sgid
-     * @param bool $force
+     * @param  int  $sgid
+     * @param  bool  $force
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function serverGroupDelete(int $sgid, bool $force = false): void
     {
@@ -1173,11 +1226,12 @@ class Server extends Node
     /**
      * Returns the PlanetTeamSpeak\TeamSpeak3Framework\Node\Servergroup object matching the given ID.
      *
-     * @param int $sgid
+     * @param  int  $sgid
      * @return ServerGroup
      * @throws AdapterException
      * @throws NodeException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function serverGroupGetById(int $sgid): ServerGroup
     {
@@ -1191,12 +1245,13 @@ class Server extends Node
     /**
      * Returns the PlanetTeamSpeak\TeamSpeak3Framework\Node\Servergroup object matching the given name.
      *
-     * @param string $name
-     * @param int $type
+     * @param  string  $name
+     * @param  int  $type
      * @return ServerGroup
      * @throws AdapterException
      * @throws NodeException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function serverGroupGetByName(string $name, int $type = TeamSpeak3::GROUP_DBTYPE_REGULAR): ServerGroup
     {
@@ -1212,11 +1267,12 @@ class Server extends Node
     /**
      * Returns a list of permissions assigned to the server group specified.
      *
-     * @param int $sgid
-     * @param bool $permsid
+     * @param  int  $sgid
+     * @param  bool  $permsid
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function serverGroupPermList(int $sgid, bool $permsid = false): array
     {
@@ -1228,14 +1284,15 @@ class Server extends Node
      * Adds a set of specified permissions to the server group specified. Multiple permissions
      * can be added by providing the four parameters of each permission in separate arrays.
      *
-     * @param int $sgid
-     * @param int|int[] $permid
-     * @param int|int[] $permvalue
-     * @param int|int[] $permnegated
-     * @param bool|bool[] $permskip
+     * @param  int  $sgid
+     * @param  int|int[]  $permid
+     * @param  int|int[]  $permvalue
+     * @param  int|int[]  $permnegated
+     * @param  bool|bool[]  $permskip
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function serverGroupPermAssign(int $sgid, int|array $permid, int|array $permvalue, int|array $permnegated = 0, bool|array $permskip = false): void
     {
@@ -1252,11 +1309,12 @@ class Server extends Node
      * Removes a set of specified permissions from the server group specified with $sgid. Multiple
      * permissions can be removed at once.
      *
-     * @param int $sgid
-     * @param int|int[] $permid
+     * @param  int  $sgid
+     * @param  int|int[]  $permid
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function serverGroupPermRemove(int $sgid, int|array $permid): void
     {
@@ -1272,10 +1330,11 @@ class Server extends Node
     /**
      * Returns a list of clients assigned to the server group specified.
      *
-     * @param int $sgid
+     * @param  int  $sgid
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function serverGroupClientList(int $sgid): array
     {
@@ -1290,11 +1349,12 @@ class Server extends Node
      * Adds a client to the server group specified. Please note that a client cannot be
      * added to default groups or template groups.
      *
-     * @param int $sgid
-     * @param int $cldbid
+     * @param  int  $sgid
+     * @param  int  $cldbid
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function serverGroupClientAdd(int $sgid, int $cldbid): void
     {
@@ -1306,11 +1366,12 @@ class Server extends Node
     /**
      * Removes a client from the server group specified.
      *
-     * @param int $sgid
-     * @param int $cldbid
+     * @param  int  $sgid
+     * @param  int  $cldbid
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function serverGroupClientDel(int $sgid, int $cldbid): void
     {
@@ -1321,11 +1382,12 @@ class Server extends Node
      * Returns an ordered array of regular server groups available based on a pre-defined
      * set of rules.
      *
-     * @param int $type
+     * @param  int  $type
      * @return array
      * @throws AdapterException
      * @throws NodeException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function serverGroupGetProfiles(int $type = TeamSpeak3::GROUP_DBTYPE_REGULAR): array
     {
@@ -1395,12 +1457,13 @@ class Server extends Node
      * Tries to identify the post powerful/the weakest server group on the virtual server and returns
      * the ID.
      *
-     * @param int $mode
-     * @param int $type
+     * @param  int  $mode
+     * @param  int  $type
      * @return ServerGroup
      * @throws AdapterException
      * @throws NodeException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function serverGroupIdentify(
         int $mode = TeamSpeak3::GROUP_IDENTIFIY_STRONGEST,
@@ -1416,10 +1479,11 @@ class Server extends Node
     /**
      * Returns a list of channel groups available.
      *
-     * @param array $filter
+     * @param  array  $filter
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function channelGroupList(array $filter = []): array
     {
@@ -1449,11 +1513,12 @@ class Server extends Node
     /**
      * Creates a new channel group using the name specified with $name and returns its ID.
      *
-     * @param string $name
-     * @param int $type
+     * @param  string  $name
+     * @param  int  $type
      * @return int
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function channelGroupCreate(string $name, int $type = TeamSpeak3::GROUP_DBTYPE_REGULAR): int
     {
@@ -1467,13 +1532,14 @@ class Server extends Node
     /**
      * Creates a copy of an existing channel group specified by $scgid and returns the new groups ID.
      *
-     * @param int $scgid
-     * @param string|null $name
-     * @param int $tcgid
-     * @param int $type
+     * @param  int  $scgid
+     * @param  string|null  $name
+     * @param  int  $tcgid
+     * @param  int  $type
      * @return int
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function channelGroupCopy(int $scgid, string $name = null, int $tcgid = 0, int $type = TeamSpeak3::GROUP_DBTYPE_REGULAR): int
     {
@@ -1492,11 +1558,12 @@ class Server extends Node
     /**
      * Renames the channel group specified with $cgid.
      *
-     * @param int $cgid
-     * @param string $name
+     * @param  int  $cgid
+     * @param  string  $name
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function channelGroupRename(int $cgid, string $name): void
     {
@@ -1509,11 +1576,12 @@ class Server extends Node
      * Deletes the channel group specified with $cgid. If $force is set to 1, the channel group
      * will be deleted even if there are clients within.
      *
-     * @param int $cgid
-     * @param bool $force
+     * @param  int  $cgid
+     * @param  bool  $force
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function channelGroupDelete(int $cgid, bool $force = false): void
     {
@@ -1525,10 +1593,11 @@ class Server extends Node
     /**
      * Returns the PlanetTeamSpeak\TeamSpeak3Framework\Node\Channelgroup object matching the given ID.
      *
-     * @param int $cgid
+     * @param  int  $cgid
      * @return ChannelGroup
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function channelGroupGetById(int $cgid): ChannelGroup
     {
@@ -1542,11 +1611,12 @@ class Server extends Node
     /**
      * Returns the PlanetTeamSpeak\TeamSpeak3Framework\Node\Channelgroup object matching the given name.
      *
-     * @param string $name
-     * @param int $type
+     * @param  string  $name
+     * @param  int  $type
      * @return ChannelGroup
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function channelGroupGetByName(string $name, int $type = TeamSpeak3::GROUP_DBTYPE_REGULAR): ChannelGroup
     {
@@ -1562,11 +1632,12 @@ class Server extends Node
     /**
      * Returns a list of permissions assigned to the channel group specified.
      *
-     * @param int $cgid
-     * @param bool $permsid
+     * @param  int  $cgid
+     * @param  bool  $permsid
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function channelGroupPermList(int $cgid, bool $permsid = false): array
     {
@@ -1578,12 +1649,13 @@ class Server extends Node
      * Adds a set of specified permissions to the channel group specified. Multiple permissions
      * can be added by providing the two parameters of each permission in separate arrays.
      *
-     * @param int $cgid
-     * @param int|int[] $permid
-     * @param int|int[] $permvalue
+     * @param  int  $cgid
+     * @param  int|int[]  $permid
+     * @param  int|int[]  $permvalue
      * @return void
-     * @throws ServerQueryException
      * @throws AdapterException
+     * @throws ServerQueryException
+     * @throws TransportException
      */
     public function channelGroupPermAssign(int $cgid, int|array $permid, int|array $permvalue): void
     {
@@ -1600,11 +1672,12 @@ class Server extends Node
      * Removes a set of specified permissions from the channel group specified with $cgid. Multiple
      * permissions can be removed at once.
      *
-     * @param int $cgid
-     * @param int|int[] $permid
+     * @param  int  $cgid
+     * @param  int|int[]  $permid
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function channelGroupPermRemove(int $cgid, int|array $permid): void
     {
@@ -1622,13 +1695,14 @@ class Server extends Node
      * parameters are optional so you're free to choose the most suitable combination for your
      * requirements.
      *
-     * @param int|null $cgid
-     * @param int|null $cid
-     * @param int|null $cldbid
-     * @param bool $resolve
+     * @param  int|null  $cgid
+     * @param  int|null  $cid
+     * @param  int|null  $cldbid
+     * @param  bool  $resolve
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function channelGroupClientList(int $cgid = null, int $cid = null, int $cldbid = null, bool $resolve = false): array
     {
@@ -1664,6 +1738,7 @@ class Server extends Node
      * @return StringHelper
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function permReset(): StringHelper
     {
@@ -1678,10 +1753,11 @@ class Server extends Node
      * Removes any assignment of the permission specified with $permid on the selected virtual server
      * and returns the number of removed assignments on success.
      *
-     * @param int $permid
+     * @param  int  $permid
      * @return int
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function permRemoveAny(int $permid): int
     {
@@ -1720,16 +1796,17 @@ class Server extends Node
     /**
      * Initializes a file transfer upload. $clientftfid is an arbitrary ID to identify the file transfer on client-side.
      *
-     * @param int $clientftfid
-     * @param int $cid
-     * @param string $name
-     * @param int $size
-     * @param string $cpw
-     * @param bool $overwrite
-     * @param bool $resume
+     * @param  int  $clientftfid
+     * @param  int  $cid
+     * @param  string  $name
+     * @param  int  $size
+     * @param  string  $cpw
+     * @param  bool  $overwrite
+     * @param  bool  $resume
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function transferInitUpload(
         int $clientftfid,
@@ -1765,14 +1842,15 @@ class Server extends Node
     /**
      * Initializes a file transfer download. $clientftfid is an arbitrary ID to identify the file transfer on client-side.
      *
-     * @param int $clientftfid
-     * @param int $cid
-     * @param string $name
-     * @param string $cpw
-     * @param int $seekpos
+     * @param  int  $clientftfid
+     * @param  int  $cid
+     * @param  string  $name
+     * @param  string  $cpw
+     * @param  int  $seekpos
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function transferInitDownload(int $clientftfid, int $cid, string $name, string $cpw = '', int $seekpos = 0): array
     {
@@ -1805,6 +1883,7 @@ class Server extends Node
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function transferList(): array
     {
@@ -1814,11 +1893,12 @@ class Server extends Node
     /**
      * Stops the running file transfer with server-side ID $serverftfid.
      *
-     * @param int $serverftfid
-     * @param bool $delete
+     * @param  int  $serverftfid
+     * @param  bool  $delete
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function transferStop(int $serverftfid, bool $delete = false): void
     {
@@ -1867,6 +1947,7 @@ class Server extends Node
      * @throws FileTransferException
      * @throws HelperException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function iconUpload(string $data): int
     {
@@ -1884,10 +1965,11 @@ class Server extends Node
     /**
      * Changes the virtual server configuration using given properties.
      *
-     * @param array $properties
+     * @param  array  $properties
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function modify(array $properties): void
     {
@@ -1898,10 +1980,11 @@ class Server extends Node
     /**
      * Sends a text message to all clients on the virtual server.
      *
-     * @param string $msg
+     * @param  string  $msg
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function message(string $msg): void
     {
@@ -1915,6 +1998,7 @@ class Server extends Node
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function messageList(): array
     {
@@ -1924,12 +2008,13 @@ class Server extends Node
     /**
      * Sends an offline message to the client specified by $cluid.
      *
-     * @param string $cluid
-     * @param string $subject
-     * @param string $message
+     * @param  string  $cluid
+     * @param  string  $subject
+     * @param  string  $message
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function messageCreate(string $cluid, string $subject, string $message): void
     {
@@ -1939,10 +2024,11 @@ class Server extends Node
     /**
      * Deletes an existing offline message with ID $msgid from your inbox.
      *
-     * @param int $msgid
+     * @param  int  $msgid
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function messageDelete(int $msgid): void
     {
@@ -1952,11 +2038,12 @@ class Server extends Node
     /**
      * Returns an existing offline message with ID $msgid from your inbox.
      *
-     * @param int $msgid
-     * @param bool $flag_read
+     * @param  int  $msgid
+     * @param  bool  $flag_read
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function messageRead(int $msgid, bool $flag_read = true): array
     {
@@ -1972,10 +2059,11 @@ class Server extends Node
     /**
      * Creates and returns snapshot data for the selected virtual server.
      *
-     * @param int $mode
+     * @param  int  $mode
      * @return string
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function snapshotCreate(int $mode = TeamSpeak3::SNAPSHOT_STRING): string
     {
@@ -1992,12 +2080,13 @@ class Server extends Node
      * Deploys snapshot data on the selected virtual server. If no virtual server is selected (ID 0),
      * the data will be used to create a new virtual server from scratch.
      *
-     * @param string $data
-     * @param int $mode
+     * @param  string  $data
+     * @param  int  $mode
      * @return array
      * @throws AdapterException
      * @throws HelperException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function snapshotDeploy(string $data, int $mode = TeamSpeak3::SNAPSHOT_STRING): array
     {
@@ -2027,11 +2116,12 @@ class Server extends Node
      * messages. Depending on the notifications you've registered for, the server will send you
      * a message on every event.
      *
-     * @param string $event
-     * @param int $id
+     * @param  string  $event
+     * @param  int  $id
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function notifyRegister(string $event, int $id = 0): void
     {
@@ -2045,6 +2135,7 @@ class Server extends Node
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function notifyUnregister(): void
     {
@@ -2058,6 +2149,7 @@ class Server extends Node
      * @throws AdapterException
      * @throws NodeException
      * @throws ServerQueryException
+     * @throws TransportException
      * @deprecated
      */
     public function tokenList(): array
@@ -2070,11 +2162,12 @@ class Server extends Node
      * of token_id1 and token_id2 will be translated into the appropriate group and/or channel
      * names.
      *
-     * @param bool $resolve
+     * @param  bool  $resolve
      * @return array
      * @throws AdapterException
      * @throws NodeException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function privilegeKeyList(bool $resolve = false): array
     {
@@ -2105,14 +2198,15 @@ class Server extends Node
     /**
      * Alias for privilegeKeyCreate().
      *
-     * @param int $id1
-     * @param int $id2
-     * @param int $type
-     * @param string|null $description
-     * @param array|null $customset
+     * @param  int  $id1
+     * @param  int  $id2
+     * @param  int  $type
+     * @param  string|null  $description
+     * @param  array|null  $customset
      * @return StringHelper
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      * @deprecated
      */
     public function tokenCreate(
@@ -2127,14 +2221,15 @@ class Server extends Node
 
     /**
      * Creates a new privilege key (token) and returns the key.
-     * @param int $id1
-     * @param int $id2
-     * @param int $type
-     * @param string|null $description
-     * @param string|null $customset
+     * @param  int  $id1
+     * @param  int  $id2
+     * @param  int  $type
+     * @param  string|null  $description
+     * @param  string|null  $customset
      * @return StringHelper
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function privilegeKeyCreate(
         int $id1,
@@ -2157,6 +2252,7 @@ class Server extends Node
      * @param $token
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      * @deprecated
      */
     public function tokenDelete($token): void
@@ -2167,10 +2263,11 @@ class Server extends Node
     /**
      * Deletes a token specified by key $token.
      *
-     * @param string $token
+     * @param  string  $token
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function privilegeKeyDelete(string $token): void
     {
@@ -2183,6 +2280,7 @@ class Server extends Node
      * @param $token
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      * @deprecated
      */
     public function tokenUse($token): void
@@ -2194,10 +2292,11 @@ class Server extends Node
      * Use a token key gain access to a server or channel group. Please note that the server will
      * automatically delete the token after it has been used.
      *
-     * @param string $token
+     * @param  string  $token
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function privilegeKeyUse(string $token): void
     {
@@ -2207,11 +2306,12 @@ class Server extends Node
     /**
      * Returns a list of custom client properties specified by $ident.
      *
-     * @param string $ident
-     * @param string $pattern
+     * @param  string  $ident
+     * @param  string  $pattern
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function customSearch(string $ident, string $pattern = '%'): array
     {
@@ -2221,10 +2321,11 @@ class Server extends Node
     /**
      * Returns a list of custom properties for the client specified by $cldbid.
      *
-     * @param int $cldbid
+     * @param  int  $cldbid
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function customInfo(int $cldbid): array
     {
@@ -2234,12 +2335,13 @@ class Server extends Node
     /**
      * Creates or updates a custom property for the client specified by $cldbid.
      *
-     * @param int $cldbid
-     * @param string $ident
-     * @param string $value
+     * @param  int  $cldbid
+     * @param  string  $ident
+     * @param  string  $value
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function customSet(int $cldbid, string $ident, string $value): void
     {
@@ -2249,11 +2351,12 @@ class Server extends Node
     /**
      * Removes a custom property from the client specified by $cldbid.
      *
-     * @param int $cldbid
-     * @param string $ident
+     * @param  int  $cldbid
+     * @param  string  $ident
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function customDelete(int $cldbid, string $ident): void
     {
@@ -2263,11 +2366,12 @@ class Server extends Node
     /**
      * Returns a list of active bans on the selected virtual server.
      *
-     * @param null $offset
-     * @param null $limit
+     * @param  null  $offset
+     * @param  null  $limit
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function banList($offset = null, $limit = null): array
     {
@@ -2280,6 +2384,7 @@ class Server extends Node
      * @return int
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function banCount(): int
     {
@@ -2292,6 +2397,7 @@ class Server extends Node
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function banListClear(): void
     {
@@ -2302,12 +2408,13 @@ class Server extends Node
      * Adds a new ban rule on the selected virtual server. All parameters are optional but at least one
      * of the following rules must be set: ip, name, or uid.
      *
-     * @param array $rules
-     * @param int|null $timeseconds
-     * @param string|null $reason
+     * @param  array  $rules
+     * @param  int|null  $timeseconds
+     * @param  string|null  $reason
      * @return int
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function banCreate(array $rules, int $timeseconds = null, string $reason = null): int
     {
@@ -2322,10 +2429,11 @@ class Server extends Node
     /**
      * Deletes the specified ban rule from the server.
      *
-     * @param int $banid
+     * @param  int  $banid
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function banDelete(int $banid): void
     {
@@ -2336,10 +2444,11 @@ class Server extends Node
      * Returns a list of complaints on the selected virtual server. If $tcldbid is specified, only
      * complaints about the targeted client will be shown.
      *
-     * @param int|null $tcldbid
+     * @param  int|null  $tcldbid
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function complaintList(int $tcldbid = null): array
     {
@@ -2349,10 +2458,11 @@ class Server extends Node
     /**
      * Deletes all active complaints about the client with database ID $tcldbid from the server.
      *
-     * @param int $tcldbid
+     * @param  int  $tcldbid
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function complaintListClear(int $tcldbid): void
     {
@@ -2362,11 +2472,12 @@ class Server extends Node
     /**
      * Submits a complaint about the client with database ID $tcldbid to the server.
      *
-     * @param int $tcldbid
-     * @param string $message
+     * @param  int  $tcldbid
+     * @param  string  $message
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function complaintCreate(int $tcldbid, string $message): void
     {
@@ -2376,11 +2487,12 @@ class Server extends Node
     /**
      * Deletes the complaint about the client with ID $tcldbid submitted by the client with ID $fcldbid from the server.
      *
-     * @param int $tcldbid
-     * @param int $fcldbid
+     * @param  int  $tcldbid
+     * @param  int  $fcldbid
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function complaintDelete(int $tcldbid, int $fcldbid): void
     {
@@ -2390,10 +2502,11 @@ class Server extends Node
     /**
      * Returns a list of temporary server passwords.
      *
-     * @param bool $resolve
+     * @param  bool  $resolve
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function tempPasswordList(bool $resolve = false): array
     {
@@ -2417,14 +2530,15 @@ class Server extends Node
      * password will automatically join the channel specified with $tcid. If tcid is set to 0,
      * the client will join the default channel.
      *
-     * @param string $pw
-     * @param int $duration
-     * @param int $tcid
-     * @param string $tcpw
-     * @param string $desc
+     * @param  string  $pw
+     * @param  int  $duration
+     * @param  int  $tcid
+     * @param  string  $tcpw
+     * @param  string  $desc
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function tempPasswordCreate(string $pw, int $duration, int $tcid = 0, string $tcpw = '', string $desc = ''): void
     {
@@ -2434,10 +2548,11 @@ class Server extends Node
     /**
      * Deletes the temporary server password specified with $pw.
      *
-     * @param string $pw
+     * @param  string  $pw
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function tempPasswordDelete(string $pw): void
     {
@@ -2447,13 +2562,14 @@ class Server extends Node
     /**
      * Displays a specified number of entries (1-100) from the servers log.
      *
-     * @param int $lines
-     * @param int|null $begin_pos
-     * @param bool|null $reverse
-     * @param bool|null $instance
+     * @param  int  $lines
+     * @param  int|null  $begin_pos
+     * @param  bool|null  $reverse
+     * @param  bool|null  $instance
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function logView(int $lines = 30, int $begin_pos = null, bool $reverse = null, bool $instance = null): array
     {
@@ -2464,11 +2580,12 @@ class Server extends Node
     /**
      * Writes a custom entry into the virtual server log.
      *
-     * @param string $logmsg
-     * @param int $loglevel
+     * @param  string  $logmsg
+     * @param  int  $loglevel
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function logAdd(string $logmsg, int $loglevel = TeamSpeak3::LOGLEVEL_INFO): void
     {
@@ -2481,6 +2598,7 @@ class Server extends Node
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function connectionInfo(): array
     {
@@ -2493,6 +2611,7 @@ class Server extends Node
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function delete(): void
     {
@@ -2505,6 +2624,7 @@ class Server extends Node
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function start(): void
     {
@@ -2518,6 +2638,7 @@ class Server extends Node
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function stop(string $msg = null): void
     {
@@ -2527,11 +2648,12 @@ class Server extends Node
     /**
      * Sends a plugin command to all clients connected to the server.
      *
-     * @param string $plugin
-     * @param string $data
+     * @param  string  $plugin
+     * @param  string  $data
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function sendPluginCmd(string $plugin, string $data): void
     {
@@ -2541,10 +2663,11 @@ class Server extends Node
     /**
      * Changes the properties of your own client connection.
      *
-     * @param array $properties
+     * @param  array  $properties
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function selfUpdate(array $properties): void
     {
@@ -2559,10 +2682,11 @@ class Server extends Node
      * Updates your own ServerQuery login credentials using a specified username. The password
      * will be auto-generated.
      *
-     * @param string $username
+     * @param  string  $username
      * @return StringHelper
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function selfUpdateLogin(string $username): StringHelper
     {
@@ -2577,6 +2701,7 @@ class Server extends Node
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function selfPermOverview(): array
     {
@@ -2587,6 +2712,7 @@ class Server extends Node
     /**
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      * @ignore
      */
     protected function fetchNodeList(): void
@@ -2603,6 +2729,7 @@ class Server extends Node
     /**
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      * @ignore
      */
     protected function fetchNodeInfo(): void

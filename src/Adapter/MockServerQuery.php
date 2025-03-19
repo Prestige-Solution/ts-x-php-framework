@@ -3,6 +3,8 @@
 namespace PlanetTeamSpeak\TeamSpeak3Framework\Adapter;
 
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\ServerQueryException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\TransportException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Helper\Profiler;
 use PlanetTeamSpeak\TeamSpeak3Framework\Helper\Signal;
 use PlanetTeamSpeak\TeamSpeak3Framework\TeamSpeak3;
@@ -16,6 +18,8 @@ class MockServerQuery extends ServerQuery
      *
      * @return void
      * @throws AdapterException
+     * @throws ServerQueryException
+     * @throws TransportException
      */
     protected function syn(): void
     {

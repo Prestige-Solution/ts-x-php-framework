@@ -27,7 +27,6 @@ use PlanetTeamSpeak\TeamSpeak3Framework\Exception\HelperException;
 
 /**
  * Class Crypt
- * todo: Replace this class with native encryption
  *
  * @class Crypt
  * @brief Helper class for data encryption.

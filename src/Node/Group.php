@@ -15,10 +15,11 @@ abstract class Group extends Node
     /**
      * Sends a text message to all clients residing in the channel group on the virtual server.
      *
-     * @param string $msg
+     * @param  string  $msg
      * @return void
-     * @throws ServerQueryException
      * @throws AdapterException
+     * @throws ServerQueryException
+     * @throws TransportException
      */
     public function message(string $msg): void
     {

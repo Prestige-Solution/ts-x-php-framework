@@ -26,6 +26,7 @@ namespace PlanetTeamSpeak\TeamSpeak3Framework\Node;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\NodeException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\ServerQueryException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\TransportException;
 use PlanetTeamSpeak\TeamSpeak3Framework\TeamSpeak3;
 
 /**
@@ -61,6 +62,7 @@ class ServerGroup extends Group
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function rename(string $name): void
     {
@@ -75,6 +77,7 @@ class ServerGroup extends Group
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function delete(bool $force = false): void
     {
@@ -90,6 +93,7 @@ class ServerGroup extends Group
      * @return int
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function copy(string $name = null, int $tsgid = 0, int $type = TeamSpeak3::GROUP_DBTYPE_REGULAR): int
     {
@@ -103,6 +107,7 @@ class ServerGroup extends Group
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function permList(bool $permsid = false): array
     {
@@ -120,6 +125,7 @@ class ServerGroup extends Group
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function permAssign(int $permid, int $permvalue, int $permnegated = 0, int $permskip = 0): void
     {
@@ -145,6 +151,7 @@ class ServerGroup extends Group
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function permRemove(int $permid): void
     {
@@ -168,6 +175,7 @@ class ServerGroup extends Group
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function clientList(): array
     {
@@ -182,6 +190,7 @@ class ServerGroup extends Group
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function clientAdd(int $cldbid): void
     {
@@ -195,6 +204,7 @@ class ServerGroup extends Group
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function clientDel(int $cldbid): void
     {
@@ -220,6 +230,7 @@ class ServerGroup extends Group
      * @return string
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function privilegeKeyCreate(string $description = null, string $customset = null): string
     {

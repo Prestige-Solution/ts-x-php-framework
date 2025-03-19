@@ -11,8 +11,14 @@ The ideal is that this version can be integrated into your own project and the m
 # Installation
 We **DON'T** change the original Namespace from PlanetTeamspeak. So the replacement should not be affected your current Project.
 
+**PHP Required Extensions**<br>
+``apt install php8.2 php8.2-{common,mbstring,ssh2} -y``
+
 **Via Composer**<br>
-``composer require prestige-solution/ts-x-php-framework:latest`` or with a specific release ``composer require prestige-solution/ts-x-php-framework:2.0.0-beta-2``
+Current Version:<br>
+``composer require prestige-solution/ts-x-php-framework``<br><br>
+or with a specific release<br> 
+``composer require prestige-solution/ts-x-php-framework:2.0.0-beta-2``
 
 **Via Git**<br>
 Add to your ``composer.json`` following options
@@ -90,9 +96,9 @@ if (filter_var($host, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) || filter_var(gethos
 - [x] Functionality tests for the bot identity
 - [x] Minimalistic testing with a Live Server or Development Server
 - [x] Bug fixes
-- [ ] Search Bugs and fixes
+- [x] Search Bugs and fixes
 - [ ] Full Testing with a Live Server or Development Server
-- [ ] Readme and Documentations
+- [x] Readme and Documentations
 
 ---
 

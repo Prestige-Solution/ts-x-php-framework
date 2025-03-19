@@ -23,6 +23,10 @@
 
 namespace PlanetTeamSpeak\TeamSpeak3Framework\Viewer;
 
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\NodeException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\ServerQueryException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\TransportException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Helper\Convert;
 use PlanetTeamSpeak\TeamSpeak3Framework\Node\Channel;
 use PlanetTeamSpeak\TeamSpeak3Framework\Node\ChannelGroup;
@@ -70,6 +74,10 @@ class Json implements ViewerInterface
      */
     protected int $lastLvl = 0;
 
+    protected int $id = 0;
+
+    protected int $icon = 0;
+
     /**
      * The Json constructor.
      *
@@ -86,9 +94,13 @@ class Json implements ViewerInterface
     /**
      * Assembles an stdClass object for the current element.
      *
-     * @param Node $node
-     * @param array $siblings
+     * @param  Node  $node
+     * @param  array  $siblings
      * @return string
+     * @throws AdapterException
+     * @throws NodeException
+     * @throws ServerQueryException
+     * @throws TransportException
      */
     public function fetchObject(Node $node, array $siblings = []): string
     {
@@ -153,13 +165,16 @@ class Json implements ViewerInterface
      * Returns the level of the current element.
      *
      * @return int
+     * @throws AdapterException
+     * @throws ServerQueryException
+     * @throws TransportException
      */
     protected function getLevel(): int
     {
         if ($this->currObj instanceof Channel) {
             return $this->currObj->getLevel() + 2;
         } elseif ($this->currObj instanceof Client) {
-            return $this->currObj->channelGetById($this->currObj->cid)->getLevel() + 3;
+            return $this->currObj->getParent()->channelGetById($this->currObj->cid)->getLevel() + 3;
         }
 
         return 1;
@@ -191,6 +206,9 @@ class Json implements ViewerInterface
      * additional class names to allow further customization of the content via CSS.
      *
      * @return string
+     * @throws AdapterException
+     * @throws ServerQueryException
+     * @throws TransportException
      */
     protected function getClass(): string
     {
@@ -245,6 +263,9 @@ class Json implements ViewerInterface
      * Returns an individual type for a spacer.
      *
      * @return string
+     * @throws AdapterException
+     * @throws ServerQueryException
+     * @throws TransportException
      */
     protected function getSpacerType(): string
     {
@@ -280,6 +301,10 @@ class Json implements ViewerInterface
      * for the current TeamSpeak_Node_Abstract object.
      *
      * @return string
+     * @throws AdapterException
+     * @throws NodeException
+     * @throws ServerQueryException
+     * @throws TransportException
      */
     protected function getName(): string
     {
@@ -307,6 +332,10 @@ class Json implements ViewerInterface
      * Returns the parent ID of the current element.
      *
      * @return stdClass
+     * @throws AdapterException
+     * @throws NodeException
+     * @throws ServerQueryException
+     * @throws TransportException
      */
     protected function getProps(): stdClass
     {
@@ -315,8 +344,8 @@ class Json implements ViewerInterface
         if (is_a($this->currObj, Node::class)) {
             $this->id = 0;
             $this->icon = 0;
-            $props->version = $this->currObj->version('version')->toString();
-            $props->platform = $this->currObj->version('platform')->toString();
+            $props->version = $this->currObj->getParent()->getAdapter()->getHost()->version('version')->toString();
+            $props->platform = $this->currObj->getParent()->getAdapter()->getHost()->version('platform')->toString();
             $props->users = $this->currObj->virtualservers_total_clients_online;
             $props->slots = $this->currObj->virtualservers_total_maxclients;
             $props->flags = 0;
@@ -393,7 +422,7 @@ class Json implements ViewerInterface
             $props->flags += $this->currObj->client_is_channel_commander ? 4 : 0;
             $props->flags += $this->currObj->client_is_priority_speaker ? 8 : 0;
             $props->flags += $this->currObj->client_is_talker ? 16 : 0;
-            $props->flags += $this->currObj->channelGetById($this->currObj->cid)->channel_needed_talk_power > $this->currObj->client_talk_power && ! $this->currObj->client_is_talker ? 32 : 0;
+            $props->flags += $this->currObj->getParent()->channelGetById($this->currObj->cid)->channel_needed_talk_power > $this->currObj->client_talk_power && ! $this->currObj->client_is_talker ? 32 : 0;
             $props->flags += $this->currObj->client_input_muted || ! $this->currObj->client_input_hardware ? 64 : 0;
             $props->flags += $this->currObj->client_output_muted || ! $this->currObj->client_output_hardware ? 128 : 0;
         } elseif (is_a($this->currObj, ServerGroup::class) || is_a($this->currObj, ChannelGroup::class)) {

@@ -81,7 +81,7 @@ class MockTCP extends TCP
         return $reply."\n";
     }
 
-    protected function fwrite($data)
+    protected function fwrite($data): void
     {
         if (! array_key_exists($data, self::CMD)) {
             $this->reply = "error id=1 msg=Unkown\n";

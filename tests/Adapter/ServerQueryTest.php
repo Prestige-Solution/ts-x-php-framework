@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 use PlanetTeamSpeak\TeamSpeak3Framework\Adapter\MockServerQuery;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\ServerQueryException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\TransportException;
 
 class ServerQueryTest extends TestCase
 {
@@ -20,7 +21,9 @@ class ServerQueryTest extends TestCase
     }
 
     /**
+     * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function testRequestIllegalCharakterException()
     {
@@ -35,6 +38,7 @@ class ServerQueryTest extends TestCase
     /**
      * @throws AdapterException
      * @throws ServerQueryException
+     * @throws TransportException
      */
     public function testLogin()
     {
