@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php_versions: ['8.2']
+        php_versions: ['8.2', '8.3']
         
     name: PHPUnit (PHP ${{ matrix.php_versions }})
     runs-on: ubuntu-latest
