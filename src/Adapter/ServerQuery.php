@@ -173,6 +173,9 @@ class ServerQuery extends Adapter
      */
     public function wait(): Event
     {
+        //declare default $evt
+        $evt = null;
+
         if ($this->getTransport()->getConfig('blocking')) {
             throw new AdapterException('only available in non-blocking mode');
         }
