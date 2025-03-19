@@ -21,7 +21,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php_versions }}
-          extensions: common mbstring ssh2
+          extensions: json ctype openssl ssh2
           coverage: none
           tools: none
     
@@ -33,7 +33,7 @@ jobs:
         with:
           dev: yes
           php_version: ${{ matrix.php_versions }}
-          php_extensions: common mbstring ssh2
+          php_extensions: json ctype openssl ssh2
           
       - name: copy environment file
         run: cp .env.testing.example .env.testing
