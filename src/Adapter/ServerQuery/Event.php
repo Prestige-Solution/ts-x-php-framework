@@ -64,13 +64,12 @@ class Event implements ArrayAccess
     /**
      * Creates a new PlanetTeamSpeak\TeamSpeak3Framework\Adapter\ServerQuery\Event object.
      *
-     * @param  StringHelper  $evt
      * @param  Host|null  $con
      * @throws AdapterException
      * @throws ServerQueryException
      * @throws TransportException
      */
-    public function __construct(StringHelper $evt, Host $con = null)
+    public function __construct(StringHelper|null $evt, Host $con = null)
     {
         if (! $evt->startsWith(TeamSpeak3::EVENT)) {
             throw new AdapterException('invalid notification event format');
