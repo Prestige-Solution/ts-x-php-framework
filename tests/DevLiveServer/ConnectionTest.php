@@ -26,6 +26,8 @@ class ConnectionTest extends TestCase
 
     private string $password;
 
+    private string $apiKey;
+
     private string $ts3_server_uri;
 
     private string $ts3_server_uri_ssh;
@@ -41,6 +43,7 @@ class ConnectionTest extends TestCase
             $this->queryPort = str_replace('DEV_LIVE_SERVER_QUERY_PORT=', '', preg_replace('#\n(?!\n)#', '', $env[4]));
             $this->user = str_replace('DEV_LIVE_SERVER_QUERY_USER=', '', preg_replace('#\n(?!\n)#', '', $env[5]));
             $this->password = str_replace('DEV_LIVE_SERVER_QUERY_USER_PASSWORD=', '', preg_replace('#\n(?!\n)#', '', $env[6]));
+            $this->apiKey = str_replace('DEV_LIVE_SERVER_API_KEY=', '', preg_replace('#\n(?!\n)#', '', $env[11]));
         } else {
             $this->active = 'false';
         }
