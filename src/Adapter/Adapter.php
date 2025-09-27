@@ -1,33 +1,12 @@
 <?php
 
-/**
- * @file
- * TeamSpeak 3 PHP Framework
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- * @author    Sven 'ScP' Paulsen
- * @copyright Copyright (c) Planet TeamSpeak. All rights reserved.
- */
-
 namespace PlanetTeamSpeak\TeamSpeak3Framework\Adapter;
 
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Helper\Profiler;
 use PlanetTeamSpeak\TeamSpeak3Framework\Helper\Profiler\Timer;
-use PlanetTeamSpeak\TeamSpeak3Framework\Transport\TCP;
 use PlanetTeamSpeak\TeamSpeak3Framework\Transport\Transport;
+use PlanetTeamSpeak\TeamSpeak3Framework\Transport\TSssh;
 
 /**
  * @class PlanetTeamSpeak\TeamSpeak3Framework\Adapter\Adapter
@@ -43,7 +22,7 @@ abstract class Adapter
     protected null|array $options = null;
 
     /**
-     * Stores an PlanetTeamSpeak\TeamSpeak3Framework\Transport\Transport object.
+     * Stores a PlanetTeamSpeak\TeamSpeak3Framework\Transport\Transport object.
      *
      * @var Transport|null
      */
@@ -114,9 +93,9 @@ abstract class Adapter
     /**
      * Returns the transport object used for this connection adapter.
      *
-     * @return Transport|TCP|null
+     * @return Transport|TSssh|null
      */
-    public function getTransport(): null|Transport|TCP
+    public function getTransport(): null|Transport|TSssh
     {
         return $this->transport;
     }
@@ -129,7 +108,7 @@ abstract class Adapter
      * @param string $transport
      * @return void
      */
-    protected function initTransport(array $options, string $transport = TCP::class): void
+    protected function initTransport(array $options, string $transport = TSssh::class): void
     {
         $this->transport = new $transport($options);
     }

@@ -1,26 +1,5 @@
 <?php
 
-/**
- * @file
- * TeamSpeak 3 PHP Framework
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- * @author    Sven 'ScP' Paulsen
- * @copyright Copyright (c) Planet TeamSpeak. All rights reserved.
- */
-
 namespace PlanetTeamSpeak\TeamSpeak3Framework\Helper;
 
 use DateTime;
@@ -33,22 +12,16 @@ use PlanetTeamSpeak\TeamSpeak3Framework\TeamSpeak3;
  */
 class Convert
 {
-    /**
-     * Converts bytes to a human-readable value.
-     * @param  int  $bytes
-     * @param  int  $precision
-     * @return string
-     */
-    public static function bytes(int $bytes, int $precision = 10): string
+    public static function bytes(int $bytes, int $precision = 2): string
     {
-        // Identify if it's a negative or positive number
-        $negative = str_starts_with($bytes, '-');
+        // Negative check, aber korrekt für int
+        $negative = $bytes < 0;
 
         // force calculation with positive numbers only
-        $bytes = floatval(abs($bytes));
+        $bytes = abs($bytes);
 
         $unit_conversions = [
-            0 => ['UNIT' => 'B', 'VALUE' => pow(1024, 0)],
+            0 => ['UNIT' => 'B',   'VALUE' => pow(1024, 0)],
             1 => ['UNIT' => 'KiB', 'VALUE' => pow(1024, 1)],
             2 => ['UNIT' => 'MiB', 'VALUE' => pow(1024, 2)],
             3 => ['UNIT' => 'GiB', 'VALUE' => pow(1024, 3)],
@@ -59,19 +32,18 @@ class Convert
             8 => ['UNIT' => 'YiB', 'VALUE' => pow(1024, 8)],
         ];
 
-        // Sort from the biggest defined unit to smallest to get the best human-readable format.
+        // Sort from the biggest defined unit to the smallest to get the best human-readable format.
         krsort($unit_conversions);
 
         foreach ($unit_conversions as $conversion) {
             if ($bytes >= $conversion['VALUE']) {
                 $result = $bytes / $conversion['VALUE'];
-                $result = round($result, $precision).' '.$conversion['UNIT'];
-
-                return ($negative) ? '-'.$result : $result;
+                $result = number_format($result, $precision, '.', '') . ' ' . $conversion['UNIT'];
+                return $negative ? '-' . $result : $result;
             }
         }
 
-        return ($negative) ? '-'.$bytes.' B' : $bytes.' B';
+        return ($negative ? '-' : '') . $bytes . ' B';
     }
 
     /**

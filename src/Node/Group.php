@@ -44,6 +44,7 @@ abstract class Group extends Node
      * @throws ServerQueryException
      * @throws FileTransferException
      * @throws TransportException
+     * @throws \Exception
      */
     public function iconDownload()
     {

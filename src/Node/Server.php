@@ -1,28 +1,8 @@
 <?php
 
-/**
- * @file
- * TeamSpeak 3 PHP Framework
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- * @author    Sven 'ScP' Paulsen
- * @copyright Copyright (c) Planet TeamSpeak. All rights reserved.
- */
-
 namespace PlanetTeamSpeak\TeamSpeak3Framework\Node;
 
+use Exception;
 use PlanetTeamSpeak\TeamSpeak3Framework\Adapter\ServerQuery\Reply;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\FileTransferException;
@@ -167,14 +147,33 @@ class Server extends Node
      */
     public function channelCreate(array $properties): int
     {
-        $cid = $this->execute('channelcreate', $properties)->toList();
+        $result = $this->execute('channelcreate', $properties)->toList();
         $this->channelListReset();
 
-        if (! isset($properties['channel_flag_permanent']) && ! isset($properties['channel_flag_semi_permanent'])) {
-            $this->getParent()->whoamiSet('client_channel_id', $cid['cid']);
+        $cid = null;
+
+        // Go backwards through the lines – the last line usually contains the new channel ID.
+        for ($i = count($result) - 1; $i >= 0; $i--) {
+            foreach ($result[$i] as $key => $value) {
+                if (stripos($key, 'cid') !== false) {
+                    // Extract only the leading digit
+                    if (preg_match('/\d+/', $value, $matches)) {
+                        $cid = (int) $matches[0];
+                        break 2;
+                    }
+                }
+            }
         }
 
-        return $cid['cid'];
+        if ($cid === null) {
+            throw new \RuntimeException('channelCreate: Ungültiges Ergebnis: ' . print_r($result, true));
+        }
+
+        if (!isset($properties['channel_flag_permanent']) && !isset($properties['channel_flag_semi_permanent'])) {
+            $this->getParent()->whoamiSet('client_channel_id', $cid);
+        }
+
+        return $cid;
     }
 
     /**
@@ -493,7 +492,7 @@ class Server extends Node
     }
 
     /**
-     * Returns detailed information about the specified file stored in a channels file repository.
+     * Returns detailed information about the specified file stored in a channel file repository.
      *
      * @param  int  $cid
      * @param  string  $cpw
@@ -511,8 +510,8 @@ class Server extends Node
     }
 
     /**
-     * Renames a file in a channels file repository. If the two parameters $tcid and $tcpw are specified, the file
-     * will be moved into another channels file repository.
+     * Renames a file in a channel file repository. If the two parameters $tcid and $tcpw are specified, the file
+     * will be moved into another channel file repository.
      *
      * @param  int  $cid
      * @param  string  $cpw
@@ -531,7 +530,7 @@ class Server extends Node
     }
 
     /**
-     * Deletes one or more files stored in a channels file repository.
+     * Deletes one or more files stored in a channel file repository.
      *
      * @param  int  $cid
      * @param  string  $cpw
@@ -547,7 +546,7 @@ class Server extends Node
     }
 
     /**
-     * Creates new directory in a channels file repository.
+     * Creates a new directory in a channel file repository.
      *
      * @param  int  $cid
      * @param  string  $cpw
@@ -584,7 +583,7 @@ class Server extends Node
     }
 
     /**
-     * Returns the pathway of a channel which can be used as a clients default channel.
+     * Returns the pathway of a channel which can be used as a client's default channel.
      *
      * @param  int  $cid
      * @return string
@@ -801,6 +800,7 @@ class Server extends Node
      * @throws AdapterException
      * @throws ServerQueryException
      * @throws TransportException
+     * @throws Exception
      */
     public function clientGetByName(string $name): Client
     {
@@ -809,8 +809,7 @@ class Server extends Node
                 return $client;
             }
         }
-
-        throw new ServerQueryException('invalid clientID', 0x200);
+        throw new Exception("Client not found");
     }
 
     /**
@@ -884,7 +883,7 @@ class Server extends Node
     }
 
     /**
-     * Returns an array containing the last known nickname and the unique identifier of the client
+     * Returns an array containing the last-known nickname and the unique identifier of the client
      * matching the database ID specified with $cldbid.
      *
      * @param  string  $cldbid
@@ -978,7 +977,7 @@ class Server extends Node
 
     /**
      * Bans the client specified with ID $clid from the server. Please note that this will create three separate
-     * ban rules for the targeted clients IP address, the unique identifier and the myTeamSpeak ID (if available).
+     * ban rules for the targeted clients IP address, the unique identifier, and the myTeamSpeak ID (if available).
      *
      * @param  int  $clid
      * @param  int|null  $timeseconds
@@ -999,7 +998,7 @@ class Server extends Node
     }
 
     /**
-     * Changes the clients properties using given properties.
+     * Changes the client's properties using given properties.
      *
      * @param  string  $cldbid
      * @param  array  $properties
@@ -1016,7 +1015,7 @@ class Server extends Node
     }
 
     /**
-     * Deletes a clients properties from the database.
+     * Deletes a client's properties from the database.
      *
      * @param  string  $cldbid
      * @return void
@@ -1454,7 +1453,7 @@ class Server extends Node
     }
 
     /**
-     * Tries to identify the post powerful/the weakest server group on the virtual server and returns
+     * Tries to identify the post-powerful/the weakest server group on the virtual server and returns
      * the ID.
      *
      * @param  int  $mode
@@ -1692,7 +1691,7 @@ class Server extends Node
 
     /**
      * Returns all the client and/or channel IDs currently assigned to channel groups. All three
-     * parameters are optional so you're free to choose the most suitable combination for your
+     * parameters are optional, so you're free to choose the most suitable combination for your
      * requirements.
      *
      * @param  int|null  $cgid
@@ -1794,7 +1793,7 @@ class Server extends Node
     }
 
     /**
-     * Initializes a file transfer upload. $clientftfid is an arbitrary ID to identify the file transfer on client-side.
+     * Initializes a file transfer upload. $clientftfid is an arbitrary ID to identify the file transfer on the client-side.
      *
      * @param  int  $clientftfid
      * @param  int  $cid
@@ -1840,7 +1839,7 @@ class Server extends Node
     }
 
     /**
-     * Initializes a file transfer download. $clientftfid is an arbitrary ID to identify the file transfer on client-side.
+     * Initializes a file transfer download. $clientftfid is an arbitrary ID to identify the file transfer on the client-side.
      *
      * @param  int  $clientftfid
      * @param  int  $cid
@@ -1915,6 +1914,7 @@ class Server extends Node
      * @throws ServerQueryException
      * @throws FileTransferException
      * @throws TransportException
+     * @throws Exception
      */
     public function iconDownload(string $iconname = null)
     {
@@ -1945,9 +1945,9 @@ class Server extends Node
      * @return int
      * @throws AdapterException
      * @throws FileTransferException
-     * @throws HelperException
      * @throws ServerQueryException
      * @throws TransportException
+     * @throws Exception
      */
     public function iconUpload(string $data): int
     {
@@ -1992,7 +1992,7 @@ class Server extends Node
     }
 
     /**
-     * Returns a list of offline messages you've received. The output contains the senders unique identifier,
+     * Returns a list of offline messages you've received. The output contains the sender's unique identifier,
      * the messages subject, etc.
      *
      * @return array
@@ -2158,7 +2158,7 @@ class Server extends Node
     }
 
     /**
-     * Returns a list of privilege keys (tokens) available. If $resolve is set to TRUE the values
+     * Returns a list of privilege keys (tokens) available. If $resolve is set to TRUE, the values
      * of token_id1 and token_id2 will be translated into the appropriate group and/or channel
      * names.
      *
@@ -2289,7 +2289,7 @@ class Server extends Node
     }
 
     /**
-     * Use a token key gain access to a server or channel group. Please note that the server will
+     * Use a token key to gain access to a server or channel group. Please note that the server will
      * automatically delete the token after it has been used.
      *
      * @param  string  $token
@@ -2405,7 +2405,7 @@ class Server extends Node
     }
 
     /**
-     * Adds a new ban rule on the selected virtual server. All parameters are optional but at least one
+     * Adds a new ban rule on the selected virtual server. All parameters are optional, but at least one
      * of the following rules must be set: ip, name, or uid.
      *
      * @param  array  $rules
@@ -2560,7 +2560,7 @@ class Server extends Node
     }
 
     /**
-     * Displays a specified number of entries (1-100) from the servers log.
+     * Displays a specified number of entries (1-100) from the server log.
      *
      * @param  int  $lines
      * @param  int|null  $begin_pos
@@ -2738,7 +2738,7 @@ class Server extends Node
     }
 
     /**
-     * Internal callback funtion for sorting of client objects.
+     * Internal callback functions for sorting of client objects.
      *
      * @param Client $a
      * @param Client $b
@@ -2786,7 +2786,7 @@ class Server extends Node
     }
 
     /**
-     * Internal callback funtion for sorting of file list items.
+     * Internal callback functions for sorting of file list items.
      *
      * @param array $a
      * @param array $b

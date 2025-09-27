@@ -6,7 +6,7 @@ use PlanetTeamSpeak\TeamSpeak3Framework\Exception\TransportException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Helper\Signal;
 use PlanetTeamSpeak\TeamSpeak3Framework\Helper\StringHelper;
 
-class MockTCP extends TCP
+class MockTCP extends TSssh
 {
     public const S_WELCOME_L0 = 'TS3';
 
@@ -31,6 +31,9 @@ class MockTCP extends TCP
         $this->stream = true;
     }
 
+    /**
+     * @throws TransportException
+     */
     public function readLine(string $token = "\n"): StringHelper
     {
         $line = StringHelper::factory('');

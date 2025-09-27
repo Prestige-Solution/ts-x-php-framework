@@ -1,26 +1,5 @@
 <?php
 
-/**
- * @file
- * TeamSpeak 3 PHP Framework
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- * @author    Sven 'ScP' Paulsen
- * @copyright Copyright (c) Planet TeamSpeak. All rights reserved.
- */
-
 namespace PlanetTeamSpeak\TeamSpeak3Framework;
 
 use Exception;
@@ -425,6 +404,9 @@ class TeamSpeak3
      * @throws ServerQueryException
      * @throws Exception
      */
+    /**
+     * Factory for PlanetTeamSpeak\TeamSpeak3Framework\Node\Server classes.
+     */
     public static function factory(string $uri): Host|Server|ServerQuery|MockServerQuery|FileTransfer
     {
         self::init();
@@ -432,7 +414,14 @@ class TeamSpeak3
         $uri = new Uri($uri);
 
         $adapter = self::getAdapterName($uri->getScheme());
-        $options = ['host' => $uri->getHost(), 'port' => $uri->getPort(), 'timeout' => (int) $uri->getQueryVar('timeout', 10), 'blocking' => (int) $uri->getQueryVar('blocking', 0), 'tls' => (int) $uri->getQueryVar('tls', 0), 'ssh' => (int) $uri->getQueryVar('ssh', 0)];
+        $options = [
+            'host' => $uri->getHost(),
+            'port' => $uri->getPort(),
+            'timeout' => (int) $uri->getQueryVar('timeout', 10),
+            'blocking' => (int) $uri->getQueryVar('blocking', 0),
+            'tls' => (int) $uri->getQueryVar('tls', 0),
+            'ssh' => (int) $uri->getQueryVar('ssh', 0)
+        ];
 
         self::loadClass($adapter);
 
@@ -441,13 +430,13 @@ class TeamSpeak3
             $options['password'] = $uri->getPass();
         }
 
-        $adapterClass = 'PlanetTeamSpeak\\TeamSpeak3Framework\\'.str_replace(DIRECTORY_SEPARATOR, '\\', $adapter);
-
+        $adapterClass = 'PlanetTeamSpeak\\TeamSpeak3Framework\\' . str_replace(DIRECTORY_SEPARATOR, '\\', $adapter);
         $object = new $adapterClass($options);
 
         try {
             if ($object instanceof ServerQuery) {
-                $node = $object->getHost();
+                // Host-Objekt erzeugen
+                $node = new Host($object);
 
                 if ($uri->hasUser() && $uri->hasPass()) {
                     $node->login($uri->getUser(), $uri->getPass());
@@ -475,6 +464,7 @@ class TeamSpeak3
                     $node->setExcludeQueryClients((bool) $uri->getQueryVar('no_query_clients'));
                 }
 
+                // Server auswählen
                 if ($uri->hasQueryVar('server_id')) {
                     $node = $node->serverGetById($uri->getQueryVar('server_id'));
                 } elseif ($uri->hasQueryVar('server_uid')) {
@@ -485,6 +475,7 @@ class TeamSpeak3
                     $node = $node->serverGetByName($uri->getQueryVar('server_name'));
                 }
 
+                // Kanal oder Client auswählen
                 if ($node instanceof Server) {
                     if ($uri->hasQueryVar('channel_id')) {
                         $node = $node->channelGetById($uri->getQueryVar('channel_id'));
@@ -642,4 +633,33 @@ class TeamSpeak3
 
         return $output;
     }
+
+    public static function encodeArgs(array $props): string
+    {
+        $parts = [];
+
+        foreach ($props as $key => $val) {
+            // bool -> int, null -> empty string
+            if (is_bool($val)) {
+                $val = $val ? '1' : '0';
+            } elseif ($val === null) {
+                $val = '';
+            } else {
+                $val = (string)$val;
+            }
+
+            // TeamSpeak3 Query escaping (minimal, robust)
+            // ersetzt: Backslash, Pipe, Space
+            $val = str_replace(
+                ["\\", "|", " "],
+                ["\\\\", "\\p", "\\s"],
+                $val
+            );
+
+            $parts[] = $key . '=' . $val;
+        }
+
+        return implode(' ', $parts);
+    }
+
 }

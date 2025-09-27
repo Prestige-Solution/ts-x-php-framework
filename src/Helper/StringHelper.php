@@ -1,26 +1,5 @@
 <?php
 
-/**
- * @file
- * TeamSpeak 3 PHP Framework
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- * @author    Sven 'ScP' Paulsen
- * @copyright Copyright (c) Planet TeamSpeak. All rights reserved.
- */
-
 namespace PlanetTeamSpeak\TeamSpeak3Framework\Helper;
 
 use ArrayAccess;
@@ -484,7 +463,7 @@ class StringHelper implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
-     * Decodes the string with MIME base64 and returns the result as an PlanetTeamSpeak\TeamSpeak3Framework\Helper\StringHelper
+     * Decodes the string with MIME base64 and returns the result as a PlanetTeamSpeak\TeamSpeak3Framework\Helper\StringHelper
      *
      * @param string $base64
      * @return self
@@ -755,7 +734,7 @@ class StringHelper implements ArrayAccess, Iterator, Countable, JsonSerializable
 
     /**
      * Processes the string and replaces all accented UTF-8 characters by unaccented ASCII-7 "equivalents",
-     * whitespaces are replaced by a pre-defined spacer and the string is lowercase.
+     * whitespaces are replaced by a pre-defined spacer, and the string is lowercase.
      *
      * @param string $spacer
      * @return self
@@ -771,7 +750,7 @@ class StringHelper implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
-     * Replaces space characters with percent encoded strings.
+     * Replaces space characters with percent-encoded strings.
      *
      * @return string
      */

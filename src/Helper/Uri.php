@@ -1,26 +1,5 @@
 <?php
 
-/**
- * @file
- * TeamSpeak 3 PHP Framework
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- * @author    Sven 'ScP' Paulsen
- * @copyright Copyright (c) Planet TeamSpeak. All rights reserved.
- */
-
 namespace PlanetTeamSpeak\TeamSpeak3Framework\Helper;
 
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\HelperException;
@@ -325,7 +304,7 @@ class Uri
             case ! preg_match("/^(([0-9]{1,3})\.){3}([0-9]{1,3})$/", $host) and preg_match("/^(([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])\.)*([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])$/i", $host):
                 // Valid hostname as specified in RFC 1123 (IPv4 like strings are excluded)
                 // `filter_var($host, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME)` unfortunately also reports invalid IP
-                // addresses (e.g. `127.0.0.300`) as valid, so we can not use this filter here.
+                // addresses (e.g. `127.0.0.300`) as valid, so we cannot use this filter here.
                 // Regex reference: https://stackoverflow.com/questions/106179/regular-expression-to-match-dns-hostname-or-ip-address
                 break;
             default:
@@ -657,7 +636,7 @@ class Uri
     }
 
     /**
-     * Returns the applications host address.
+     * Returns the application host address.
      *
      * @return StringHelper
      */
@@ -677,7 +656,7 @@ class Uri
     }
 
     /**
-     * Returns the applications base address.
+     * Returns the application base address.
      *
      * @return StringHelper
      */

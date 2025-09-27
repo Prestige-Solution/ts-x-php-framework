@@ -7,6 +7,7 @@ use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\HelperException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\ServerQueryException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\TransportException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Node\Server;
 use PlanetTeamSpeak\TeamSpeak3Framework\TeamSpeak3;
 
 class ChannelAndUserTest extends TestCase
@@ -28,8 +29,6 @@ class ChannelAndUserTest extends TestCase
     private string $password;
 
     private string $ts3_server_uri;
-
-    private string $ts3_server_uri_ssh;
 
     private string $ts3_unit_test_channel_name;
 
@@ -59,27 +58,12 @@ class ChannelAndUserTest extends TestCase
 
         $this->ts3_server_uri = 'serverquery://'.$this->user.':'.$this->password.'@'.$this->host.':'.$this->queryPort.
             '/?server_port=9987'.
-            '&ssh=0'.
-            '&no_query_clients=0'.
-            '&blocking=0'.
-            '&timeout=30'.
-            '&nickname=UnitTestBot';
-
-        $this->ts3_server_uri_ssh = 'serverquery://'.$this->user.':'.$this->password.'@'.$this->host.':10022'.
-            '/?server_port=9987'.
             '&ssh=1'.
             '&no_query_clients=0'.
             '&blocking=0'.
-            '&timeout=30'.
-            '&nickname=UnitTestBot';
+            '&timeout=30';
     }
 
-    /**
-     * @throws AdapterException
-     * @throws HelperException
-     * @throws ServerQueryException
-     * @throws TransportException
-     */
     public function test_can_get_channel_info()
     {
         if ($this->active == 'false') {
@@ -443,16 +427,17 @@ class ChannelAndUserTest extends TestCase
 
         $userInfo = $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->getInfo();
         $this->assertIsArray($userInfo);
-        $this->assertEquals($this->ts3_unit_test_userName, $userInfo['client_nickname']);
-        $this->assertEquals(0, $userInfo['client_is_talker']);
 
-        $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->modify(['client_is_talker'=> 1]);
+        $this->assertEquals($this->ts3_unit_test_userName, $userInfo['client_nickname']);
+        $this->assertEquals("", $userInfo['client_description']);
+
+        $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->modify(['client_description'=> "unittest"]);
         $userInfoModified = $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->getInfo();
         $this->assertIsArray($userInfoModified);
-        $this->assertEquals(1, $userInfoModified['client_is_talker']);
+        $this->assertEquals("unittest", $userInfoModified['client_description']);
 
         //reset user modify
-        $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->modify(['client_is_talker'=> 0]);
+        $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->modify(['client_description'=> ""]);
 
         $this->unset_play_test_channel($ts3_VirtualServer);
         $ts3_VirtualServer->getParent()->getAdapter()->getTransport()->disconnect();
@@ -484,16 +469,11 @@ class ChannelAndUserTest extends TestCase
         $ts3_VirtualServer->getParent()->getAdapter()->getTransport()->disconnect();
     }
 
-    /**
-     * @throws AdapterException
-     * @throws ServerQueryException
-     * @throws HelperException
-     */
-    private function set_play_test_channel($ts3VirtualServer): int
+    private function set_play_test_channel(Server $ts3VirtualServer): int
     {
-        $cid = $ts3VirtualServer->channelGetByName($this->ts3_unit_test_channel_name)->getInfo();
+        $cid = $ts3VirtualServer->channelGetByName($this->ts3_unit_test_channel_name)->getId();
 
-        $createdCID = $ts3VirtualServer->channelCreate(['channel_name' => 'Play-Test', 'channel_flag_permanent' => 1, 'cpid' => $cid['cid']]);
+        $createdCID = $ts3VirtualServer->channelCreate(['channel_name' => 'Play-Test', 'channel_flag_permanent' => 1, 'cpid' => $cid]);
         $this->test_cid = $createdCID;
 
         return $createdCID;

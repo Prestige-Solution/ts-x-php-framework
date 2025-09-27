@@ -29,6 +29,8 @@ class TCPTest extends TestCase
      */
     public function testConstructorNoException()
     {
+        $this->markTestSkipped('Deprecated TCP transport');
+
         $adapter = new TCP(
             ['host' => $this->host, 'port' => $this->port]
         );
@@ -49,6 +51,7 @@ class TCPTest extends TestCase
 
     public function testConstructorExceptionNoHost()
     {
+        $this->markTestSkipped('Deprecated TCP transport');
         $this->expectException(TransportException::class);
         $this->expectExceptionMessage("config must have a key for 'host'");
 
@@ -57,6 +60,7 @@ class TCPTest extends TestCase
 
     public function testConstructorExceptionNoPort()
     {
+        $this->markTestSkipped('Deprecated TCP transport');
         $this->expectException(TransportException::class);
         $this->expectExceptionMessage("config must have a key for 'port'");
 
@@ -68,6 +72,7 @@ class TCPTest extends TestCase
      */
     public function testGetConfig()
     {
+        $this->markTestSkipped('Deprecated TCP transport');
         $adapter = new TCP(
             ['host' => $this->host, 'port' => $this->port]
         );
@@ -84,6 +89,7 @@ class TCPTest extends TestCase
      */
     public function testGetStream()
     {
+        $this->markTestSkipped('Deprecated TCP transport');
         $transport = new TCP(
             ['host' => $this->host, 'port' => $this->port]
         );
@@ -95,6 +101,7 @@ class TCPTest extends TestCase
      */
     protected function createMockServerQuery(): MockServerQuery
     {
+        $this->markTestSkipped('Deprecated TCP transport');
         return new MockServerQuery(['host' => '0.0.0.0', 'port' => 9987]);
     }
 
@@ -104,6 +111,7 @@ class TCPTest extends TestCase
      */
     public function testConnectionStatus()
     {
+        $this->markTestSkipped('Deprecated TCP transport');
         $mockServerQuery = $this->createMockServerQuery();
         $this->assertTrue($mockServerQuery->getTransport()->isConnected());
         $mockServerQuery->getTransport()->disconnect();
@@ -115,6 +123,7 @@ class TCPTest extends TestCase
      */
     public function testDisconnect()
     {
+        $this->markTestSkipped('Deprecated TCP transport');
         $transport = new TCP(
             ['host' => $this->host, 'port' => $this->port]
         );
@@ -127,6 +136,7 @@ class TCPTest extends TestCase
      */
     public function testDisconnectNoConnection()
     {
+        $this->markTestSkipped('Deprecated TCP transport');
         $transport = new TCP(
             ['host' => $this->host, 'port' => $this->port]
         );

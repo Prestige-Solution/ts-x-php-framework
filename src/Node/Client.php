@@ -1,26 +1,5 @@
 <?php
 
-/**
- * @file
- * TeamSpeak 3 PHP Framework
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- * @author    Sven 'ScP' Paulsen
- * @copyright Copyright (c) Planet TeamSpeak. All rights reserved.
- */
-
 namespace PlanetTeamSpeak\TeamSpeak3Framework\Node;
 
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
@@ -60,24 +39,58 @@ class Client extends Node
     }
 
     /**
-     * Changes the clients properties using given properties.
+     * Changes the client's properties using given properties.
      *
      * @param  array  $properties
      * @return void
      * @throws AdapterException
+     * @throws NodeException
      * @throws ServerQueryException
      * @throws TransportException
      */
     public function modify(array $properties): void
     {
+        // Ensure that clid is set
+        if (!$this->getId()) {
+            $this->fetchNodeInfo();
+        }
+
+        if (!$this->getId()) {
+            throw new NodeException("Cannot modify client, no clid set");
+        }
+
+        // Add clid for clientedit
         $properties['clid'] = $this->getId();
 
+        // execute clientedit
         $this->execute('clientedit', $properties);
-        $this->resetNodeInfo();
+
+        // Update NodeInfo – ensure that index 1 is used
+        $maxRetries = 3; // TS6 may delay applying updates
+        $attempt = 0;
+
+        do {
+            $attempt++;
+            $result = $this->execute('clientinfo', ['clid' => $this->getId()])->toArray();
+
+            if (isset($result[1]) && is_array($result[1])) {
+                $this->nodeInfo = $result[1];
+                break;
+            } elseif (isset($result[0]) && is_array($result[0])) {
+                $this->nodeInfo = $result[0];
+            }
+
+            usleep(200000); // Wait 0.2 seconds
+        } while ($attempt < $maxRetries);
+
+        // Fallback: If not adopted, set local values
+        foreach ($properties as $k => $v) {
+            $this->nodeInfo[$k] = is_numeric($v) ? (int)$v : $v;
+        }
     }
 
     /**
-     * Changes the clients properties using given properties.
+     * Changes the client's properties using given properties.
      *
      * @param  array  $properties
      * @return void
@@ -91,7 +104,7 @@ class Client extends Node
     }
 
     /**
-     * Deletes the clients properties from the database.
+     * Deletes the client's properties from the database.
      *
      * @return void
      * @throws AdapterException
@@ -367,14 +380,14 @@ class Client extends Node
     }
 
     /**
-     * Downloads and returns the clients avatar file content.
+     * Downloads and returns the client's avatar file content.
      *
      * @return StringHelper|void
      * @throws AdapterException
-     * @throws HelperException
-     * @throws ServerQueryException
      * @throws FileTransferException
+     * @throws ServerQueryException
      * @throws TransportException
+     * @throws \Exception
      */
     public function avatarDownload()
     {
@@ -430,7 +443,7 @@ class Client extends Node
     }
 
     /**
-     * Returns the revision/build number from the clients version string.
+     * Returns the revision/build number from the client's version string.
      *
      * @return int|null
      */
@@ -463,7 +476,7 @@ class Client extends Node
     }
 
     /**
-     * Downloads and returns the clients icon file content.
+     * Downloads and returns the client's icon file content.
      *
      * @return StringHelper|void
      * @throws AdapterException
@@ -471,6 +484,7 @@ class Client extends Node
      * @throws HelperException
      * @throws ServerQueryException
      * @throws TransportException
+     * @throws \Exception
      */
     public function iconDownload()
     {
@@ -506,17 +520,33 @@ class Client extends Node
 
     /**
      * @throws AdapterException
+     * @throws NodeException
      * @throws ServerQueryException
      * @throws TransportException
      * @ignore
      */
     protected function fetchNodeInfo(): void
     {
+        // Skip ServerQuery-Bots
         if ($this->offsetExists('client_type') && $this['client_type'] == 1) {
             return;
         }
 
-        $this->nodeInfo = array_merge($this->nodeInfo, $this->execute('clientinfo', ['clid' => $this->getId()])->toList());
+        // Ensure that we have a clid
+        if (!$this->getId()) {
+            throw new NodeException("Cannot fetch node info: clid not set");
+        }
+
+        $result = $this->execute('clientinfo', ['clid' => $this->getId()])->toArray();
+
+        // TS6 OpenShell delivers real data on index 1
+        if (isset($result[1]) && is_array($result[1])) {
+            $this->nodeInfo = $result[1];
+        } elseif (isset($result[0]) && is_array($result[0])) {
+            $this->nodeInfo = $result[0];
+        } else {
+            $this->nodeInfo = []; // Fallback
+        }
     }
 
     /**
