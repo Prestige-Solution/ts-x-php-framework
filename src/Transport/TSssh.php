@@ -12,7 +12,7 @@ class TSssh extends Transport
     protected ?SSH2 $ssh = null;
 
     /**
-     * Verbindung aufbauen
+     * Establish connection
      * @throws TransportException
      */
     public function connect(): void
@@ -20,12 +20,12 @@ class TSssh extends Transport
         $this->ssh = new SSH2($this->config['host'], $this->config['port']);
 
         if (!$this->ssh->login($this->config['username'], $this->config['password'])) {
-            throw new TransportException('Login fehlgeschlagen: falscher Benutzername oder Passwort');
+            throw new TransportException('Login failed: incorrect username or password');
         }
     }
 
     /**
-     * Prüfen, ob verbunden
+     * Check whether connected
      */
     public function isConnected(): bool
     {
@@ -33,7 +33,7 @@ class TSssh extends Transport
     }
 
     /**
-     * Lese Daten
+     * Read data
      * @throws TransportException
      */
     public function read(int $length = 4096): StringHelper
@@ -54,7 +54,7 @@ class TSssh extends Transport
     }
 
     /**
-     * Lese Zeile
+     * Read line
      * @throws TransportException
      */
     public function readLine(string $token = "\n"): StringHelper
@@ -81,7 +81,7 @@ class TSssh extends Transport
     }
 
     /**
-     * Schreibe Daten
+     * Write data
      * @throws TransportException
      */
     public function send(string $data): void
@@ -96,7 +96,7 @@ class TSssh extends Transport
     }
 
     /**
-     * Schreibe Daten mit Zeilenumbruch
+     * Write data with line breaks
      * @throws TransportException
      */
     public function sendLine(string $data, string $separator = "\n"): void
@@ -105,7 +105,7 @@ class TSssh extends Transport
     }
 
     /**
-     * Warten, bis Daten verfügbar sind
+     * Wait until data is available
      */
     public function waitForReadyRead(int $time = 5): void
     {
@@ -123,13 +123,13 @@ class TSssh extends Transport
             usleep(100_000); // 100 ms break
         }
 
-        echo "⏳ Timeout: keine Daten innerhalb von {$time}s" . PHP_EOL;
+        echo "⏳ Timeout: no data within {$time}s" . PHP_EOL;
     }
 
     /**
-     * Verbindung schließen
+     * Close connection
      */
-    public function disconnect(string $leaveMessage = "job successfully"): void
+    public function disconnect(): void
     {
         if ($this->ssh !== null) {
             try {

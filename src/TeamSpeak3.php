@@ -435,7 +435,7 @@ class TeamSpeak3
 
         try {
             if ($object instanceof ServerQuery) {
-                // Host-Objekt erzeugen
+                // Create host object
                 $node = new Host($object);
 
                 if ($uri->hasUser() && $uri->hasPass()) {
@@ -464,7 +464,7 @@ class TeamSpeak3
                     $node->setExcludeQueryClients((bool) $uri->getQueryVar('no_query_clients'));
                 }
 
-                // Server auswählen
+                // Select server
                 if ($uri->hasQueryVar('server_id')) {
                     $node = $node->serverGetById($uri->getQueryVar('server_id'));
                 } elseif ($uri->hasQueryVar('server_uid')) {
@@ -475,7 +475,7 @@ class TeamSpeak3
                     $node = $node->serverGetByName($uri->getQueryVar('server_name'));
                 }
 
-                // Kanal oder Client auswählen
+                // Select channel or client
                 if ($node instanceof Server) {
                     if ($uri->hasQueryVar('channel_id')) {
                         $node = $node->channelGetById($uri->getQueryVar('channel_id'));
