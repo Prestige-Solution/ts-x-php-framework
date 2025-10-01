@@ -23,7 +23,7 @@ class NodeValue
 
     public function unescape(): string
     {
-        // Beispiel: escape-Sequenzen zurückwandeln
+        // Example: Converting escape sequences back
         $this->value = str_replace(['\\s', '\\p'], [' ', '|'], $this->value);
         return $this->value;
     }

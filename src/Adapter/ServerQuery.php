@@ -111,30 +111,39 @@ class ServerQuery extends Adapter
     }
 
     /**
-     * @throws AdapterException
-     * @throws TransportException
-     * @throws ServerQueryException
      */
-    public function wait(): Event
+    public function wait(int $timeout = 5): ?Event
     {
         if ($this->getTransport()?->getConfig('blocking')) {
             throw new AdapterException('only available in non-blocking mode');
         }
 
         $transport = $this->getTransport();
-        $evt = null;
 
-        do {
-            if (! $transport?->isConnected()) {
-                break;
-            }
+        if (! $transport?->isConnected()) {
+            throw new \phpseclib3\Exception\ConnectionClosedException("Connection closed by server");
+        }
 
-            $line = $transport->readLine();
-            $evt = StringHelper::factory($line);
+        // Attempt: read one line within timeout
+        $line = $transport->readLine($timeout);
 
-        } while (! $evt->section(TeamSpeak3::SEPARATOR_CELL)->startsWith(TeamSpeak3::EVENT));
+        if ($line === null) {
+            // Timeout → No event, but connection is still active
+            $idle_seconds = time() - $this->getQueryLastTimestamp();
+            Signal::getInstance()->emit('serverqueryWaitTimeout', [$idle_seconds, $this]);
 
-        return new Event($evt, $this->getHost());
+            // no event, so zero return
+            return null;
+        }
+
+        // Parse event data
+        $evt = StringHelper::factory($line);
+
+        if ($evt->section(TeamSpeak3::SEPARATOR_CELL)->startsWith(TeamSpeak3::EVENT)) {
+            return new Event($evt, $this->getHost());
+        }
+
+        return null;
     }
 
     public function prepare(string $cmd, array $params = []): string

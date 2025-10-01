@@ -115,12 +115,12 @@ abstract class Transport
      */
     abstract public function connect(): void;
 
-    /**
-     * Disconnects from a remote server.
-     *
-     * @return void
-     */
-    abstract public function disconnect(): void;
+//    /**
+//     * Disconnects from a remote server.
+//     *
+//     * @return void
+//     */
+//    abstract public function disconnect(): void;
 
     /**
      * Reads data from the stream.

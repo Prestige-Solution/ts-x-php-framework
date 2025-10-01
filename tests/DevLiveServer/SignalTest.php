@@ -100,14 +100,9 @@ class SignalTest extends TestCase
             while (true) {
                 $this->ts3_VirtualServer->getParent()->getAdapter()->wait();
             }
-        } catch(TeamSpeak3Exception $e) {
-            //catch disconnect exception when getParent()->getTransport()->disconnect() -> Sounds crazy TODO what happen here?
-            $this->assertEquals("node method 'getTransport()' does not exist", $e->getMessage());
-            $this->assertEquals(0, $e->getCode());
+        } catch (\phpseclib3\Exception\ConnectionClosedException $e) {
+            $this->assertEquals("Connection closed by server", $e->getMessage());
         }
-
-        //the real Query Logout after exit the while() Loop
-        $this->ts3_VirtualServer->getParent()->getAdapter()->getTransport()->disconnect();
     }
 
     /**
