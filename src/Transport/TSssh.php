@@ -19,6 +19,10 @@ class TSssh extends Transport
     {
         $this->ssh = new SSH2($this->config['host'], $this->config['port']);
 
+        $this->ssh->setPreferredAlgorithms([
+            'hostkey' => ['rsa-sha2-512','rsa-sha2-256','ssh-rsa'],
+        ]);
+
         if (!$this->ssh->login($this->config['username'], $this->config['password'])) {
             throw new TransportException('Login failed: incorrect username or password');
         }
