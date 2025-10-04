@@ -3,16 +3,16 @@
 The X stand for a non-specific Teamspeak Version. So we would handle all current and future Versions from a Teamspeak Server.
 
 Unfortunately, the original repository is no longer up to date and has not been maintained for 3 years. This is the reason why this project is being created.<br>
-The main goal is to bring the framework up to date and to equip it with extended unit tests which can also be carried out with a live server.<br>
+The main goal is to bring the framework up to date and to equip it with extended unit tests which can also be carried out with tests for a live server.<br>
 The ideal is that this version can be integrated into your own project and the main functionalities can be tested with your Teamspeak server.
 
 ---
 
 # Installation
-We **DON'T** change the original Namespace from PlanetTeamspeak. So the replacement should not be affected your current Project.
+With the Refactoring at Version 3.0.0, the Framework has a few updates. But the most functionalities and namespaces are the same. 
 
 **PHP Required Extensions**<br>
-``apt install php8.2 php8.2-{common,mbstring,ssh2} -y``
+``apt install php8.3 php8.3-{common,mbstring,ssh2} -y``
 
 **Via Composer**<br>
 Current Version:<br>
@@ -52,26 +52,19 @@ To run all tests use `composer test`. <br>
 |----------|---------------|
 | timeout  | 10            |
 | blocking | 0             |
-| tls      | 0             |
-| ssh      | 0             |
 
 If you build the serverquery without above parameters then there options will be set by default.<br>
 **Note:** don't set timeout to 0. Further Information's at [php.net](https://www.php.net/manual/de/function.stream-select.php)
 
 ## Examples
-- RAW Mode (stream_socket_client)
+- URI Example
 ```php
-'serverquery://<user>:<password>@<host>:<query_port>/?server_port=<server_port>&ssh=0&no_query_clients=0&blocking=0&timeout=30&nickname=<bot_name>'
-```
-
-- SSH Mode (ssh2_shell)
-```php
-'serverquery://<user>:<password>@<host>:<query_port>/?server_port=<server_port>&ssh=1&no_query_clients=0&blocking=0&timeout=30&nickname=<bot_name>'
+'serverquery://<user>:<pass>@<host>:<port>/?server_port=9987&no_query_clients=0&blocking=0&timeout=30&nickname=<bot_name>'
 ```
 
 - Contains Username or Password special chars like ``+`` then you can use
 ```php
-'serverquery://' . rawurlencode(<user>) . ':' . rawurlencode(<password>) .' @<host>:<query_port>/?server_port=<server_port>&ssh=1&no_query_clients=0&blocking=0&timeout=30&nickname=<bot_name>'
+'serverquery://'.rawurlencode(<user>).':'.rawurlencode(<password>) .'@<host>:<port>/?server_port=9987&no_query_clients=0&blocking=0&timeout=30'
 ```
 In my opinion you should **don't use specials chars**. Better, create a new QueryLogin Password and / or Username.
 
@@ -85,20 +78,6 @@ if (filter_var($host, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) || filter_var(gethos
     return false;
 }
 ```
-
----
-
-# Current Milestones:
-- [x] Collect initial inspection and understanding of the source code
-- [x] Fix a few existing Unit Tests
-- [x] Rewrite source code up to PHP 8.2+
-- [x] Functionality tests of the framework
-- [x] Functionality tests for the bot identity
-- [x] Minimalistic testing with a Live Server or Development Server
-- [x] Bug fixes
-- [x] Search Bugs and fixes
-- [ ] Full Testing with a Live Server or Development Server
-- [x] Readme and Documentations
 
 ---
 

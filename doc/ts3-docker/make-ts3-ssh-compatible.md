@@ -1,5 +1,6 @@
 # Make Teamspeak3 compatible
-## You can use a Docker Compose file
+## Teamspeak 3 Server
+### docker-compose.yml
 ```yaml
 services:
   teamspeak:
@@ -25,7 +26,8 @@ services:
       #TS3SERVER_DB_PORT: 5432   # optional, Standard: 5432
     restart: unless-stopped
 ```
-## Setup a ssh_rsa_host_key
+
+### Setup a ssh_rsa_host_key
 go to ``ts3-docker/data`` and run ``ssh-keygen -t rsa -b 4096 -m PEM -f ssh_host_rsa_key -N ""``<br>
 This will create a compatible ssh_rsa_host_key for the teamspeak 3 server.<br>
 
@@ -37,7 +39,7 @@ docker exec -it teamspeak-server sh -c "chmod 600 /var/ts3server/ssh_host_rsa_ke
 docker-compose restart ts3
 ```
 
-## Directory Structure
+### Directory Structure
 ```shell
 .
 ├── data
@@ -49,4 +51,35 @@ docker-compose restart ts3
 │   ├── ssh_host_rsa_key.pub
 │   └── ts3server.sqlitedb
 └── docker-compose.yml
+```
+## Teamspeak 6 Server
+```yaml
+services:
+  teamspeak:
+    image: teamspeaksystems/teamspeak6-server:latest
+    container_name: teamspeak-server
+    restart: unless-stopped
+    ports:
+      - "9987:9987/udp"    # Default voice port
+      - "30033:30033/tcp"  # File transfer port
+      - "10022:10022/tcp" # (Optional) ServerQuery SSH port
+      - "10080:10080/tcp"  # (Optional) WebQuery port
+      - "5899:5899" # Websocket
+    environment:
+      - TSSERVER_LICENSE_ACCEPTED=accept
+      - TSSERVER_DEFAULT_PORT=9987
+      - TSSERVER_VOICE_IP=0.0.0.0
+      - TSSERVER_FILE_TRANSFER_PORT=30033
+      - TSSERVER_FILE_TRANSFER_IP=0.0.0.0
+      - TSSERVER_QUERY_HTTP_ENABLED=true
+      - TSSERVER_QUERY_SSH_ENABLED=true
+      # - TSSERVER_MACHINE_ID=my_unique_machine_id
+      - TSSERVER_LOG_PATH=/var/tsserver/logs
+      # - TSSERVER_QUERY_ADMIN_PASSWORD=secretpassword
+    volumes:
+      - tsserver-data:/var/tsserver
+
+volumes:
+  tsserver-data:
+    name: tsserver-data
 ```

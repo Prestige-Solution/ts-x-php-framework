@@ -11,7 +11,7 @@ Replace all `DEV_LIVE_SERVER_*` Variables with your Teamspeak Configuration
 |----------------------------------------|----------------------------------------------------------------------------------------------------------------------|
 | DEV_LIVE_SERVER_AVAILABLE=             | Activate Channel Tests (Default =  false). At false all Channel Tests will be skipped                                |
 | DEV_LIVE_SERVER_HOST=                  | Your Host Address (Recommended: IPv4)                                                                                |
-| DEV_LIVE_SERVER_QUERY_PORT=            | Raw = 10011 / ssh = 10022 (Recommended: Raw Mode)                                                                    |
+| DEV_LIVE_SERVER_QUERY_PORT=            | ssh = 10022                                                                                                          |
 | DEV_LIVE_SERVER_QUERY_USER=            | Your Query Username                                                                                                  |
 | DEV_LIVE_SERVER_QUERY_USER_PASSWORD=   | Password for the Query User                                                                                          |
 | DEV_LIVE_SERVER_UNIT_TEST_CHANNEL=     | Setup a Channelname for Channel Tests. The Live Server Tests will create channels under this configured Channelname* |
