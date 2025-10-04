@@ -71,4 +71,62 @@ class ConnectionTest extends TestCase
         $this->assertEquals('Linux', $nodeInfo['virtualserver_platform']);
         $this->assertEquals($this->user, $whoami['client_nickname']);
     }
+
+    /**
+     * @throws AdapterException
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws \Exception
+     */
+    public function test_can_ssh_connect_with_nickname()
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $testUri = $this->ts3_server_uri.'&nickname=UnitTestBot';
+
+        $ts3_Host = TeamSpeak3::factory($testUri);
+        $nodeInfo = $ts3_Host->getInfo();
+        $whoami = $ts3_Host->whoami();
+
+        $ts3_Host->getAdapter()->getTransport()->disconnect();
+
+        $this->assertEquals('UnitTestBot', $whoami['client_nickname']);
+        $this->assertEquals('Linux', $nodeInfo['virtualserver_platform']);
+    }
+
+    /**
+     * @throws AdapterException
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws \Exception
+     */
+    public function test_can_ssh_multiple_connect_with_different_nicknames()
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $conn1 = $this->ts3_server_uri.'&nickname=UnitTestBot1';
+        $conn2 = $this->ts3_server_uri.'&nickname=UnitTestBot2';
+        $conn3 = $this->ts3_server_uri.'&nickname=UnitTestBot3';
+
+        $ts3_Host1 = TeamSpeak3::factory($conn1);
+        $whoami1 = $ts3_Host1->whoami();
+
+        $ts3_Host2 = TeamSpeak3::factory($conn2);
+        $whoami2 = $ts3_Host2->whoami();
+
+        $ts3_Host3 = TeamSpeak3::factory($conn3);
+        $whoami3 = $ts3_Host3->whoami();
+
+        $ts3_Host1->getAdapter()->getTransport()->disconnect();
+        $ts3_Host2->getAdapter()->getTransport()->disconnect();
+        $ts3_Host3->getAdapter()->getTransport()->disconnect();
+
+        $this->assertEquals('UnitTestBot1', $whoami1['client_nickname']);
+        $this->assertEquals('UnitTestBot2', $whoami2['client_nickname']);
+        $this->assertEquals('UnitTestBot3', $whoami3['client_nickname']);
+    }
 }
