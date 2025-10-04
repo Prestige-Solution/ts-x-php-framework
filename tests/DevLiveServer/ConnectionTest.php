@@ -2,11 +2,10 @@
 
 namespace PlanetTeamSpeak\TeamSpeak3Framework\Tests\DevLiveServer;
 
-use phpseclib3\Net\SSH2;
 use PHPUnit\Framework\TestCase;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
-use PlanetTeamSpeak\TeamSpeak3Framework\Exception\HelperException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\ServerQueryException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\TransportException;
 use PlanetTeamSpeak\TeamSpeak3Framework\TeamSpeak3;
 
 class ConnectionTest extends TestCase
@@ -46,12 +45,17 @@ class ConnectionTest extends TestCase
 
         $this->ts3_server_uri = 'serverquery://'.$this->user.':'.$this->password.'@'.$this->host.':'.$this->queryPort.
             '/?server_port=9987'.
-            '&ssh=1'.
             '&no_query_clients=0'.
             '&blocking=0'.
             '&timeout=30';
     }
 
+    /**
+     * @throws AdapterException
+     * @throws ServerQueryException
+     * @throws TransportException
+     * @throws \Exception
+     */
     public function test_can_ssh_connect()
     {
         if ($this->active == 'false') {
