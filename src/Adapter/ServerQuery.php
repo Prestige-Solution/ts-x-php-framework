@@ -18,8 +18,11 @@ use PlanetTeamSpeak\TeamSpeak3Framework\Transport\Transport;
 class ServerQuery extends Adapter
 {
     protected ?Host $host = null;
+
     protected ?int $timer = null;
+
     protected int $count = 0;
+
     protected array $block = ['help'];
 
     /**
@@ -98,7 +101,6 @@ class ServerQuery extends Adapter
             $str = StringHelper::factory($str);
 
             $rpl[] = $str;
-
         } while ($str->section(TeamSpeak3::SEPARATOR_CELL) != TeamSpeak3::ERROR);
 
         $this->getProfiler()?->stop();
@@ -110,8 +112,6 @@ class ServerQuery extends Adapter
         return $reply;
     }
 
-    /**
-     */
     public function wait(int $timeout = 5): ?Event
     {
         if ($this->getTransport()?->getConfig('blocking')) {
@@ -121,7 +121,7 @@ class ServerQuery extends Adapter
         $transport = $this->getTransport();
 
         if (! $transport?->isConnected()) {
-            throw new \phpseclib3\Exception\ConnectionClosedException("Connection closed by server");
+            throw new \phpseclib3\Exception\ConnectionClosedException('Connection closed by server');
         }
 
         // Attempt: read one line within timeout
@@ -157,18 +157,34 @@ class ServerQuery extends Adapter
             if (is_array($value)) {
                 $value = array_values($value);
                 foreach ($value as $i => $v) {
-                    if ($v === null) continue;
-                    if ($v === false) $v = 0x00;
-                    if ($v === true) $v = 0x01;
-                    if ($v instanceof Node) $v = $v->getId();
+                    if ($v === null) {
+                        continue;
+                    }
+                    if ($v === false) {
+                        $v = 0x00;
+                    }
+                    if ($v === true) {
+                        $v = 0x01;
+                    }
+                    if ($v instanceof Node) {
+                        $v = $v->getId();
+                    }
 
                     $cells[$i][] = $ident.StringHelper::factory($v)->escape()->toUtf8();
                 }
             } else {
-                if ($value === null) continue;
-                if ($value === false) $value = 0x00;
-                if ($value === true) $value = 0x01;
-                if ($value instanceof Node) $value = $value->getId();
+                if ($value === null) {
+                    continue;
+                }
+                if ($value === false) {
+                    $value = 0x00;
+                }
+                if ($value === true) {
+                    $value = 0x01;
+                }
+                if ($value instanceof Node) {
+                    $value = $value->getId();
+                }
 
                 $args[] = $ident.StringHelper::factory($value)->escape()->toUtf8();
             }

@@ -428,15 +428,15 @@ class ChannelAndUserTest extends TestCase
         $this->assertIsArray($userInfo);
 
         $this->assertEquals($this->ts3_unit_test_userName, $userInfo['client_nickname']);
-        $this->assertEquals("", $userInfo['client_description']);
+        $this->assertEquals('', $userInfo['client_description']);
 
-        $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->modify(['client_description'=> "unittest"]);
+        $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->modify(['client_description'=> 'unittest']);
         $userInfoModified = $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->getInfo();
         $this->assertIsArray($userInfoModified);
-        $this->assertEquals("unittest", $userInfoModified['client_description']);
+        $this->assertEquals('unittest', $userInfoModified['client_description']);
 
         //reset user modify
-        $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->modify(['client_description'=> ""]);
+        $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->modify(['client_description'=> '']);
 
         $this->unset_play_test_channel($ts3_VirtualServer);
         $ts3_VirtualServer->getParent()->getAdapter()->getTransport()->disconnect();

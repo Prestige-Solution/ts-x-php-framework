@@ -393,7 +393,7 @@ class TeamSpeak3
      *
      * If you have special characters in your password or username, you need to encode them.
      * serverquery://'.rawurlencode(<user>).':'.rawurlencode(<password>) .'@<host>:<query_port>/?server_port=9987&no_query_clients=0&blocking=0&timeout=30&nickname=UnitTestBot
- *
+     *
      * @param string $uri
      * @return Host|Server|ServerQuery|MockServerQuery|FileTransfer
      * @throws AdapterException
@@ -418,7 +418,7 @@ class TeamSpeak3
             'timeout' => (int) $uri->getQueryVar('timeout', 10),
             'blocking' => (int) $uri->getQueryVar('blocking', 0),
             'tls' => 0, // TODO maybe unnecessary?
-            'ssh' => 1
+            'ssh' => 1,
         ];
 
         self::loadClass($adapter);
@@ -426,7 +426,7 @@ class TeamSpeak3
         $options['username'] = $uri->getUser();
         $options['password'] = $uri->getPass();
 
-        $adapterClass = 'PlanetTeamSpeak\\TeamSpeak3Framework\\' . str_replace(DIRECTORY_SEPARATOR, '\\', $adapter);
+        $adapterClass = 'PlanetTeamSpeak\\TeamSpeak3Framework\\'.str_replace(DIRECTORY_SEPARATOR, '\\', $adapter);
         $object = new $adapterClass($options);
 
         try {
@@ -641,21 +641,20 @@ class TeamSpeak3
             } elseif ($val === null) {
                 $val = '';
             } else {
-                $val = (string)$val;
+                $val = (string) $val;
             }
 
             // TeamSpeak3 Query escaping (minimal, robust)
             // ersetzt: Backslash, Pipe, Space
             $val = str_replace(
-                ["\\", "|", " "],
-                ["\\\\", "\\p", "\\s"],
+                ['\\', '|', ' '],
+                ['\\\\', '\\p', '\\s'],
                 $val
             );
 
-            $parts[] = $key . '=' . $val;
+            $parts[] = $key.'='.$val;
         }
 
         return implode(' ', $parts);
     }
-
 }

@@ -166,10 +166,10 @@ class Server extends Node
         }
 
         if ($cid === null) {
-            throw new \RuntimeException('channelCreate: Ungültiges Ergebnis: ' . print_r($result, true));
+            throw new \RuntimeException('channelCreate: Ungültiges Ergebnis: '.print_r($result, true));
         }
 
-        if (!isset($properties['channel_flag_permanent']) && !isset($properties['channel_flag_semi_permanent'])) {
+        if (! isset($properties['channel_flag_permanent']) && ! isset($properties['channel_flag_semi_permanent'])) {
             $this->getParent()->whoamiSet('client_channel_id', $cid);
         }
 
@@ -809,7 +809,7 @@ class Server extends Node
                 return $client;
             }
         }
-        throw new Exception("Client not found");
+        throw new Exception('Client not found');
     }
 
     /**

@@ -22,15 +22,23 @@ use ReflectionClass;
 class Host extends Node
 {
     protected array|null $whoami = null;
+
     protected array|null $version = null;
+
     protected array|null $serverList = null;
+
     protected array|null $permissionEnds = null;
+
     protected array|null $permissionList = null;
+
     protected array|null $permissionCats = null;
 
     protected string|null $predefined_query_name = null;
+
     protected bool $exclude_query_clients = false;
+
     protected bool $start_offline_virtual = false;
+
     protected bool $sort_clients_channels = false;
 
     public function __construct(ServerQuery $squery)
@@ -68,6 +76,7 @@ class Host extends Node
         if ($this->version === null) {
             $this->version = $this->request('version')->toList();
         }
+
         return ($ident && isset($this->version[$ident])) ? $this->version[$ident] : $this->version;
     }
 
@@ -78,22 +87,26 @@ class Host extends Node
      */
     public function serverSelect(int $sid, bool $virtual = null): void
     {
-        if ($this->whoami !== null && $this->serverSelectedId() === $sid) return;
+        if ($this->whoami !== null && $this->serverSelectedId() === $sid) {
+            return;
+        }
 
         $virtual = $virtual ?? $this->start_offline_virtual;
         $getargs = func_get_args();
 
         $args = ['sid' => $sid];
         if ($sid !== 0 && $this->predefined_query_name) {
-            $args['client_nickname'] = (string)$this->predefined_query_name;
+            $args['client_nickname'] = (string) $this->predefined_query_name;
         }
-        if ($virtual) $args['-virtual'] = null;
+        if ($virtual) {
+            $args['-virtual'] = null;
+        }
 
         $this->execute('use', $args);
         $this->whoamiReset();
 
         if ($sid !== 0 && $this->predefined_query_name && $this->whoamiGet('client_nickname') !== $this->predefined_query_name) {
-            $this->execute('clientupdate', ['client_nickname' => (string)$this->predefined_query_name]);
+            $this->execute('clientupdate', ['client_nickname' => (string) $this->predefined_query_name]);
         }
 
         $this->setStorage('_server_use', [__FUNCTION__, $getargs]);
@@ -117,22 +130,26 @@ class Host extends Node
      */
     public function serverSelectByPort(int $port, bool $virtual = null): void
     {
-        if ($this->whoami !== null && $this->serverSelectedPort() === $port) return;
+        if ($this->whoami !== null && $this->serverSelectedPort() === $port) {
+            return;
+        }
 
         $virtual = $virtual ?? $this->start_offline_virtual;
         $getargs = func_get_args();
 
         $args = ['port' => $port];
         if ($port !== 0 && $this->predefined_query_name) {
-            $args['client_nickname'] = (string)$this->predefined_query_name;
+            $args['client_nickname'] = (string) $this->predefined_query_name;
         }
-        if ($virtual) $args['-virtual'] = null;
+        if ($virtual) {
+            $args['-virtual'] = null;
+        }
 
         $this->execute('use', $args);
         $this->whoamiReset();
 
         if ($port !== 0 && $this->predefined_query_name && $this->whoamiGet('client_nickname') !== $this->predefined_query_name) {
-            $this->execute('clientupdate', ['client_nickname' => (string)$this->predefined_query_name]);
+            $this->execute('clientupdate', ['client_nickname' => (string) $this->predefined_query_name]);
         }
 
         $this->setStorage('_server_use', [__FUNCTION__, $getargs]);
@@ -158,6 +175,7 @@ class Host extends Node
     public function serverIdGetByPort(int $port): int
     {
         $sid = $this->execute('serveridgetbyport', ['virtualserver_port' => $port])->toList();
+
         return $sid['server_id'];
     }
 
@@ -170,8 +188,9 @@ class Host extends Node
      */
     public function serverGetPortById(int $sid): int
     {
-        if (!isset($this->serverList()[$sid]))
+        if (! isset($this->serverList()[$sid])) {
             throw new ServerQueryException('invalid serverID', 0x400);
+        }
 
         return $this->serverList()[$sid]['virtualserver_port'];
     }
@@ -194,6 +213,7 @@ class Host extends Node
     public function serverGetById(int $sid): Server
     {
         $this->serverSelectById($sid);
+
         return new Server($this, ['virtualserver_id' => $sid]);
     }
 
@@ -205,6 +225,7 @@ class Host extends Node
     public function serverGetByPort(int $port): Server
     {
         $this->serverSelectByPort($port);
+
         return new Server($this, ['virtualserver_id' => $this->serverSelectedId()]);
     }
 
@@ -218,7 +239,9 @@ class Host extends Node
     public function serverGetByName(string $name): Server
     {
         foreach ($this->serverList() as $server) {
-            if ($server['virtualserver_name'] === $name) return $server;
+            if ($server['virtualserver_name'] === $name) {
+                return $server;
+            }
         }
         throw new ServerQueryException('invalid serverID', 0x400);
     }
@@ -233,11 +256,12 @@ class Host extends Node
     public function serverGetByUid(string $uid): Server
     {
         foreach ($this->serverList() as $server) {
-            if ($server['virtualserver_unique_identifier'] === $uid) return $server;
+            if ($server['virtualserver_unique_identifier'] === $uid) {
+                return $server;
+            }
         }
         throw new ServerQueryException('invalid serverID', 0x400);
     }
-
 
     /**
      * @throws AdapterException
@@ -248,7 +272,7 @@ class Host extends Node
     {
         $this->serverListReset();
         $detail = $this->execute('servercreate', $properties)->toList();
-        $server = new Server($this, ['virtualserver_id' => (int)$detail['sid']]);
+        $server = new Server($this, ['virtualserver_id' => (int) $detail['sid']]);
 
         Signal::getInstance()->emit('notifyServercreated', $this, $detail['sid']);
         Signal::getInstance()->emit('notifyTokencreated', $server, $detail['token']);
@@ -263,7 +287,9 @@ class Host extends Node
      */
     public function serverDelete(int $sid): void
     {
-        if ($sid === $this->serverSelectedId()) $this->serverDeselect();
+        if ($sid === $this->serverSelectedId()) {
+            $this->serverDeselect();
+        }
         $this->execute('serverdelete', ['sid' => $sid]);
         $this->serverListReset();
         Signal::getInstance()->emit('notifyServerdeleted', $this, $sid);
@@ -276,7 +302,9 @@ class Host extends Node
      */
     public function serverStart(int $sid): void
     {
-        if ($sid === $this->serverSelectedId()) $this->serverDeselect();
+        if ($sid === $this->serverSelectedId()) {
+            $this->serverDeselect();
+        }
         $this->execute('serverstart', ['sid' => $sid]);
         $this->serverListReset();
         Signal::getInstance()->emit('notifyServerstarted', $this, $sid);
@@ -289,7 +317,9 @@ class Host extends Node
      */
     public function serverStop(int $sid, string $msg = null): void
     {
-        if ($sid === $this->serverSelectedId()) $this->serverDeselect();
+        if ($sid === $this->serverSelectedId()) {
+            $this->serverDeselect();
+        }
         $this->execute('serverstop', ['sid' => $sid, 'reasonmsg' => $msg]);
         $this->serverListReset();
         Signal::getInstance()->emit('notifyServerstopped', $this, $sid);
@@ -306,7 +336,6 @@ class Host extends Node
         $this->execute('serverprocessstop', ['reasonmsg' => $msg]);
     }
 
-
     /**
      * @throws AdapterException
      * @throws ServerQueryException
@@ -322,6 +351,7 @@ class Host extends Node
             }
             $this->resetNodeList();
         }
+
         return $this->filterList($this->serverList, $filter);
     }
 
@@ -374,6 +404,7 @@ class Host extends Node
     {
         $detail = $this->execute('apikeyadd', ['scope' => $scope, 'lifetime' => $lifetime, 'cldbid' => $cldbid])->toList();
         Signal::getInstance()->emit('notifyApikeycreated', $this, $detail['apikey']);
+
         return $detail;
     }
 
@@ -394,17 +425,23 @@ class Host extends Node
      */
     public function permissionList(): array
     {
-        if ($this->permissionList === null) $this->fetchPermissionList();
+        if ($this->permissionList === null) {
+            $this->fetchPermissionList();
+        }
         foreach ($this->permissionList as $permname => $permdata) {
             $this->permissionList[$permname]['permcatid'] ??= $this->permissionGetCategoryById($permdata['permid']);
             $this->permissionList[$permname]['permgrant'] ??= $this->permissionGetGrantById($permdata['permid']);
         }
+
         return $this->permissionList;
     }
 
     public function permissionCats(): array
     {
-        if ($this->permissionCats === null) $this->fetchPermissionCats();
+        if ($this->permissionCats === null) {
+            $this->fetchPermissionCats();
+        }
+
         return $this->permissionCats;
     }
 
@@ -415,7 +452,10 @@ class Host extends Node
      */
     public function permissionEnds(): array
     {
-        if ($this->permissionEnds === null) $this->fetchPermissionList();
+        if ($this->permissionEnds === null) {
+            $this->fetchPermissionList();
+        }
+
         return $this->permissionCats;
     }
 
@@ -435,12 +475,15 @@ class Host extends Node
                 'permcatname' => StringHelper::factory(Convert::permissionCategory($val)),
                 'permcatparent' => 0,
                 'permcatchilren' => 0,
-                'permcatcount' => 0
+                'permcatcount' => 0,
             ];
             foreach ($permissions as $perm) {
-                if ($perm['permcatid'] === $val) $permtree[$val]['permcatcount']++;
+                if ($perm['permcatid'] === $val) {
+                    $permtree[$val]['permcatcount']++;
+                }
             }
         }
+
         return $permtree;
     }
 
@@ -472,7 +515,10 @@ class Host extends Node
      */
     public function permissionGetIdByName(string $name): int
     {
-        if (!isset($this->permissionList()[$name])) throw new ServerQueryException('invalid permission ID', 0xA02);
+        if (! isset($this->permissionList()[$name])) {
+            throw new ServerQueryException('invalid permission ID', 0xA02);
+        }
+
         return $this->permissionList()[$name]['permid'];
     }
 
@@ -484,7 +530,9 @@ class Host extends Node
     public function permissionGetNameById(int $permissionId): StringHelper
     {
         foreach ($this->permissionList() as $name => $perm) {
-            if ($perm['permid'] === $permissionId) return new StringHelper($name);
+            if ($perm['permid'] === $permissionId) {
+                return new StringHelper($name);
+            }
         }
         throw new ServerQueryException('invalid permission ID', 0xA02);
     }
@@ -504,10 +552,14 @@ class Host extends Node
                 $this->fetchPermissionCats();
             }
             foreach (array_values($this->permissionCats) as $key => $val) {
-                if ($this->permissionEnds[$key] >= $permid) return $val;
+                if ($this->permissionEnds[$key] >= $permid) {
+                    return $val;
+                }
             }
+
             return 0;
         }
+
         return $permid >> 8;
     }
 
@@ -686,7 +738,6 @@ class Host extends Node
         Signal::getInstance()->emit('notifyLogin', $this);
     }
 
-
     /**
      * @throws AdapterException
      * @throws ServerQueryException
@@ -802,7 +853,6 @@ class Host extends Node
         return $this->whoami()[$ident] ?? $default;
     }
 
-
     /**
      * @throws TransportException
      * @throws ServerQueryException
@@ -821,7 +871,7 @@ class Host extends Node
         } else {
             // fallback: set only the local cache
             $this->whoami();
-            $this->whoami[$ident] = is_numeric($value) ? (int)$value : StringHelper::factory($value);
+            $this->whoami[$ident] = is_numeric($value) ? (int) $value : StringHelper::factory($value);
         }
     }
 
@@ -829,6 +879,7 @@ class Host extends Node
     {
         $this->whoami = null;
     }
+
     public function getAdapterHost(): string
     {
         return $this->getParent()->getTransportHost();
@@ -912,7 +963,8 @@ class Host extends Node
 
     public function setPredefinedQueryName(string $name = null): void
     {
-        $this->predefined_query_name = $name; $this->setStorage('_query_nick', $name);
+        $this->predefined_query_name = $name;
+        $this->setStorage('_query_nick', $name);
     }
 
     public function getPredefinedQueryName(): ?string
@@ -922,7 +974,8 @@ class Host extends Node
 
     public function setExcludeQueryClients(bool $exclude = false): void
     {
-        $this->exclude_query_clients = $exclude; $this->setStorage('_query_hide', $exclude);
+        $this->exclude_query_clients = $exclude;
+        $this->setStorage('_query_hide', $exclude);
     }
 
     public function getExcludeQueryClients(): bool
@@ -932,7 +985,8 @@ class Host extends Node
 
     public function setUseOfflineAsVirtual(bool $virtual = false): void
     {
-        $this->start_offline_virtual = $virtual; $this->setStorage('_do_virtual', $virtual);
+        $this->start_offline_virtual = $virtual;
+        $this->setStorage('_do_virtual', $virtual);
     }
 
     public function getUseOfflineAsVirtual(): bool
@@ -942,7 +996,8 @@ class Host extends Node
 
     public function setLoadClientlistFirst(bool $first = false): void
     {
-        $this->sort_clients_channels = $first; $this->setStorage('_client_top', $first);
+        $this->sort_clients_channels = $first;
+        $this->setStorage('_client_top', $first);
     }
 
     public function getLoadClientlistFirst(): bool
@@ -1022,7 +1077,7 @@ class Host extends Node
 
                 $finalNick = $this->predefined_query_name;
                 if ($nickInUse) {
-                    $finalNick .= '_' . mt_rand(1000, 9999); // Fallback-Suffix
+                    $finalNick .= '_'.mt_rand(1000, 9999); // Fallback-Suffix
                 }
 
                 $this->execute('clientupdate', [

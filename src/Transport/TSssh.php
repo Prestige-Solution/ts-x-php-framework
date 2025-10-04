@@ -20,10 +20,10 @@ class TSssh extends Transport
         $this->ssh = new SSH2($this->config['host'], $this->config['port']);
 
         $this->ssh->setPreferredAlgorithms([
-            'hostkey' => ['rsa-sha2-512','rsa-sha2-256','ssh-rsa'],
+            'hostkey' => ['rsa-sha2-512', 'rsa-sha2-256', 'ssh-rsa'],
         ]);
 
-        if (!$this->ssh->login($this->config['username'], $this->config['password'])) {
+        if (! $this->ssh->login($this->config['username'], $this->config['password'])) {
             throw new TransportException('Login failed: incorrect username or password');
         }
     }
@@ -42,13 +42,13 @@ class TSssh extends Transport
      */
     public function read(int $length = 4096): StringHelper
     {
-        if (!$this->isConnected()) {
+        if (! $this->isConnected()) {
             $this->connect();
         }
 
         $data = $this->ssh->read($length);
 
-        Signal::getInstance()->emit(strtolower($this->getAdapterType()) . 'DataRead', $data);
+        Signal::getInstance()->emit(strtolower($this->getAdapterType()).'DataRead', $data);
 
         if ($data === false) {
             throw new TransportException("Connection to server '{$this->config['host']}:{$this->config['port']}' lost");
@@ -63,20 +63,20 @@ class TSssh extends Transport
      */
     public function readLine(string $token = "\n"): StringHelper
     {
-        if (!$this->isConnected()) {
+        if (! $this->isConnected()) {
             $this->connect();
         }
 
         $line = '';
 
-        while (!str_ends_with($line, $token)) {
+        while (! str_ends_with($line, $token)) {
             $data = $this->ssh->read($token);
 
             if ($data === false) {
                 break; // Timeout or connection lost
             }
 
-            Signal::getInstance()->emit(strtolower($this->getAdapterType()) . 'DataRead', $data);
+            Signal::getInstance()->emit(strtolower($this->getAdapterType()).'DataRead', $data);
 
             $line .= $data;
         }
@@ -90,13 +90,13 @@ class TSssh extends Transport
      */
     public function send(string $data): void
     {
-        if (!$this->isConnected()) {
+        if (! $this->isConnected()) {
             $this->connect();
         }
 
         $this->ssh->write($data);
 
-        Signal::getInstance()->emit(strtolower($this->getAdapterType()) . 'DataSend', $data);
+        Signal::getInstance()->emit(strtolower($this->getAdapterType()).'DataSend', $data);
     }
 
     /**
@@ -105,7 +105,7 @@ class TSssh extends Transport
      */
     public function sendLine(string $data, string $separator = "\n"): void
     {
-        $this->send($data . $separator);
+        $this->send($data.$separator);
     }
 
     /**
@@ -113,7 +113,7 @@ class TSssh extends Transport
      */
     public function waitForReadyRead(int $time = 5): void
     {
-        if (!$this->isConnected()) {
+        if (! $this->isConnected()) {
             return;
         }
 
@@ -121,13 +121,14 @@ class TSssh extends Transport
         while ((time() - $start) < $time) {
             $data = $this->ssh->read();
             if ($data !== false && $data !== '') {
-                echo "📩 Neue Daten: " . $data . PHP_EOL;
+                echo '📩 Neue Daten: '.$data.PHP_EOL;
+
                 return;
             }
             usleep(100_000); // 100 ms break
         }
 
-        echo "⏳ Timeout: no data within {$time}s" . PHP_EOL;
+        echo "⏳ Timeout: no data within {$time}s".PHP_EOL;
     }
 
     /**

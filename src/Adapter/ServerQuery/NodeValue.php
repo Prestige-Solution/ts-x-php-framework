@@ -25,6 +25,7 @@ class NodeValue
     {
         // Example: Converting escape sequences back
         $this->value = str_replace(['\\s', '\\p'], [' ', '|'], $this->value);
+
         return $this->value;
     }
 
@@ -39,6 +40,6 @@ class NodeValue
             ? explode($separator, $this->value, $limit)
             : explode($separator, $this->value);
 
-        return array_map(fn($p) => new self($p), $parts);
+        return array_map(fn ($p) => new self($p), $parts);
     }
 }

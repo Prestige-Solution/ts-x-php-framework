@@ -102,6 +102,7 @@ class TCPTest extends TestCase
     protected function createMockServerQuery(): MockServerQuery
     {
         $this->markTestSkipped('Deprecated TCP transport');
+
         return new MockServerQuery(['host' => '0.0.0.0', 'port' => 9987]);
     }
 

@@ -206,7 +206,7 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
                 $siblings[] = $iterator->getSubIterator($level)->valid() ? 1 : 0;
             }
 
-            $siblings[] = !$iterator->getSubIterator($level)->valid() ? 1 : 0;
+            $siblings[] = ! $iterator->getSubIterator($level)->valid() ? 1 : 0;
 
             $html .= $viewer->fetchObject($node, $siblings);
         }
@@ -288,11 +288,11 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
                 if (str_contains($key, '_bytes_')) {
                     $info[$key] = Convert::bytes($val);
                 } elseif (str_contains($key, '_bandwidth_')) {
-                    $info[$key] = Convert::bytes($val) . '/s';
+                    $info[$key] = Convert::bytes($val).'/s';
                 } elseif (str_contains($key, '_packets_')) {
                     $info[$key] = number_format($val, 0, null, '.');
                 } elseif (str_contains($key, '_packetloss_')) {
-                    $info[$key] = sprintf('%01.2f', floatval($val) * 100) . '%';
+                    $info[$key] = sprintf('%01.2f', floatval($val) * 100).'%';
                 } elseif (str_ends_with($key, '_uptime')) {
                     $info[$key] = Convert::seconds($val);
                 } elseif (str_ends_with($key, '_version')) {
@@ -353,11 +353,11 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
                 if ($keyObj->contains('_bytes_')) {
                     $info[$keyObj->toString()] = Convert::bytes($val);
                 } elseif ($keyObj->contains('_bandwidth_')) {
-                    $info[$keyObj->toString()] = Convert::bytes($val) . '/s';
+                    $info[$keyObj->toString()] = Convert::bytes($val).'/s';
                 } elseif ($keyObj->contains('_packets_')) {
                     $info[$keyObj->toString()] = number_format($val, 0, null, '.');
                 } elseif ($keyObj->contains('_packetloss_')) {
-                    $info[$keyObj->toString()] = sprintf('%01.2f', floatval($val instanceof StringHelper ? $val->toString() : strval($val)) * 100) . '%';
+                    $info[$keyObj->toString()] = sprintf('%01.2f', floatval($val instanceof StringHelper ? $val->toString() : strval($val)) * 100).'%';
                 } elseif ($keyObj->endsWith('_uptime')) {
                     $info[$keyObj->toString()] = Convert::seconds($val);
                 } elseif ($keyObj->endsWith('_version')) {
@@ -562,6 +562,7 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
         $this->verifyNodeList();
 
         $current = $this->current();
+
         return $current !== null && $current->count() > 0;
     }
 

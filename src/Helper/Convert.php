@@ -38,12 +38,13 @@ class Convert
         foreach ($unit_conversions as $conversion) {
             if ($bytes >= $conversion['VALUE']) {
                 $result = $bytes / $conversion['VALUE'];
-                $result = number_format($result, $precision, '.', '') . ' ' . $conversion['UNIT'];
-                return $negative ? '-' . $result : $result;
+                $result = number_format($result, $precision, '.', '').' '.$conversion['UNIT'];
+
+                return $negative ? '-'.$result : $result;
             }
         }
 
-        return ($negative ? '-' : '') . $bytes . ' B';
+        return ($negative ? '-' : '').$bytes.' B';
     }
 
     /**

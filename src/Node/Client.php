@@ -51,12 +51,12 @@ class Client extends Node
     public function modify(array $properties): void
     {
         // Ensure that clid is set
-        if (!$this->getId()) {
+        if (! $this->getId()) {
             $this->fetchNodeInfo();
         }
 
-        if (!$this->getId()) {
-            throw new NodeException("Cannot modify client, no clid set");
+        if (! $this->getId()) {
+            throw new NodeException('Cannot modify client, no clid set');
         }
 
         // Add clid for clientedit
@@ -85,7 +85,7 @@ class Client extends Node
 
         // Fallback: If not adopted, set local values
         foreach ($properties as $k => $v) {
-            $this->nodeInfo[$k] = is_numeric($v) ? (int)$v : $v;
+            $this->nodeInfo[$k] = is_numeric($v) ? (int) $v : $v;
         }
     }
 
@@ -533,8 +533,8 @@ class Client extends Node
         }
 
         // Ensure that we have a clid
-        if (!$this->getId()) {
-            throw new NodeException("Cannot fetch node info: clid not set");
+        if (! $this->getId()) {
+            throw new NodeException('Cannot fetch node info: clid not set');
         }
 
         $result = $this->execute('clientinfo', ['clid' => $this->getId()])->toArray();

@@ -121,7 +121,7 @@ class Reply
 
         $linesRaw = explode(TeamSpeak3::SEPARATOR_LIST, $this->toString());
 
-        return array_map(fn($line) => new NodeValue($line), $linesRaw);
+        return array_map(fn ($line) => new NodeValue($line), $linesRaw);
     }
 
     /**
@@ -150,11 +150,11 @@ class Reply
 
         foreach ($this->toTable() as $i => $row) {
             foreach ($row as $pair) {
-                if (!$pair->toString()) {
+                if (! $pair->toString()) {
                     continue;
                 }
 
-                if (!$pair->contains(TeamSpeak3::SEPARATOR_PAIR)) {
+                if (! $pair->contains(TeamSpeak3::SEPARATOR_PAIR)) {
                     $array[$i][$pair->toString()] = null;
                 } else {
                     list($ident, $value) = $pair->split(TeamSpeak3::SEPARATOR_PAIR, 2);
@@ -181,7 +181,7 @@ class Reply
         $assoc = [];
 
         foreach ($nodes as $node) {
-            if (!isset($node[$ident])) {
+            if (! isset($node[$ident])) {
                 continue;
             }
 
