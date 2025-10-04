@@ -369,7 +369,6 @@ class TeamSpeak3
     /**
      * Factory for PlanetTeamSpeak\TeamSpeak3Framework\Node\Server classes. $uri must be formatted as
      * "<adapter>://<user>:<pass>@<host>:<port>/<options>#<flags>". All parameters
-     * except adapter, host and port are optional.
      *
      * === Supported Options ===
      *   - timeout
@@ -389,14 +388,12 @@ class TeamSpeak3
      *   - clients_before_channels
      *
      * === URI Examples ===
-     *   - serverquery://127.0.0.1:10011/
-     *   - serverquery://127.0.0.1:10022/?ssh=1 (TeamSpeak ONLY)
-     *   - serverquery://127.0.0.1:10022/?ssh=1&server_port=9987
-     *   - serverquery://127.0.0.1:10011/?server_port=9987&channel_id=1
-     *   - serverquery://127.0.0.1:10011/?server_port=9987&channel_id=1#no_query_clients
-     *   - serverquery://127.0.0.1:10011/?server_port=9987&client_name=ScP
-     *   - filetransfer://127.0.0.1:30011/
+     * serverquery://<user>:<pass>@<HOST>:<PORT>/?server_port=9987&no_query_clients=0&blocking=0&timeout=30
+     * serverquery://<user>:<pass>@<HOST>:<PORT>/?server_port=9987&no_query_clients=0&blocking=0&timeout=30&nickname=UnitTestBot
      *
+     * If you have special characters in your password or username, you need to encode them.
+     * serverquery://'.rawurlencode(<user>).':'.rawurlencode(<password>) .'@<host>:<query_port>/?server_port=9987&no_query_clients=0&blocking=0&timeout=30&nickname=UnitTestBot
+ *
      * @param string $uri
      * @return Host|Server|ServerQuery|MockServerQuery|FileTransfer
      * @throws AdapterException
@@ -406,6 +403,7 @@ class TeamSpeak3
      */
     /**
      * Factory for PlanetTeamSpeak\TeamSpeak3Framework\Node\Server classes.
+     * @throws Exception
      */
     public static function factory(string $uri): Host|Server|ServerQuery|MockServerQuery|FileTransfer
     {
@@ -419,23 +417,21 @@ class TeamSpeak3
             'port' => $uri->getPort(),
             'timeout' => (int) $uri->getQueryVar('timeout', 10),
             'blocking' => (int) $uri->getQueryVar('blocking', 0),
-            'tls' => (int) $uri->getQueryVar('tls', 0),
-            'ssh' => (int) $uri->getQueryVar('ssh', 0)
+            'tls' => 0, // TODO maybe unnecessary?
+            'ssh' => 1
         ];
 
         self::loadClass($adapter);
 
-        if ($options['ssh']) {
-            $options['username'] = $uri->getUser();
-            $options['password'] = $uri->getPass();
-        }
+        $options['username'] = $uri->getUser();
+        $options['password'] = $uri->getPass();
 
         $adapterClass = 'PlanetTeamSpeak\\TeamSpeak3Framework\\' . str_replace(DIRECTORY_SEPARATOR, '\\', $adapter);
         $object = new $adapterClass($options);
 
         try {
             if ($object instanceof ServerQuery) {
-                // Create host object
+                // Create a host object
                 $node = new Host($object);
 
                 if ($uri->hasUser() && $uri->hasPass()) {
@@ -475,7 +471,7 @@ class TeamSpeak3
                     $node = $node->serverGetByName($uri->getQueryVar('server_name'));
                 }
 
-                // Select channel or client
+                // Select a channel or client
                 if ($node instanceof Server) {
                     if ($uri->hasQueryVar('channel_id')) {
                         $node = $node->channelGetById($uri->getQueryVar('channel_id'));
@@ -574,7 +570,7 @@ class TeamSpeak3
     }
 
     /**
-     * Checks for required PHP features, enables autoloading and starts a default profiler.
+     * Checks for required PHP features, enables autoloading, and starts a default profiler.
      *
      * @return void
      * @throws Exception
