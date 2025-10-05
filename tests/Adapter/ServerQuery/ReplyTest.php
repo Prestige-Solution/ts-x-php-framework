@@ -148,7 +148,7 @@ class ReplyTest extends TestCase
             new StringHelper(static::$S_ERROR_OK),
         ]);
 
-        $clientlist_array = $reply->toArray('clid')[0];
+        $clientlist_array = $reply->toArray()[0];
 
         $this->assertEquals(static::$E_CLIENTLIST_EXTENDED_SINGLE_CLID, (string) $clientlist_array['clid']);
         $this->assertEquals(static::$E_CLIENTLIST_EXTENDED_SINGLE_CLIENT_NICKNAME, (string) $clientlist_array['client_nickname']);
