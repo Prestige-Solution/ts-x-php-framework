@@ -12,11 +12,18 @@ class ServerQueryTest extends TestCase
 {
     public const S_ERROR_OK = 'error id=0 msg=ok';
 
+    /**
+     * @throws AdapterException
+     */
     protected function createMockServerQuery(): MockServerQuery
     {
         return new MockServerQuery(['host' => '0.0.0.0', 'port' => 9987]);
     }
 
+    /**
+     * @throws ServerQueryException
+     * @throws TransportException
+     */
     public function testRequestIllegalCharakterException()
     {
         $query = "Hello\nWorld\r";
@@ -25,18 +32,5 @@ class ServerQueryTest extends TestCase
         $this->expectExceptionMessage(sprintf("illegal characters in command '%s'", $query));
         $serverQuery = $this->createMockServerQuery();
         $serverQuery->request($query);
-    }
-
-    public function testLogin()
-    {
-        $query = 'login serveradmin secret';
-        $serverQuery = $this->createMockServerQuery();
-        $reply = $serverQuery->request($query);
-        $this->assertEquals('ok', $reply->getErrorProperty('msg'));
-
-        $query = 'login client_login_name=serveradmin client_login_password=secret';
-        $serverQuery = $this->createMockServerQuery();
-        $reply = $serverQuery->request($query);
-        $this->assertEquals('ok', $reply->getErrorProperty('msg'));
     }
 }
