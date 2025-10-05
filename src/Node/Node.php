@@ -281,6 +281,12 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
                 $v = $v->toString();
             }
 
+            // Remove ANSI escape sequences (like \e[47G, \x1B[31m, etc.)
+            if (is_string($v)) {
+                $v = preg_replace('/\x1B\[[0-?]*[ -\/]*[@-~]/', '', $v);
+                $v = trim($v);
+            }
+
             // Convert numeric strings to int
             if (is_numeric($v)) {
                 $v = (int) $v;

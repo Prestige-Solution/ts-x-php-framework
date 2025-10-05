@@ -48,17 +48,24 @@ class TSssh extends Transport
 
         $data = $this->ssh->read($length);
 
-        // Remove ANSI escape sequences
-        if (is_string($data)) {
-            $data = preg_replace('/\x1B\[[0-9;]*[A-Za-z]/', '', $data);
-            $data = trim($data);
-        }
-
-        Signal::getInstance()->emit(strtolower($this->getAdapterType()).'DataRead', $data);
-
         if ($data === false) {
             throw new TransportException("Connection to server '{$this->config['host']}:{$this->config['port']}' lost");
         }
+
+        // Remove ANSI/CSI/OSC control sequences (robust patterns)
+        // CSI: ESC [ ... @-~  (z.B. ESC[31m, ESC[47G)
+        // OSC: ESC ] ... BEL (BEL = \x07)
+        // individual ESC sequences: ESC followed by any char
+        $data = preg_replace([
+            '/\x1B\[[0-?]*[ -\/]*[@-~]/',   // CSI sequences
+            '/\x1B\][^\x07]*\x07/',        // OSC ... BEL
+            '/\x1B\[?=\d*[A-Za-z]/',        // fallback for exotic forms (optional)
+        ], '', $data);
+
+        // Remove unnecessary whitespace/CR/LF at the beginning/end
+        $data = trim($data, "\0\t\n\r\0\x0B");
+
+        Signal::getInstance()->emit(strtolower($this->getAdapterType()).'DataRead', $data);
 
         return new StringHelper($data);
     }
