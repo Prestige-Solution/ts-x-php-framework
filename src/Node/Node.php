@@ -270,10 +270,17 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
 
         $info = $this->nodeInfo;
 
-        // OpenShell / TS6 delivers [0] = metadata, [1] = real data
-        if (isset($info[1]) && is_array($info[1])) {
-            $info = array_merge($info[0], $info[1]); // Merge Metadata + Data
+        // Flat merge: top keys and numeric subarrays
+        $flatInfo = $info;
+        foreach ($info as $k => $v) {
+            if (is_array($v)) {
+                foreach ($v as $subKey => $subVal) {
+                    $flatInfo[$subKey] = $subVal;
+                }
+                unset($flatInfo[$k]);
+            }
         }
+        $info = $flatInfo;
 
         // StringHelper → String
         foreach ($info as $k => $v) {

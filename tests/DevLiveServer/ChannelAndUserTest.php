@@ -527,6 +527,61 @@ class ChannelAndUserTest extends TestCase
      * @throws AdapterException
      * @throws TransportException
      * @throws ServerQueryException
+     * @throws \Exception
+     */
+    public function test_channel_has_necessary_keys()
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        $channelInfoGetByName = $ts3_VirtualServer->channelGetByName($this->ts3_unit_test_channel_name)->getInfo();
+
+        $this->assertArrayHasKey('cid', $channelInfoGetByName);
+        $this->assertArrayHasKey('pid', $channelInfoGetByName);
+        $this->assertArrayHasKey('channel_order', $channelInfoGetByName);
+        $this->assertArrayHasKey('channel_name', $channelInfoGetByName);
+        $this->assertArrayHasKey('channel_topic', $channelInfoGetByName);
+        $this->assertArrayHasKey('channel_flag_default', $channelInfoGetByName);
+        $this->assertArrayHasKey('channel_flag_password', $channelInfoGetByName);
+        $this->assertArrayHasKey('channel_flag_permanent', $channelInfoGetByName);
+        $this->assertArrayHasKey('channel_flag_semi_permanent', $channelInfoGetByName);
+        $this->assertArrayHasKey('channel_codec', $channelInfoGetByName);
+        $this->assertArrayHasKey('channel_codec_quality', $channelInfoGetByName);
+        $this->assertArrayHasKey('channel_needed_talk_power', $channelInfoGetByName);
+        $this->assertArrayHasKey('channel_icon_id', $channelInfoGetByName);
+        $this->assertArrayHasKey('total_clients_family', $channelInfoGetByName);
+        $this->assertArrayHasKey('channel_maxclients', $channelInfoGetByName);
+        $this->assertArrayHasKey('channel_maxfamilyclients', $channelInfoGetByName);
+        $this->assertArrayHasKey('total_clients', $channelInfoGetByName);
+        $this->assertArrayHasKey('channel_needed_subscribe_power', $channelInfoGetByName);
+        $this->assertArrayHasKey('channel_banner_gfx_url', $channelInfoGetByName);
+        $this->assertArrayHasKey('channel_banner_mode', $channelInfoGetByName);
+        $this->assertArrayHasKey('channel_description', $channelInfoGetByName);
+        $this->assertArrayHasKey('channel_password', $channelInfoGetByName);
+        $this->assertArrayHasKey('channel_codec_latency_factor', $channelInfoGetByName);
+        $this->assertArrayHasKey('channel_codec_is_unencrypted', $channelInfoGetByName);
+        $this->assertArrayHasKey('channel_security_salt', $channelInfoGetByName);
+        $this->assertArrayHasKey('channel_delete_delay', $channelInfoGetByName);
+        $this->assertArrayHasKey('channel_unique_identifier', $channelInfoGetByName);
+        $this->assertArrayHasKey('channel_flag_maxclients_unlimited', $channelInfoGetByName);
+        $this->assertArrayHasKey('channel_flag_maxfamilyclients_unlimited', $channelInfoGetByName);
+        $this->assertArrayHasKey('channel_flag_maxfamilyclients_inherited', $channelInfoGetByName);
+        $this->assertArrayHasKey('channel_filepath', $channelInfoGetByName);
+        $this->assertArrayHasKey('channel_forced_silence', $channelInfoGetByName);
+        $this->assertArrayHasKey('channel_name_phonetic', $channelInfoGetByName);
+        $this->assertArrayHasKey('seconds_empty', $channelInfoGetByName);
+
+
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $this->assertFalse($ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
+    }
+
+    /**
+     * @throws AdapterException
+     * @throws TransportException
+     * @throws ServerQueryException
      */
     private function set_play_test_channel(Server $ts3VirtualServer): int
     {
