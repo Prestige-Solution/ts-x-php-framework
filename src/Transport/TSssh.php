@@ -61,7 +61,7 @@ class TSssh extends Transport
      * Read line
      * @throws TransportException
      */
-    public function readLine(string $token = "\n"): StringHelper
+    public function readLine(string $token = "\n"): ?StringHelper
     {
         if (! $this->isConnected()) {
             $this->connect();
@@ -73,7 +73,7 @@ class TSssh extends Transport
             $data = $this->ssh->read($token);
 
             if ($data === false) {
-                break; // Timeout or connection lost
+                return null; // Timeout or connection lost
             }
 
             Signal::getInstance()->emit(strtolower($this->getAdapterType()).'DataRead', $data);
