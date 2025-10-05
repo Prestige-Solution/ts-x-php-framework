@@ -80,11 +80,11 @@ class Reply
 
         $err = array_pop($rpl);
 
-        // Fehlerobjekt validieren
+        // Validate error object
         if ($err instanceof StringHelper) {
             $this->fetchError($err);
         } else {
-            // Fallback: kein Error zurückbekommen → leer initialisieren
+            // Fallback: no error returned → initialize as empty
             $this->error = [
                 'id'  => 0,
                 'msg' => 'ok',
