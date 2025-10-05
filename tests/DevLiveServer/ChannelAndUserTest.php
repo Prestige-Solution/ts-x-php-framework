@@ -5,6 +5,7 @@ namespace PlanetTeamSpeak\TeamSpeak3Framework\Tests\DevLiveServer;
 use PHPUnit\Framework\TestCase;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\HelperException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\NodeException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\ServerQueryException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\TransportException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Node\Server;
@@ -63,6 +64,12 @@ class ChannelAndUserTest extends TestCase
             '&timeout=30';
     }
 
+    /**
+     * @throws AdapterException
+     * @throws ServerQueryException
+     * @throws TransportException
+     * @throws \Exception
+     */
     public function test_can_get_channel_info()
     {
         if ($this->active == 'false') {
@@ -85,6 +92,7 @@ class ChannelAndUserTest extends TestCase
      * @throws HelperException
      * @throws ServerQueryException
      * @throws TransportException
+     * @throws \Exception
      */
     public function test_can_create_play_test_channel()
     {
@@ -108,6 +116,7 @@ class ChannelAndUserTest extends TestCase
      * @throws HelperException
      * @throws ServerQueryException
      * @throws TransportException
+     * @throws \Exception
      */
     public function test_can_create_channels()
     {
@@ -148,6 +157,7 @@ class ChannelAndUserTest extends TestCase
      * @throws HelperException
      * @throws ServerQueryException
      * @throws TransportException
+     * @throws \Exception
      */
     public function test_can_edit_channel()
     {
@@ -192,6 +202,7 @@ class ChannelAndUserTest extends TestCase
      * @throws HelperException
      * @throws ServerQueryException
      * @throws TransportException
+     * @throws \Exception
      */
     public function test_can_delete_channels()
     {
@@ -229,6 +240,7 @@ class ChannelAndUserTest extends TestCase
      * @throws HelperException
      * @throws ServerQueryException
      * @throws TransportException
+     * @throws \Exception
      */
     public function test_can_move_channels()
     {
@@ -275,6 +287,7 @@ class ChannelAndUserTest extends TestCase
      * @throws HelperException
      * @throws ServerQueryException
      * @throws TransportException
+     * @throws \Exception
      */
     public function test_whoami()
     {
@@ -301,6 +314,7 @@ class ChannelAndUserTest extends TestCase
      * @throws HelperException
      * @throws ServerQueryException
      * @throws TransportException
+     * @throws \Exception
      */
     public function test_can_get_channel_permissions()
     {
@@ -328,6 +342,7 @@ class ChannelAndUserTest extends TestCase
      * @throws HelperException
      * @throws ServerQueryException
      * @throws TransportException
+     * @throws \Exception
      */
     public function test_can_set_channel_permissions()
     {
@@ -357,6 +372,7 @@ class ChannelAndUserTest extends TestCase
      * @throws HelperException
      * @throws ServerQueryException
      * @throws TransportException
+     * @throws \Exception
      */
     public function test_can_delete_channel_permissions()
     {
@@ -390,6 +406,7 @@ class ChannelAndUserTest extends TestCase
      * @throws HelperException
      * @throws ServerQueryException
      * @throws TransportException
+     * @throws \Exception
      */
     public function test_can_get_user_attributes()
     {
@@ -414,6 +431,8 @@ class ChannelAndUserTest extends TestCase
      * @throws HelperException
      * @throws ServerQueryException
      * @throws TransportException
+     * @throws NodeException
+     * @throws \Exception
      */
     public function test_can_set_user_attributes()
     {
@@ -447,6 +466,7 @@ class ChannelAndUserTest extends TestCase
      * @throws HelperException
      * @throws ServerQueryException
      * @throws TransportException
+     * @throws \Exception
      */
     public function test_can_move_user()
     {
@@ -468,6 +488,40 @@ class ChannelAndUserTest extends TestCase
         $ts3_VirtualServer->getParent()->getAdapter()->getTransport()->disconnect();
     }
 
+    /**
+     * @throws AdapterException
+     * @throws ServerQueryException
+     * @throws TransportException
+     * @throws \Exception
+     */
+    public function test_channel_get_info_has_cid()
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        $channelInfoGetByName = $ts3_VirtualServer->channelGetByName($this->ts3_unit_test_channel_name);
+        $channelInfoGetById = $ts3_VirtualServer->channelGetById($channelInfoGetByName['cid']);
+
+        $ts3_VirtualServer->getParent()->getAdapter()->getTransport()->disconnect();
+
+        $this->assertArrayHasKey('cid', $channelInfoGetByName);
+        $this->assertArrayHasKey('cid', $channelInfoGetByName->getInfo());
+        $this->assertArrayHasKey('cid', $channelInfoGetById);
+        $this->assertArrayHasKey('cid', $channelInfoGetById->getInfo());
+        $this->assertEquals($this->ts3_unit_test_channel_name, $channelInfoGetByName['channel_name']);
+        $this->assertEquals(1, $channelInfoGetByName['channel_flag_permanent']);
+        $this->assertEquals('-1', $channelInfoGetByName['channel_maxclients']);
+        $this->assertEquals('-1', $channelInfoGetByName['channel_maxfamilyclients']);
+
+    }
+
+    /**
+     * @throws AdapterException
+     * @throws TransportException
+     * @throws ServerQueryException
+     */
     private function set_play_test_channel(Server $ts3VirtualServer): int
     {
         $cid = $ts3VirtualServer->channelGetByName($this->ts3_unit_test_channel_name)->getId();

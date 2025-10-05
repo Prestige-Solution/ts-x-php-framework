@@ -272,7 +272,7 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
 
         // OpenShell / TS6 delivers [0] = metadata, [1] = real data
         if (isset($info[1]) && is_array($info[1])) {
-            $info = $info[1];
+            $info = array_merge($info[0], $info[1]); // Merge Metadata + Data
         }
 
         // StringHelper → String
