@@ -19,10 +19,6 @@
   },
   "require": {
     "php": "^8.2",
-    "ext-ctype": "*",
-    "ext-json": "*",
-    "ext-openssl": "*",
-    "ext-ssh2": "*",
     "phpseclib/phpseclib": "^3.0"
   },
   "require-dev": {
