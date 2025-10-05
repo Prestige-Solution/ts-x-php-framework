@@ -29,6 +29,7 @@ class ServerQuery extends Adapter
      * Initialize the Transport and check server response
      *
      * @throws AdapterException
+     * @throws TransportException
      */
     protected function syn(): void
     {
@@ -112,6 +113,11 @@ class ServerQuery extends Adapter
         return $reply;
     }
 
+    /**
+     * @throws AdapterException
+     * @throws TransportException
+     * @throws ServerQueryException
+     */
     public function wait(int $timeout = 5): ?Event
     {
         if ($this->getTransport()?->getConfig('blocking')) {

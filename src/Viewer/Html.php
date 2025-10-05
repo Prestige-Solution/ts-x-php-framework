@@ -25,7 +25,6 @@ namespace PlanetTeamSpeak\TeamSpeak3Framework\Viewer;
 
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\FileTransferException;
-use PlanetTeamSpeak\TeamSpeak3Framework\Exception\HelperException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\NodeException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\ServerQueryException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\TransportException;
@@ -138,7 +137,6 @@ class Html implements ViewerInterface
      * @return string
      * @throws AdapterException
      * @throws FileTransferException
-     * @throws HelperException
      * @throws NodeException
      * @throws ServerQueryException
      * @throws TransportException
@@ -404,7 +402,6 @@ class Html implements ViewerInterface
      * @return string
      * @throws AdapterException
      * @throws FileTransferException
-     * @throws HelperException
      * @throws NodeException
      * @throws ServerQueryException
      * @throws TransportException
@@ -428,10 +425,10 @@ class Html implements ViewerInterface
      *
      * @return string
      * @throws AdapterException
-     * @throws HelperException
-     * @throws ServerQueryException
      * @throws FileTransferException
+     * @throws ServerQueryException
      * @throws TransportException
+     * @throws \Exception
      */
     protected function getSuffixIconServer(): string
     {
@@ -471,9 +468,9 @@ class Html implements ViewerInterface
      * @return string
      * @throws AdapterException
      * @throws FileTransferException
-     * @throws HelperException
      * @throws ServerQueryException
      * @throws TransportException
+     * @throws \Exception
      */
     protected function getSuffixIconChannel(): string
     {
@@ -533,10 +530,10 @@ class Html implements ViewerInterface
      * @return string
      * @throws AdapterException
      * @throws FileTransferException
-     * @throws HelperException
      * @throws NodeException
      * @throws ServerQueryException
      * @throws TransportException
+     * @throws \Exception
      */
     protected function getSuffixIconClient(): string
     {
