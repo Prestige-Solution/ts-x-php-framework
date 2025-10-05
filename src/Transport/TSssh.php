@@ -48,6 +48,12 @@ class TSssh extends Transport
 
         $data = $this->ssh->read($length);
 
+        // Remove ANSI escape sequences
+        if (is_string($data)) {
+            $data = preg_replace('/\x1B\[[0-9;]*[A-Za-z]/', '', $data);
+            $data = trim($data);
+        }
+
         Signal::getInstance()->emit(strtolower($this->getAdapterType()).'DataRead', $data);
 
         if ($data === false) {

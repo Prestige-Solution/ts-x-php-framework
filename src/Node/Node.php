@@ -278,8 +278,15 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
         // StringHelper → String
         foreach ($info as $k => $v) {
             if ($v instanceof StringHelper) {
-                $info[$k] = $v->toString();
+                $v = $v->toString();
             }
+
+            // Convert numeric strings to int
+            if (is_numeric($v)) {
+                $v = (int) $v;
+            }
+
+            $info[$k] = $v;
         }
 
         // Optional: human-readable conversions
