@@ -505,6 +505,7 @@ class ChannelAndUserTest extends TestCase
         $channelInfoGetById = $ts3_VirtualServer->channelGetById($channelInfoGetByName['cid']);
 
         $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $this->assertFalse($ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
 
         $this->assertArrayHasKey('cid', $channelInfoGetByName);
         $this->assertArrayHasKey('cid', $channelInfoGetByName->getInfo());
@@ -517,6 +518,9 @@ class ChannelAndUserTest extends TestCase
         $this->assertEquals('-1', $channelInfoGetByName['channel_maxclients']);
         $this->assertEquals('-1', $channelInfoGetByName['channel_maxfamilyclients']);
 
+        $this->assertTrue($ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $this->assertFalse($ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
     }
 
     /**
