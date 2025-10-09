@@ -127,7 +127,7 @@ class SignalTest extends TestCase
             // Resetting lists
             $this->ts3_VirtualServer->clientListReset();
             $this->ts3_VirtualServer->serverGroupListReset();
-            
+
             // Get virtualserver info
             $this->ts3_VirtualServer->getInfo();
             $this->ts3_VirtualServer->connectionInfo();

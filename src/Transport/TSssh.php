@@ -24,7 +24,7 @@ class TSssh extends Transport
         ]);
 
         // activate non-blocking mode
-        if(isset($this->config['blocking']) && $this->config['blocking'] === 0) {
+        if (isset($this->config['blocking']) && $this->config['blocking'] === 0) {
             $this->stream = $this->ssh->fsock ?? null;
             if (is_resource($this->stream)) {
                 stream_set_blocking($this->stream, false);

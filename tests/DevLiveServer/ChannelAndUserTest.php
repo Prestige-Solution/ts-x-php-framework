@@ -573,7 +573,6 @@ class ChannelAndUserTest extends TestCase
         $this->assertArrayHasKey('channel_name_phonetic', $channelInfoGetByName);
         $this->assertArrayHasKey('seconds_empty', $channelInfoGetByName);
 
-
         $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
         $this->assertFalse($ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
     }
