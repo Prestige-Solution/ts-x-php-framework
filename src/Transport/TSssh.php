@@ -23,6 +23,14 @@ class TSssh extends Transport
             'hostkey' => ['rsa-sha2-512', 'rsa-sha2-256', 'ssh-rsa'],
         ]);
 
+        // activate non-blocking mode
+        if(isset($this->config['blocking']) && $this->config['blocking'] === 0) {
+            $this->stream = $this->ssh->fsock ?? null;
+            if (is_resource($this->stream)) {
+                stream_set_blocking($this->stream, false);
+            }
+        }
+
         if (! $this->ssh->login($this->config['username'], $this->config['password'])) {
             throw new TransportException('Login failed: incorrect username or password');
         }
@@ -74,19 +82,30 @@ class TSssh extends Transport
      * Read line
      * @throws TransportException
      */
-    public function readLine(string $token = "\n"): ?StringHelper
+    public function readLine(int $timeout = 1, string $token = "\n"): ?StringHelper
     {
         if (! $this->isConnected()) {
             $this->connect();
         }
 
         $line = '';
+        $start = time();
 
         while (! str_ends_with($line, $token)) {
             $data = $this->ssh->read($token);
 
             if ($data === false) {
                 return null; // Timeout or connection lost
+            }
+
+            if ($data === '') {
+                // wait a bit and check timeout
+                if ((time() - $start) >= $timeout) {
+                    return null; // no data within timeout
+                }
+
+                usleep(50_000); // 50 ms pause before next read
+                continue;
             }
 
             Signal::getInstance()->emit(strtolower($this->getAdapterType()).'DataRead', $data);
