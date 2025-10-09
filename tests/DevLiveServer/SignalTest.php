@@ -96,7 +96,7 @@ class SignalTest extends TestCase
         $this->ts3_VirtualServer->serverGetSelected()->notifyRegister('server');
 
         try {
-            while (true) {
+            while (time() <= $this->duration) {
                 $this->ts3_VirtualServer->getParent()->getAdapter()->wait();
             }
         } catch (\phpseclib3\Exception\ConnectionClosedException $e) {
