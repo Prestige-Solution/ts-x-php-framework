@@ -133,4 +133,33 @@ class SignalTest extends TestCase
             $this->ts3_VirtualServer->connectionInfo();
         }
     }
+
+    /**
+     * @throws AdapterException
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws \Exception
+     */
+    public function test_clientupdate_getErrorProperty()
+    {
+        if ($this->active == 'false' || $this->ts3_unit_test_signals == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        try {
+            // Connect to the specified server, authenticate and spawn an object for the virtual server
+            $this->ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        } catch(TeamSpeak3Exception $e) {
+            //catch exception
+            echo $e->getMessage();
+        }
+
+        $clientUpdate = $this->ts3_VirtualServer->getAdapter()->request('clientupdate');
+        $clientUpdateResult = $clientUpdate->getErrorProperty('msg')->toString();
+
+        $this->assertEquals('ok', $clientUpdateResult);
+
+        $this->ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $this->assertFalse($this->ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
+    }
 }
