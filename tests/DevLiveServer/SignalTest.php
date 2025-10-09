@@ -113,7 +113,6 @@ class SignalTest extends TestCase
      * @param  ServerQuery  $serverquery
      * @throws AdapterException
      * @throws ServerQueryException
-     * @throws NodeException
      * @throws TransportException
      */
     public function onWaitTimeout(int $idle_seconds, ServerQuery $serverquery): void
