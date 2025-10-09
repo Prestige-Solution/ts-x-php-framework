@@ -125,18 +125,9 @@ class SignalTest extends TestCase
             // Resetting lists
             $this->ts3_VirtualServer->clientListReset();
             $this->ts3_VirtualServer->serverGroupListReset();
-
-            // Get servergroup client info
-            $this->ts3_VirtualServer->clientList(['client_type' => 0]);
-            $servergrouplist = $this->ts3_VirtualServer->serverGroupList(['type' => 1]);
-
-            $servergroup_clientlist = [];
-            foreach ($servergrouplist as $servergroup) {
-                $servergroup_clientlist[$servergroup->sgid] = count($this->ts3_VirtualServer->serverGroupClientList($servergroup->sgid));
-            }
-
+            
             // Get virtualserver info
-            $this->ts3_VirtualServer->getInfo(true, true);
+            $this->ts3_VirtualServer->getInfo();
             $this->ts3_VirtualServer->connectionInfo();
         }
 
