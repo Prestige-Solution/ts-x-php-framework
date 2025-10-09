@@ -48,8 +48,8 @@ class TSssh extends Transport
 
         $data = $this->ssh->read($length);
 
-        if ($data === false) {
-            throw new TransportException("Connection to server '{$this->config['host']}:{$this->config['port']}' lost");
+        if ($data === false || $data === '' || $data === null) {
+            return new StringHelper('');
         }
 
         // Remove ANSI/CSI/OSC control sequences (robust patterns)
