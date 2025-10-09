@@ -121,7 +121,7 @@ class SignalTest extends TestCase
         }
 
         // Get data every minute
-        if ($idle_seconds % 60 == 0) {
+        if ($idle_seconds % 10 == 0) {
             // Resetting lists
             $this->ts3_VirtualServer->clientListReset();
             $this->ts3_VirtualServer->serverGroupListReset();
