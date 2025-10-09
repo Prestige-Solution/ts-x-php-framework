@@ -210,21 +210,6 @@ class ReplyTest extends TestCase
         $this->markTestSkipped('todo: testGetNotifyEvents');
     }
 
-    public function testGetErrorProperty()
-    {
-        $this->markTestSkipped('todo: testGetErrorProperty');
-    }
-
-    public function testFetchError()
-    {
-        $this->markTestSkipped('todo: testFetchError');
-        //$this->assertInstanceOf(\TeamSpeak3_Adapter_ServerQuery_Reply::class, $reply);
-        //$this->assertInternalType(PHPUnit_IsType::TYPE_INT, $reply->getErrorProperty('id'));
-        //$this->assertEquals(0, $reply->getErrorProperty('id'));
-        //$this->assertInternalType(PHPUnit_IsType::TYPE_STRING, $reply->getErrorProperty('msg'));
-        //$this->assertEquals('ok', $reply->getErrorProperty('msg'));
-    }
-
     public function testFetchReply()
     {
         $this->markTestSkipped('todo: testFetchReply');
