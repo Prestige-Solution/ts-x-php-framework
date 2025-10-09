@@ -372,7 +372,6 @@ class TeamSpeak3
      *
      * === Supported Options ===
      *   - timeout
-     *   - blocking
      *   - ssh (TeamSpeak only)
      *   - nickname
      *   - no_query_clients
@@ -388,8 +387,8 @@ class TeamSpeak3
      *   - clients_before_channels
      *
      * === URI Examples ===
-     * serverquery://<user>:<pass>@<HOST>:<PORT>/?server_port=9987&no_query_clients=0&blocking=0&timeout=30
-     * serverquery://<user>:<pass>@<HOST>:<PORT>/?server_port=9987&no_query_clients=0&blocking=0&timeout=30&nickname=UnitTestBot
+     * serverquery://<user>:<pass>@<HOST>:<PORT>/?server_port=9987&no_query_clients=0&timeout=30
+     * serverquery://<user>:<pass>@<HOST>:<PORT>/?server_port=9987&no_query_clients=0&timeout=30&nickname=UnitTestBot
      *
      * If you have special characters in your password or username, you need to encode them.
      * serverquery://'.rawurlencode(<user>).':'.rawurlencode(<password>) .'@<host>:<query_port>/?server_port=9987&no_query_clients=0&blocking=0&timeout=30&nickname=UnitTestBot
