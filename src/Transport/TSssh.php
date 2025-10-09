@@ -63,7 +63,7 @@ class TSssh extends Transport
         ], '', $data);
 
         // Remove unnecessary whitespace/CR/LF at the beginning/end
-        $data = trim($data, "\0\t\n\r\0\x0B");
+        $data = trim($data, "\0\t\n\r\x0B");
 
         Signal::getInstance()->emit(strtolower($this->getAdapterType()).'DataRead', $data);
 
