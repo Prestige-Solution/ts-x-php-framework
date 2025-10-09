@@ -246,6 +246,10 @@ class Reply
 
     public function getErrorProperty(string $ident, mixed $default = null): mixed
     {
+        if (array_key_exists($ident, $this->err)) {
+            return $this->err[$ident];
+        }
+
         if (array_key_exists($ident, $this->error)) {
             return $this->error[$ident];
         }
