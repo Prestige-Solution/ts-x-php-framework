@@ -133,10 +133,5 @@ class SignalTest extends TestCase
             $this->ts3_VirtualServer->getInfo();
             $this->ts3_VirtualServer->connectionInfo();
         }
-
-        if (time() >= $this->duration) {
-            //set transport to null
-            $this->ts3_VirtualServer->getParent()->getTransport()->disconnect();
-        }
     }
 }
