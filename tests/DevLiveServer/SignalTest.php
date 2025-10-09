@@ -102,6 +102,10 @@ class SignalTest extends TestCase
         } catch (\phpseclib3\Exception\ConnectionClosedException $e) {
             $this->assertEquals('Connection closed by server', $e->getMessage());
         }
+
+        $this->assertTrue($this->ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
+        $this->ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $this->assertFalse($this->ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
     }
 
     /**
