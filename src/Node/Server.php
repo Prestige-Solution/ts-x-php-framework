@@ -1337,11 +1337,24 @@ class Server extends Node
      */
     public function serverGroupClientList(int $sgid): array
     {
-        if ($this['virtualserver_default_server_group'] == $sgid) {
+        // Check whether the default server group is loaded
+        $defaultGroup = $this->getProperty('virtualserver_default_server_group');
+
+        // If a default group exists and is queried → return an empty array
+        if ($defaultGroup !== null && (int) $defaultGroup === $sgid) {
             return [];
         }
 
-        return $this->execute('servergroupclientlist', ['sgid' => $sgid, '-names'])->toAssocArray('cldbid');
+        // Normal query of the server group on the server
+        try {
+            return $this->execute('servergroupclientlist', ['sgid' => $sgid, '-names'])->toAssocArray('cldbid');
+        } catch (ServerQueryException $e) {
+            // Optional: Intercept default server group or missing rights
+            if (str_contains($e->getMessage(), 'access to default group is forbidden')) {
+                return [];
+            }
+            throw $e;
+        }
     }
 
     /**
@@ -1705,20 +1718,29 @@ class Server extends Node
      */
     public function channelGroupClientList(int $cgid = null, int $cid = null, int $cldbid = null, bool $resolve = false): array
     {
-        if ($this['virtualserver_default_channel_group'] == $cgid) {
+        $defaultGroup = $this->getProperty('virtualserver_default_channel_group');
+
+        // Default channel group → return an empty array
+        if ($defaultGroup !== null && (int) $defaultGroup === $cgid) {
             return [];
         }
 
         try {
-            $result = $this->execute('channelgroupclientlist', ['cgid' => $cgid, 'cid' => $cid, 'cldbid' => $cldbid])
-                ->toArray();
-        } catch (ServerQueryException $e) {
-            /* ERROR_database_empty_result */
-            if ($e->getCode() != 0x501) {
-                throw $e;
+            $params = ['cgid' => $cgid];
+            if ($cid !== null) {
+                $params['cid'] = $cid;
+            }
+            if ($cldbid !== null) {
+                $params['cldbid'] = $cldbid;
             }
 
-            $result = [];
+            $result = $this->execute('channelgroupclientlist', $params)->toArray();
+        } catch (ServerQueryException $e) {
+            // Access to a standard channel group or empty
+            if (str_contains($e->getMessage(), 'access to default group is forbidden') || $e->getCode() === 0x501) {
+                return [];
+            }
+            throw $e;
         }
 
         if ($resolve) {
