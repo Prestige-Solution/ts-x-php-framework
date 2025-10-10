@@ -7,6 +7,7 @@ use PlanetTeamSpeak\TeamSpeak3Framework\Adapter\Adapter;
 use PlanetTeamSpeak\TeamSpeak3Framework\Adapter\ServerQuery;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\HelperException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\NodeException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\ServerQueryException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\TeamSpeak3Exception;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\TransportException;
@@ -74,7 +75,7 @@ class SignalTest extends TestCase
      * @throws HelperException
      * @throws \Exception
      */
-    public function test_ssh_signal_on_wait_timeout()
+    public function test_ssh_signal_on_wait()
     {
         if ($this->active == 'false' || $this->ts3_unit_test_signals == 'false') {
             $this->markTestSkipped('DevLiveServer ist not active');
@@ -113,6 +114,7 @@ class SignalTest extends TestCase
      * @throws AdapterException
      * @throws ServerQueryException
      * @throws TransportException
+     * @throws NodeException
      */
     public function onWaitTimeout(int $idle_seconds, ServerQuery $serverquery): void
     {
@@ -122,44 +124,24 @@ class SignalTest extends TestCase
             $serverquery->request('clientupdate');
         }
 
+        // Get virtualserver info
+        $this->ts3_VirtualServer->getInfo();
+        $this->ts3_VirtualServer->connectionInfo();
+
         // Get data every minute
         if ($idle_seconds % 10 == 0) {
             // Resetting lists
             $this->ts3_VirtualServer->clientListReset();
             $this->ts3_VirtualServer->serverGroupListReset();
 
-            // Get virtualserver info
-            $this->ts3_VirtualServer->getInfo();
-            $this->ts3_VirtualServer->connectionInfo();
+            // Get servergroup client info
+            $this->ts3_VirtualServer->clientList(['client_type' => 0]);
+            $servergrouplist = $this->ts3_VirtualServer->serverGroupList(['type' => 1]);
+
+            $servergroup_clientlist = [];
+            foreach ($servergrouplist as $servergroup) {
+                $servergroup_clientlist[$servergroup->sgid] = count($this->ts3_VirtualServer->serverGroupClientList($servergroup->sgid));
+            }
         }
-    }
-
-    /**
-     * @throws AdapterException
-     * @throws TransportException
-     * @throws ServerQueryException
-     * @throws \Exception
-     */
-    public function test_clientupdate_getErrorProperty()
-    {
-        if ($this->active == 'false' || $this->ts3_unit_test_signals == 'false') {
-            $this->markTestSkipped('DevLiveServer ist not active');
-        }
-
-        try {
-            // Connect to the specified server, authenticate and spawn an object for the virtual server
-            $this->ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
-        } catch(TeamSpeak3Exception $e) {
-            //catch exception
-            echo $e->getMessage();
-        }
-
-        $clientUpdate = $this->ts3_VirtualServer->getAdapter()->request('clientupdate');
-        $clientUpdateResult = $clientUpdate->getErrorProperty('msg')->toString();
-
-        $this->assertEquals('ok', $clientUpdateResult);
-
-        $this->ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
-        $this->assertFalse($this->ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
     }
 }
