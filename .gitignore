@@ -13,9 +13,7 @@ php-cs-fixer.cache
 .phpunit.cache/
 
 #test-db
-ts3server.sqlitedb
-ts3server.sqlitedb-shm
-ts3server.sqlitedb-wal
+*.sqlitedb*
 # OS-specific
 .DS_Store
 
