@@ -281,6 +281,10 @@ class Reply
 
         if ($this->getErrorProperty('id', 0x00) != 0x00 && $this->exp) {
             if ($permid = $this->getErrorProperty('failed_permid')) {
+                if ($permid instanceof StringHelper) {
+                    $permid = $permid->toInt();
+                }
+
                 if ($permsid = key($this->con->request('permget permid='.$permid, false)->toAssocArray('permsid'))) {
                     $suffix = ' (failed on '.$permsid.')';
                 } else {
