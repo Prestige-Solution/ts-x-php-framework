@@ -1500,9 +1500,29 @@ class Server extends Node
     public function channelGroupList(array $filter = []): array
     {
         if ($this->cgroupList === null) {
-            $this->cgroupList = $this->request('channelgrouplist')->toAssocArray('cgid');
+            $reply = $this->request('channelgrouplist');
+            $raw = $reply->toString(); // StringHelper → String
+            $raw = preg_replace('/^.*channelgrouplist/', '', $raw); // Remove prompt & echo
+            $raw = trim($raw, "| \n\r\t"); // Remove unnecessary pipes at
+            $cgroups = explode('|', $raw);
 
-            foreach ($this->cgroupList as $cgid => $group) {
+            $this->cgroupList = [];
+            foreach ($cgroups as $line) {
+                $group = [];
+                $pairs = explode(' ', $line);
+                foreach ($pairs as $pair) {
+                    if (! str_contains($pair, '=')) {
+                        continue;
+                    }
+                    [$key, $value] = explode('=', $pair, 2);
+                    $group[$key] = str_replace('\s', ' ', $value); // Replace escapes
+                }
+
+                if (! isset($group['cgid'])) {
+                    continue;
+                }
+
+                $cgid = (int) $group['cgid'];
                 $this->cgroupList[$cgid] = new ChannelGroup($this, $group);
             }
 
