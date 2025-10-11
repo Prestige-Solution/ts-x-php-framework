@@ -33,7 +33,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: json, ctype, openssl, ssh2
+          extensions: json, ctype, openssl, ssh2, ext-iconv
           coverage: none
 
       - name: Get Composer cache directory
