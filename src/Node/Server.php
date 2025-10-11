@@ -166,7 +166,7 @@ class Server extends Node
         }
 
         if ($cid === null) {
-            throw new \RuntimeException('channelCreate: Ungültiges Ergebnis: '.print_r($result, true));
+            throw new \RuntimeException('channelCreate: Invalid result: '.print_r($result, true));
         }
 
         if (! isset($properties['channel_flag_permanent']) && ! isset($properties['channel_flag_semi_permanent'])) {
