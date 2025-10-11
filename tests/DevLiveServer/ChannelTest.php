@@ -163,6 +163,51 @@ class ChannelAndUserTest extends TestCase
      * @throws TransportException
      * @throws \Exception
      */
+    public function test_channel_name_utf8()
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        $this->set_play_test_channel($ts3_VirtualServer);
+
+        for ($i = 0; $i <= 3; $i++) {
+            $createdCID = $ts3_VirtualServer->channelCreate(['channel_name' => 'public-'.$i, 'channel_flag_permanent' => 1, 'cpid' => $this->test_cid]);
+
+            //get to create a name
+            $channelName = $ts3_VirtualServer->channelGetById($createdCID)->getInfo();
+            $this->assertEquals('public-'.$i, $channelName['channel_name']);
+        }
+
+        //increase channels
+        for ($i = 0; $i <= 10; $i++) {
+            $createdCID = $ts3_VirtualServer->channelCreate(['channel_name' => '3on3-'.$i, 'channel_flag_permanent' => 1, 'cpid' => $this->test_cid]);
+
+            //get to create a name
+            $channelName = $ts3_VirtualServer->channelGetById($createdCID)->getInfo();
+            $this->assertEquals('3on3-'.$i, $channelName['channel_name']);
+        }
+
+        $createdCID = $ts3_VirtualServer->channelCreate(['channel_name' => 'Äpfel Channel', 'channel_flag_permanent' => 1, 'cpid' => $this->test_cid]);
+        $channelName = $ts3_VirtualServer->channelGetById($createdCID)->getInfo();
+        $this->assertEquals('Äpfel Channel', $channelName['channel_name']);
+
+        $createdCID = $ts3_VirtualServer->channelCreate(['channel_name' => '¶ Channel', 'channel_flag_permanent' => 1, 'cpid' => $this->test_cid]);
+        $channelName = $ts3_VirtualServer->channelGetById($createdCID)->getInfo();
+        $this->assertEquals('¶ Channel', $channelName['channel_name']);
+
+        $this->unset_play_test_channel($ts3_VirtualServer);
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+    }
+
+    /**
+     * @throws AdapterException
+     * @throws HelperException
+     * @throws ServerQueryException
+     * @throws TransportException
+     * @throws \Exception
+     */
     public function test_can_edit_channel()
     {
         if ($this->active == 'false') {
