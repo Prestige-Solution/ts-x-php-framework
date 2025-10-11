@@ -34,6 +34,7 @@ The Serveradministrator has no Anti-Flood Permissions, so maybe you as Administr
 Create a new server group with the name psbot, bot or a name of your choice.<br>
 You find a set of rights (150) at [doc/query_user_servergroup_export](query_user_servergroup_export.csv) that the bot needs for secure operation.<br>
 The easiest way to set these settings is with [YaTQA](https://yat.qa/) as serveradmin.
+**NOTE:** YaTQA is not ready to use with Teamspeak 6 Servers.
 
 #### Import CSV with YaTQA
 Navigate with YaTQA to Servergroups **(1)**. Choose your created Servergroup for the query bot **(2)**. Right Click on Global and Click at Import Permissions **(3)**.
