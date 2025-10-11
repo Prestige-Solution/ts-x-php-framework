@@ -176,7 +176,7 @@ class ServerQuery extends Adapter
                         $v = $v->getId();
                     }
 
-                    $cells[$i][] = $ident.StringHelper::factory($v)->escape()->toUtf8();
+                    $cells[$i][] = $ident.StringHelper::factory($v)->toUtf8()->escape()->toString();
                 }
             } else {
                 if ($value === null) {
@@ -192,7 +192,7 @@ class ServerQuery extends Adapter
                     $value = $value->getId();
                 }
 
-                $args[] = $ident.StringHelper::factory($value)->escape()->toUtf8();
+                $args[] = $ident.StringHelper::factory($value)->toUtf8()->escape()->toString();
             }
         }
 
