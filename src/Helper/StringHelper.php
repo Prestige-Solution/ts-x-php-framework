@@ -446,7 +446,8 @@ class StringHelper implements ArrayAccess, Iterator, Countable, JsonSerializable
     public function toUtf8(): static
     {
         if (! mb_check_encoding($this->string, 'UTF-8') && ! $this->isInt()) {
-            $this->string = mb_convert_encoding($this->string, 'UTF-8', 'auto'); // automatisch erkennen
+            $detected = mb_detect_encoding($this->string, mb_detect_order(), true) ?: 'ISO-8859-1';
+            $this->string = mb_convert_encoding($this->string, 'UTF-8', $detected);
         }
 
         return $this;
