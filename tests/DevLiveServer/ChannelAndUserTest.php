@@ -10,6 +10,7 @@ use PlanetTeamSpeak\TeamSpeak3Framework\Exception\ServerQueryException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\TransportException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Node\Server;
 use PlanetTeamSpeak\TeamSpeak3Framework\TeamSpeak3;
+use Throwable;
 
 class ChannelAndUserTest extends TestCase
 {
@@ -77,8 +78,11 @@ class ChannelAndUserTest extends TestCase
         }
 
         $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        $this->set_play_test_channel($ts3_VirtualServer);
+
         $channelInfo = $ts3_VirtualServer->channelGetByName($this->ts3_unit_test_channel_name)->getInfo();
 
+        $this->unset_play_test_channel($ts3_VirtualServer);
         $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
 
         $this->assertEquals($this->ts3_unit_test_channel_name, $channelInfo['channel_name']);
@@ -600,5 +604,15 @@ class ChannelAndUserTest extends TestCase
     public function unset_play_test_channel($ts3_VirtualServer): void
     {
         $ts3_VirtualServer->channelDelete($this->test_cid, true);
+    }
+
+    protected function onNotSuccessfulTest(Throwable $t): never
+    {
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+
+        $this->unset_play_test_channel($ts3_VirtualServer);
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+
+        parent::onNotSuccessfulTest($t);
     }
 }
