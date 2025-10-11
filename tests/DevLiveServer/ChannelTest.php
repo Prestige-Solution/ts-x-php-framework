@@ -54,7 +54,6 @@ class ChannelTest extends TestCase
         $this->ts3_server_uri = 'serverquery://'.$this->user.':'.$this->password.'@'.$this->host.':'.$this->queryPort.
             '/?server_port=9987'.
             '&no_query_clients=0'.
-            '&blocking=0'.
             '&timeout=30';
     }
 
