@@ -94,6 +94,7 @@ class SignalTest extends TestCase
 
         // Register for server events
         $this->ts3_VirtualServer->serverGetSelected()->notifyRegister('server');
+        $this->ts3_VirtualServer->serverGetSelected()->notifyRegister('channel');
 
         try {
             while (time() <= $this->duration) {
