@@ -104,7 +104,7 @@ class TSssh extends Transport
                     return null; // no data within timeout
                 }
 
-                usleep(50_000); // 50 ms pause before next read
+                usleep(20000);
                 continue;
             }
 
@@ -112,6 +112,11 @@ class TSssh extends Transport
 
             $line .= $data;
         }
+
+        //Cleanup Prompt
+        $line = trim($line, "\0\t\n\r\x0B");
+        // Remove immediately, e.g., “ts-bot-dev@9987(1):online>”
+        $line = preg_replace('/^[A-Za-z0-9\-_@()]+:[^\s>]*>\s*/', '', $line);
 
         return StringHelper::factory($line)->trim();
     }
