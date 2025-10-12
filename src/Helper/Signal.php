@@ -40,7 +40,10 @@ class Signal
             return null;
         }
 
-        if (! is_array($params)) {
+        // Always ensure that $params is flat bevor handler get [[$idle_seconds, $this]] instead of [$idle_seconds, $this]
+        if (is_array($params) && count($params) === 1 && is_array($params[0])) {
+            $params = $params[0];
+        } elseif (! is_array($params)) {
             $params = func_get_args();
             $params = array_slice($params, 1);
         }
