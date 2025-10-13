@@ -33,6 +33,9 @@ class TSssh extends Transport
             }
         }
 
+        $this->ssh->setTimeout($this->config['timeout']);
+        stream_set_timeout($this->stream, $this->config['timeout']);
+
         if (! $this->ssh->login($this->config['username'], $this->config['password'])) {
             throw new TransportException('Login failed: incorrect username or password');
         }
