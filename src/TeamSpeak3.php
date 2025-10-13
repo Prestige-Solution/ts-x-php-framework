@@ -414,7 +414,7 @@ class TeamSpeak3
         $options = [
             'host' => $uri->getHost(),
             'port' => $uri->getPort(),
-            'timeout' => (int) $uri->getQueryVar('timeout', 30),
+            'timeout' => (int) $uri->getQueryVar('timeout', 10),
             'blocking' => 0,
             'tls' => 0, // TODO maybe unnecessary?
             'ssh' => 1,
