@@ -19,6 +19,7 @@ class TSssh extends Transport
     {
         $this->ssh = new SSH2($this->config['host'], $this->config['port']);
 
+        $this->ssh->setTimeout($this->config['timeout']);
         $this->ssh->setPreferredAlgorithms([
             'hostkey' => ['rsa-sha2-512', 'rsa-sha2-256', 'ssh-rsa'],
         ]);
