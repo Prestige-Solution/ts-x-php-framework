@@ -19,6 +19,8 @@ class TSssh extends Transport
     {
         $this->ssh = new SSH2($this->config['host'], $this->config['port']);
 
+        $this->stream = $this->ssh->setTimeout($this->config['timeout']);
+        stream_set_timeout($this->stream, $this->config['timeout']);
         $this->ssh->setPreferredAlgorithms([
             'hostkey' => ['rsa-sha2-512', 'rsa-sha2-256', 'ssh-rsa'],
         ]);
@@ -30,6 +32,9 @@ class TSssh extends Transport
                 stream_set_blocking($this->stream, false);
             }
         }
+
+        $this->ssh->setTimeout($this->config['timeout']);
+        stream_set_timeout($this->stream, $this->config['timeout']);
 
         if (! $this->ssh->login($this->config['username'], $this->config['password'])) {
             throw new TransportException('Login failed: incorrect username or password');
@@ -82,7 +87,7 @@ class TSssh extends Transport
      * Read line
      * @throws TransportException
      */
-    public function readLine(int $timeout = null, string $token = "\n"): ?StringHelper
+    public function readLine(int $timeout = 1, string $token = "\n"): ?StringHelper
     {
         if (! $this->isConnected()) {
             $this->connect();
@@ -100,7 +105,7 @@ class TSssh extends Transport
 
             if ($data === '') {
                 // wait a bit and check timeout
-                if ($timeout !== null && (time() - $start) >= $timeout) {
+                if ((time() - $start) >= $timeout) {
                     return null; // no data within timeout
                 }
 
