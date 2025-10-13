@@ -63,7 +63,7 @@ class MockTCP extends TSssh
      * Simulated reading of a line (SSH read)
      * @throws TransportException
      */
-    public function readLine(int $timeout = 1, string $token = "\n"): StringHelper
+    public function readLine(int $timeout = null, string $token = "\n"): StringHelper
     {
         $this->connect();
         $line = StringHelper::factory('');
