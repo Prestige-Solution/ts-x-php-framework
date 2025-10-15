@@ -1571,11 +1571,28 @@ class Server extends Node
      */
     public function channelGroupCreate(string $name, int $type = TeamSpeak3::GROUP_DBTYPE_REGULAR): int
     {
+        $result = $this->execute('channelgroupadd', ['name' => $name, 'type' => $type])->toList();
         $this->channelGroupListReset();
 
-        $cgid = $this->execute('channelgroupadd', ['name' => $name, 'type' => $type])->toList();
+        $cgid = null;
 
-        return $cgid['cgid'];
+        for ($i = count($result) - 1; $i >= 0; $i--) {
+            foreach ($result[$i] as $key => $value) {
+                if (stripos($key, 'cgid') !== false) {
+                    // Extract only the leading digit
+                    if (preg_match('/\d+/', $value, $matches)) {
+                        $cgid = (int) $matches[0];
+                        break 2;
+                    }
+                }
+            }
+        }
+
+        if ($cgid === null) {
+            throw new \RuntimeException('channelGroupCreate: Invalid result: '.print_r($result, true));
+        }
+
+        return $cgid;
     }
 
     /**
