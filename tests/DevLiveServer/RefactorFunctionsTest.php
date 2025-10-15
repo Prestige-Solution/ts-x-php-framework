@@ -194,4 +194,29 @@ class RefactorFunctionsTest extends TestCase
         $this->ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
         $this->assertFalse($this->ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
     }
+
+    /**
+     * @throws AdapterException
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws \Exception
+     */
+    public function test_can_create_channel_group(): void
+    {
+        if ($this->active == 'false' || $this->ts3_unit_test_signals == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        try {
+            $this->ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        } catch(TeamSpeak3Exception $e) {
+            echo $e->getMessage();
+        }
+
+        $cgid = $this->ts3_VirtualServer->channelGroupCreate('UniTest', 1);
+        $this->ts3_VirtualServer->channelGroupDelete($cgid);
+
+        $this->ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $this->assertFalse($this->ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
+    }
 }
