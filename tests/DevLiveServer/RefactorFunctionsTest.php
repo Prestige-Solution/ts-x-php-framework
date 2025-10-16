@@ -34,8 +34,6 @@ class RefactorFunctionsTest extends TestCase
 
     private string $ts3_server_uri;
 
-    private string $ts3_unit_test_signals;
-
     private Server|Adapter|Node|Host $ts3_VirtualServer;
 
     public function setUp(): void
@@ -49,7 +47,6 @@ class RefactorFunctionsTest extends TestCase
             $this->queryPort = str_replace('DEV_LIVE_SERVER_QUERY_PORT=', '', preg_replace('#\n(?!\n)#', '', $env[4]));
             $this->user = str_replace('DEV_LIVE_SERVER_QUERY_USER=', '', preg_replace('#\n(?!\n)#', '', $env[5]));
             $this->password = str_replace('DEV_LIVE_SERVER_QUERY_USER_PASSWORD=', '', preg_replace('#\n(?!\n)#', '', $env[6]));
-            $this->ts3_unit_test_signals = str_replace('DEV_LIVE_SERVER_UNIT_TEST_SIGNALS=', '', preg_replace('#\n(?!\n)#', '', $env[10]));
         } else {
             $this->active = 'false';
         }
@@ -68,7 +65,7 @@ class RefactorFunctionsTest extends TestCase
      */
     public function test_clientupdate_getErrorProperty()
     {
-        if ($this->active == 'false' || $this->ts3_unit_test_signals == 'false') {
+        if ($this->active == 'false') {
             $this->markTestSkipped('DevLiveServer ist not active');
         }
 
@@ -98,7 +95,7 @@ class RefactorFunctionsTest extends TestCase
      */
     public function test_serverGroupList_serverGroupClientList()
     {
-        if ($this->active == 'false' || $this->ts3_unit_test_signals == 'false') {
+        if ($this->active == 'false') {
             $this->markTestSkipped('DevLiveServer ist not active');
         }
 
@@ -141,7 +138,7 @@ class RefactorFunctionsTest extends TestCase
      */
     public function test_channelGroupList_channelGroupClientList()
     {
-        if ($this->active == 'false' || $this->ts3_unit_test_signals == 'false') {
+        if ($this->active == 'false') {
             $this->markTestSkipped('DevLiveServer ist not active');
         }
 
@@ -178,7 +175,7 @@ class RefactorFunctionsTest extends TestCase
      */
     public function test_can_create_server_group(): void
     {
-        if ($this->active == 'false' || $this->ts3_unit_test_signals == 'false') {
+        if ($this->active == 'false') {
             $this->markTestSkipped('DevLiveServer ist not active');
         }
 
@@ -203,7 +200,7 @@ class RefactorFunctionsTest extends TestCase
      */
     public function test_can_create_channel_group(): void
     {
-        if ($this->active == 'false' || $this->ts3_unit_test_signals == 'false') {
+        if ($this->active == 'false') {
             $this->markTestSkipped('DevLiveServer ist not active');
         }
 
@@ -238,7 +235,7 @@ class RefactorFunctionsTest extends TestCase
             echo $e->getMessage();
         }
 
-        ##channel name
+        //#channel name
         //30 chars
         $cgid = $this->ts3_VirtualServer->channelGroupCreate('Lorem ipsum dolor sit amet, co', 1);
         $this->ts3_VirtualServer->channelGroupDelete($cgid);
@@ -247,7 +244,7 @@ class RefactorFunctionsTest extends TestCase
         $cgid = $this->ts3_VirtualServer->channelGroupCreate('Lorem ipsum dolor sit amet, consetetur s', 1);
         $this->ts3_VirtualServer->channelGroupDelete($cgid);
 
-        ##servergroup name
+        //#servergroup name
         //<= 30 chars
         $sid = $this->ts3_VirtualServer->serverGroupCreate('-----Unit Täst / Unit Test----', 1);
         $this->ts3_VirtualServer->serverGroupDelete($sid);
