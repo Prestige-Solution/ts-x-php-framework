@@ -41,6 +41,10 @@ class Server extends Node
      */
     protected array|null $cgroupList = null;
 
+    protected int $maxNameLength = 30;
+
+    protected int $maxChannelNameLength = 40;
+
     /**
      * Server constructor.
      *
