@@ -1158,6 +1158,8 @@ class Server extends Node
      */
     public function serverGroupCreate(string $name, int $type = TeamSpeak3::GROUP_DBTYPE_REGULAR): int
     {
+        $name = mb_substr($name, 0, $this->maxNameLength);
+
         $result = $this->execute('servergroupadd', ['name' => $name, 'type' => $type])->toList();
         $this->serverGroupListReset();
 
