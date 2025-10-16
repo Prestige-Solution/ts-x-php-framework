@@ -371,8 +371,8 @@ class ChannelTest extends TestCase
         $channel = $ts3_VirtualServer->channelGetById($testCid);
         $channelPermission = $channel->permList(true);
 
-        $this->assertEquals(75, $channelPermission['i_channel_needed_permission_modify_power']['permvalue']);
-        $this->assertEquals(75, $channelPermission['i_channel_needed_delete_power']['permvalue']);
+        $this->assertEquals(100, $channelPermission['i_channel_needed_permission_modify_power']['permvalue']);
+        $this->assertEquals(100, $channelPermission['i_channel_needed_delete_power']['permvalue']);
 
         $this->unset_play_test_channel($ts3_VirtualServer);
         $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
