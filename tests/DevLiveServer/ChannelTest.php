@@ -532,6 +532,50 @@ class ChannelTest extends TestCase
     }
 
     /**
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws AdapterException
+     * @throws HelperException
+     * @throws \Exception
+     */
+    public function test_invalid_parameter_size_length()
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        $this->set_play_test_channel($ts3_VirtualServer);
+
+        //40 chars
+        $testCid = $ts3_VirtualServer->channelCreate([
+            'channel_name' => 'Lorem ipsum dolor sit amet, consetetur s',
+            'channel_codec' => 4,
+            'channel_codec_quality' => 6,
+            'channel_flag_semi_permanent' => 0,
+            'channel_flag_permanent' => 1,
+            'cpid' => $this->test_cid,
+        ]);
+        $this->assertEquals('Lorem ipsum dolor sit amet, consetetur s', $ts3_VirtualServer->channelGetById($testCid)->getInfo()['channel_name']);
+        $ts3_VirtualServer->channelDelete($testCid);
+
+        //50 chars
+        $testCid = $ts3_VirtualServer->channelCreate([
+            'channel_name' => 'Lorem ipsum dolor sit amet, consetetur sLorem ipsu',
+            'channel_codec' => 4,
+            'channel_codec_quality' => 6,
+            'channel_flag_semi_permanent' => 0,
+            'channel_flag_permanent' => 1,
+            'cpid' => $this->test_cid,
+        ]);
+        $this->assertEquals('Lorem ipsum dolor sit amet, consetetur s', $ts3_VirtualServer->channelGetById($testCid)->getInfo()['channel_name']);
+        $ts3_VirtualServer->channelDelete($testCid);
+
+        $this->unset_play_test_channel($ts3_VirtualServer);
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+    }
+
+    /**
      * @throws AdapterException
      * @throws TransportException
      * @throws ServerQueryException
