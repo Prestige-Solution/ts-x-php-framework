@@ -151,6 +151,12 @@ class Server extends Node
      */
     public function channelCreate(array $properties): int
     {
+        array_walk_recursive($properties, function (&$value, $key) {
+            if ($key === 'channel_name') {
+                $value = mb_substr($value, 0, $this->maxChannelNameLength);
+            }
+        });
+
         $result = $this->execute('channelcreate', $properties)->toList();
         $this->channelListReset();
 
