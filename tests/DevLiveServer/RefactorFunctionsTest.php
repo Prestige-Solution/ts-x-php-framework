@@ -219,4 +219,48 @@ class RefactorFunctionsTest extends TestCase
         $this->ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
         $this->assertFalse($this->ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
     }
+
+    /**
+     * @throws AdapterException
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws \Exception
+     */
+    public function test_invalid_parameter_size(): void
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        try {
+            $this->ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        } catch(TeamSpeak3Exception $e) {
+            echo $e->getMessage();
+        }
+
+        ##channel name
+        //30 chars
+        $cgid = $this->ts3_VirtualServer->channelGroupCreate('Lorem ipsum dolor sit amet, co', 1);
+        $this->ts3_VirtualServer->channelGroupDelete($cgid);
+
+        //more than 30 chars
+        $cgid = $this->ts3_VirtualServer->channelGroupCreate('Lorem ipsum dolor sit amet, consetetur s', 1);
+        $this->ts3_VirtualServer->channelGroupDelete($cgid);
+
+        ##servergroup name
+        //<= 30 chars
+        $sid = $this->ts3_VirtualServer->serverGroupCreate('-----Unit Täst / Unit Test----', 1);
+        $this->ts3_VirtualServer->serverGroupDelete($sid);
+
+        //more than 30 chars
+        $sid = $this->ts3_VirtualServer->serverGroupCreate('-----Unit Täst / Unit Test----', 1);
+        $this->ts3_VirtualServer->serverGroupDelete($sid);
+
+        //more chars
+        $sid = $this->ts3_VirtualServer->serverGroupCreate('--Lorem ipsum dolür sit amet, conäetetur sadip--', 1);
+        $this->ts3_VirtualServer->serverGroupDelete($sid);
+
+        $this->ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $this->assertFalse($this->ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
+    }
 }
