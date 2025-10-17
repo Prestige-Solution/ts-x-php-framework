@@ -2478,7 +2478,19 @@ class Server extends Node
      */
     public function banCount(): int
     {
-        return current($this->execute('banlist -count', ['duration' => 1])->toList());
+        try {
+            $result = $this->execute('banlist -count', ['duration' => 1])->toList();
+            $count = (int) current($result);
+        } catch (ServerQueryException $e) {
+            if (str_contains($e->getMessage(), 'database empty result set')) {
+                // there are no bans
+                $count = 0;
+            } else {
+                throw $e;
+            }
+        }
+
+        return $count;
     }
 
     /**
