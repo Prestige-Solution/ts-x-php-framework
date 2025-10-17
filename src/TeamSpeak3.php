@@ -353,6 +353,7 @@ class TeamSpeak3
      */
     protected static array $escape_patterns = [
         '\\' => '\\\\', // backslash
+        '/' => '\\/',  // slash
         ' ' => '\\s',  // whitespace
         '|' => '\\p',  // pipe
         ';' => '\\;',  // semicolon
