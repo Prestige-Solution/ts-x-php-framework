@@ -153,6 +153,46 @@ class ClientTest extends TestCase
 
     /**
      * @throws AdapterException
+     * @throws ServerQueryException
+     * @throws TransportException
+     * @throws \Exception
+     */
+    public function test_can_ban_user()
+    {
+        if ($this->user_test_active == 'false' || $this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+
+        $userDB = $ts3_VirtualServer->clientList();
+        foreach ($userDB as $user) {
+            if ($user['client_nickname'] == $this->ts3_unit_test_userName) {
+                $userID = $user['clid'];
+            }
+        }
+
+        if (isset($userID)) {
+            $ts3_VirtualServer->clientBan($userID, 600, 'Unittest');
+        }
+
+        $banlist = $ts3_VirtualServer->banList();
+        $this->assertIsArray($banlist);
+        $this->assertEquals(1, $ts3_VirtualServer->banCount());
+
+        foreach ($banlist as $ban) {
+            if ($ban['lastnickname'] == $this->ts3_unit_test_userName) {
+                $ts3_VirtualServer->banDelete($ban['banid']);
+            }
+        }
+
+        $this->assertEquals(0, $ts3_VirtualServer->banCount());
+
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+    }
+
+    /**
+     * @throws AdapterException
      * @throws TransportException
      * @throws ServerQueryException
      */
