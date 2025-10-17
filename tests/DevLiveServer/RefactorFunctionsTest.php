@@ -238,23 +238,36 @@ class RefactorFunctionsTest extends TestCase
         //#channel name
         //30 chars
         $cgid = $this->ts3_VirtualServer->channelGroupCreate('Lorem ipsum dolor sit amet, co', 1);
+        $result = $this->ts3_VirtualServer->channelGroupGetById($cgid)->getInfo()['name'];
+        $this->assertEquals(30, strlen($result));
+        $this->assertEquals('Lorem ipsum dolor sit amet, co', $result);
         $this->ts3_VirtualServer->channelGroupDelete($cgid);
 
         //more than 30 chars
         $cgid = $this->ts3_VirtualServer->channelGroupCreate('Lorem ipsum dolor sit amet, consetetur s', 1);
+        $result = $this->ts3_VirtualServer->channelGroupGetById($cgid)->getInfo()['name'];
+        $this->assertEquals(30, strlen($result));
+        $this->assertEquals('Lorem ipsum dolor sit amet, co', $result);
         $this->ts3_VirtualServer->channelGroupDelete($cgid);
 
         //#servergroup name
         //<= 30 chars
         $sid = $this->ts3_VirtualServer->serverGroupCreate('-----Unit Täst / Unit Test----', 1);
+        $result = $this->ts3_VirtualServer->serverGroupGetById($sid)->getInfo()['name'];
+        $this->assertEquals('-----Unit Täst \/ Unit Test----', $result);
         $this->ts3_VirtualServer->serverGroupDelete($sid);
 
         //more than 30 chars
         $sid = $this->ts3_VirtualServer->serverGroupCreate('-----Unit Täst / Unit Test----', 1);
+        $result = $this->ts3_VirtualServer->serverGroupGetById($sid)->getInfo()['name'];
+        $this->assertEquals('-----Unit Täst \/ Unit Test----', $result);
         $this->ts3_VirtualServer->serverGroupDelete($sid);
 
         //more chars
         $sid = $this->ts3_VirtualServer->serverGroupCreate('--Lorem ipsum dolür sit amet, conäetetur sadip--', 1);
+        $result = $this->ts3_VirtualServer->serverGroupGetById($sid)->getInfo()['name'];
+        $this->assertEquals(30, strlen($result));
+        $this->assertEquals('--Lorem ipsum dolür sit amet,', $result);
         $this->ts3_VirtualServer->serverGroupDelete($sid);
 
         $this->ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
