@@ -66,7 +66,7 @@ class TSssh extends Transport
         // individual ESC sequences: ESC followed by any char
         $data = preg_replace([
             '/\x1B\[[0-?]*[ -\/]*[@-~]/',   // CSI sequences
-            '/\x1B\][^\x07]*\x07/',        // OSC ... BEL
+            '/\x1B][^\x07]*\x07/',        // OSC ... BEL
             '/\x1B\[?=\d*[A-Za-z]/',        // fallback for exotic forms (optional)
         ], '', $data);
 
@@ -158,14 +158,14 @@ class TSssh extends Transport
         while ((time() - $start) < $time) {
             $data = $this->ssh->read();
             if ($data !== false && $data !== '') {
-                echo '📩 Neue Daten: '.$data.PHP_EOL;
+                echo 'New data: '.$data.PHP_EOL;
 
                 return;
             }
             usleep(100_000); // 100 ms break
         }
 
-        echo "⏳ Timeout: no data within {$time}s".PHP_EOL;
+        echo "Timeout: no data within {$time}s".PHP_EOL;
     }
 
     /**

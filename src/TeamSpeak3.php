@@ -366,41 +366,11 @@ class TeamSpeak3
     ];
 
     /**
-     * Factory for PlanetTeamSpeak\TeamSpeak3Framework\Node\Server classes. $uri must be formatted as
-     * "<adapter>://<user>:<pass>@<host>:<port>/<options>#<flags>". All parameters
-     *
-     * === Supported Options ===
-     *   - timeout
-     *   - ssh (TeamSpeak only)
-     *   - nickname
-     *   - no_query_clients
-     *   - use_offline_as_virtual
-     *   - clients_before_channels
-     *   - server_id|server_uid|server_port|server_name
-     *   - channel_id|channel_name
-     *   - client_id|client_uid|client_name
-     *
-     * === Supported Flags (only one per $uri) ===
-     *   - no_query_clients
-     *   - use_offline_as_virtual
-     *   - clients_before_channels
-     *
-     * === URI Examples ===
-     * serverquery://<user>:<pass>@<HOST>:<PORT>/?server_port=9987&no_query_clients=0&timeout=30
-     * serverquery://<user>:<pass>@<HOST>:<PORT>/?server_port=9987&no_query_clients=0&timeout=30&nickname=UnitTestBot
-     *
-     * If you have special characters in your password or username, you need to encode them.
-     * serverquery://'.rawurlencode(<user>).':'.rawurlencode(<password>) .'@<host>:<query_port>/?server_port=9987&no_query_clients=0&blocking=0&timeout=30&nickname=UnitTestBot
-     *
      * @param string $uri
      * @return Host|Server|ServerQuery|MockServerQuery|FileTransfer
      * @throws AdapterException
      * @throws HelperException
      * @throws ServerQueryException
-     * @throws Exception
-     */
-    /**
-     * Factory for PlanetTeamSpeak\TeamSpeak3Framework\Node\Server classes.
      * @throws Exception
      */
     public static function factory(string $uri): Host|Server|ServerQuery|MockServerQuery|FileTransfer
