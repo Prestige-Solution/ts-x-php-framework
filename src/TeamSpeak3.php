@@ -597,32 +597,4 @@ class TeamSpeak3
 
         return $output;
     }
-
-    public static function encodeArgs(array $props): string
-    {
-        $parts = [];
-
-        foreach ($props as $key => $val) {
-            // bool -> int, null -> empty string
-            if (is_bool($val)) {
-                $val = $val ? '1' : '0';
-            } elseif ($val === null) {
-                $val = '';
-            } else {
-                $val = (string) $val;
-            }
-
-            // TeamSpeak3 Query escaping (minimal, robust)
-            // ersetzt: Backslash, Pipe, Space
-            $val = str_replace(
-                ['\\', '|', ' '],
-                ['\\\\', '\\p', '\\s'],
-                $val
-            );
-
-            $parts[] = $key.'='.$val;
-        }
-
-        return implode(' ', $parts);
-    }
 }
