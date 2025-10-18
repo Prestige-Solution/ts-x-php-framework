@@ -139,7 +139,7 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
 
         if ($iconid instanceof StringHelper) {
             $iconid = $iconid->toInt();
-        } elseif (!is_int($iconid)) {
+        } elseif (! is_int($iconid)) {
             $iconid = (int) $iconid;
         }
 
@@ -321,7 +321,7 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
                 } elseif (str_ends_with($key, '_version')) {
                     $info[$key] = Convert::version($val);
                 } elseif (str_ends_with($key, '_icon_id')) {
-                    $info[$key] = $this->iconGetName($val)->filterDigits();
+                    $info[$key] = $this->iconGetName($val)->filterDigits()->toInt();
                 }
             }
         }
@@ -386,7 +386,7 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
                 } elseif ($keyObj->endsWith('_version')) {
                     $info[$keyObj->toString()] = Convert::version($val);
                 } elseif ($keyObj->endsWith('_icon_id')) {
-                    $info[$keyObj->toString()] = $this->iconGetName($key)->filterDigits();
+                    $info[$keyObj->toString()] = $this->iconGetName($key)->filterDigits()->toInt();
                 }
             }
         }
