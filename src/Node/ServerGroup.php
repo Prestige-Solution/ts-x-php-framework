@@ -112,17 +112,6 @@ class ServerGroup extends Group
     }
 
     /**
-     * Alias for permAssign().
-     *
-     * @deprecated
-     * @throws
-     */
-    public function permAssignByName($permname, $permvalue, $permnegated = false, $permskip = false): void
-    {
-        $this->permAssign($permname, $permvalue, $permnegated, $permskip);
-    }
-
-    /**
      * Removes a set of specified permissions from the server group. Multiple
      * permissions can be removed at once.
      *
@@ -135,17 +124,6 @@ class ServerGroup extends Group
     public function permRemove(int $permid): void
     {
         $this->getParent()->serverGroupPermRemove($this->getId(), $permid);
-    }
-
-    /**
-     * Alias for permRemove().
-     *
-     * @deprecated
-     * @throws
-     */
-    public function permRemoveByName($permname): void
-    {
-        $this->permRemove($permname);
     }
 
     /**
@@ -188,17 +166,6 @@ class ServerGroup extends Group
     public function clientDel(int $cldbid): void
     {
         $this->getParent()->serverGroupClientDel($this->getId(), $cldbid);
-    }
-
-    /**
-     * Alias for privilegeKeyCreate().
-     *
-     * @deprecated
-     * @throws
-     */
-    public function tokenCreate($description = null, $customset = null): string
-    {
-        return $this->privilegeKeyCreate($description, $customset);
     }
 
     /**

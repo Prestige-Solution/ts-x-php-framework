@@ -111,17 +111,6 @@ class ChannelGroup extends Group
     }
 
     /**
-     * Alias for permAssign().
-     *
-     * @deprecated
-     * @throws
-     */
-    public function permAssignByName($permname, $permvalue): void
-    {
-        $this->permAssign($permname, $permvalue);
-    }
-
-    /**
      * Removes a set of specified permissions from the channel group. Multiple
      * permissions can be removed at once.
      *
@@ -134,17 +123,6 @@ class ChannelGroup extends Group
     public function permRemove(int $permid): void
     {
         $this->getParent()->channelGroupPermRemove($this->getId(), $permid);
-    }
-
-    /**
-     * Alias for permAssign().
-     *
-     * @deprecated
-     * @throws
-     */
-    public function permRemoveByName($permname): void
-    {
-        $this->permRemove($permname);
     }
 
     /**
@@ -161,17 +139,6 @@ class ChannelGroup extends Group
     public function clientList(int $cid = null, int $cldbid = null, bool $resolve = false): array
     {
         return $this->getParent()->channelGroupClientList($this->getId(), $cid, $cldbid, $resolve);
-    }
-
-    /**
-     * Alias for privilegeKeyCreate().
-     *
-     * @deprecated
-     * @throws
-     */
-    public function tokenCreate($cid, $description = null, $customset = null): StringHelper
-    {
-        return $this->privilegeKeyCreate($cid, $description, $customset);
     }
 
     /**

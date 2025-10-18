@@ -2233,21 +2233,6 @@ class Server extends Node
     }
 
     /**
-     * Alias for privilegeKeyList().
-     *
-     * @return array
-     * @throws AdapterException
-     * @throws NodeException
-     * @throws ServerQueryException
-     * @throws TransportException
-     * @deprecated
-     */
-    public function tokenList(): array
-    {
-        return $this->privilegeKeyList();
-    }
-
-    /**
      * Returns a list of privilege keys (tokens) available. If $resolve is set to TRUE, the values
      * of token_id1 and token_id2 will be translated into the appropriate group and/or channel
      * names.
@@ -2286,30 +2271,6 @@ class Server extends Node
     }
 
     /**
-     * Alias for privilegeKeyCreate().
-     *
-     * @param  int  $id1
-     * @param  int  $id2
-     * @param  int  $type
-     * @param  string|null  $description
-     * @param  array|null  $customset
-     * @return StringHelper
-     * @throws AdapterException
-     * @throws ServerQueryException
-     * @throws TransportException
-     * @deprecated
-     */
-    public function tokenCreate(
-        int $id1,
-        int $id2 = 0,
-        int $type = TeamSpeak3::TOKEN_SERVERGROUP,
-        string $description = null,
-        array $customset = null
-    ): StringHelper {
-        return $this->privilegeKeyCreate($id1, $id2, $type, $description, $customset);
-    }
-
-    /**
      * Creates a new privilege key (token) and returns the key.
      * @param  int  $id1
      * @param  int  $id2
@@ -2337,20 +2298,6 @@ class Server extends Node
     }
 
     /**
-     * Alias for privilegeKeyDelete().
-     *
-     * @param $token
-     * @throws AdapterException
-     * @throws ServerQueryException
-     * @throws TransportException
-     * @deprecated
-     */
-    public function tokenDelete($token): void
-    {
-        $this->privilegeKeyDelete($token);
-    }
-
-    /**
      * Deletes a token specified by key $token.
      *
      * @param  string  $token
@@ -2362,20 +2309,6 @@ class Server extends Node
     public function privilegeKeyDelete(string $token): void
     {
         $this->execute('privilegekeydelete', ['token' => $token]);
-    }
-
-    /**
-     * Alias for privilegeKeyUse().
-     *
-     * @param $token
-     * @throws AdapterException
-     * @throws ServerQueryException
-     * @throws TransportException
-     * @deprecated
-     */
-    public function tokenUse($token): void
-    {
-        $this->privilegeKeyUse($token);
     }
 
     /**

@@ -194,17 +194,6 @@ class Channel extends Node
     }
 
     /**
-     * Alias for clientPermAssign().
-     *
-     * @deprecated
-     * @throws
-     */
-    public function clientPermAssignByName($cldbid, $permname, $permvalue): void
-    {
-        $this->clientPermAssign($cldbid, $permname, $permvalue);
-    }
-
-    /**
      * Removes a set of specified permissions from a client in the channel. Multiple permissions can be removed at once.
      *
      * @param  int  $cldbid
@@ -217,17 +206,6 @@ class Channel extends Node
     public function clientPermRemove(int $cldbid, int|array $permid): void
     {
         $this->getParent()->channelClientPermRemove($this->getId(), $cldbid, $permid);
-    }
-
-    /**
-     * Alias for clientPermRemove().
-     *
-     * @deprecated
-     * @throws
-     */
-    public function clientPermRemoveByName($cldbid, $permname): void
-    {
-        $this->clientPermRemove($cldbid, $permname);
     }
 
     /**
@@ -261,17 +239,6 @@ class Channel extends Node
     }
 
     /**
-     * Alias for permAssign().
-     *
-     * @deprecated
-     * @throws
-     */
-    public function permAssignByName($permname, $permvalue): void
-    {
-        $this->permAssign($permname, $permvalue);
-    }
-
-    /**
      * Removes a set of specified permissions from the channel. Multiple permissions can be removed at once.
      *
      * @param  int|int[]  $permid
@@ -283,17 +250,6 @@ class Channel extends Node
     public function permRemove(int|array $permid): void
     {
         $this->getParent()->channelPermRemove($this->getId(), $permid);
-    }
-
-    /**
-     * Alias for permRemove().
-     *
-     * @deprecated
-     * @throws
-     */
-    public function permRemoveByName($permname): void
-    {
-        $this->permRemove($permname);
     }
 
     /**
