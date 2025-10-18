@@ -350,51 +350,6 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
     }
 
     /**
-     * Returns information about the host node and optionally the selected virtual server.
-     */
-    public function getFullInfo(?int $serverPort = null, bool $convert = false): array
-    {
-        // Retrieve host/node information
-        $this->fetchNodeInfo();
-        $info = $this->nodeInfo;
-
-        // Retrieve VirtualServer if port has been specified
-        if ($serverPort !== null) {
-            try {
-                $virtualServer = $this->serverGetByPort($serverPort); //polymorphic call is okay because we use strict analysis
-                $vsInfo = $virtualServer->getInfo(false, false); // raw value
-                $info = array_merge($info, $vsInfo);
-            } catch (\Exception $e) {
-                $info['virtualserver_error'] = $e->getMessage();
-            }
-        }
-
-        if ($convert) {
-            foreach ($info as $key => $val) {
-                $keyObj = StringHelper::factory($key);
-
-                if ($keyObj->contains('_bytes_')) {
-                    $info[$keyObj->toString()] = Convert::bytes($val);
-                } elseif ($keyObj->contains('_bandwidth_')) {
-                    $info[$keyObj->toString()] = Convert::bytes($val).'/s';
-                } elseif ($keyObj->contains('_packets_')) {
-                    $info[$keyObj->toString()] = number_format($val, 0, null, '.');
-                } elseif ($keyObj->contains('_packetloss_')) {
-                    $info[$keyObj->toString()] = sprintf('%01.2f', floatval($val instanceof StringHelper ? $val->toString() : strval($val)) * 100).'%';
-                } elseif ($keyObj->endsWith('_uptime')) {
-                    $info[$keyObj->toString()] = Convert::seconds($val);
-                } elseif ($keyObj->endsWith('_version')) {
-                    $info[$keyObj->toString()] = Convert::version($val);
-                } elseif ($keyObj->endsWith('_icon_id')) {
-                    $info[$keyObj->toString()] = $this->iconGetName($key)->filterDigits()->toInt();
-                }
-            }
-        }
-
-        return $info;
-    }
-
-    /**
      * Returns the specified property or a pre-defined default value from the node info array.
      *
      * @param string $property
