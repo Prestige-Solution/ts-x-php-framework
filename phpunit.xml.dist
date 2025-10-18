@@ -7,6 +7,15 @@
          displayDetailsOnTestsThatTriggerWarnings="true"
          displayDetailsOnPhpunitDeprecations="true"
          xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         processIsolation="false"
+         stopOnFailure="false"
+         executionOrder="default"
+         failOnWarning="true"
+         failOnRisky="true"
+         failOnEmptyTestSuite="true"
+         beStrictAboutOutputDuringTests="true"
+         cacheDirectory=".phpunit.cache"
 >
   <source>
     <include>
@@ -20,9 +29,10 @@
       <directory>./vendor</directory>
     </exclude>
   </source>
-  <coverage>
+  <coverage ignoreDeprecatedCodeUnits="true"
+            disableCodeCoverageIgnore="true">
     <report>
-      <clover outputFile="build/logs/clover.xml"/>
+      <clover outputFile=".phpunit.cache/clover.xml"/>
     </report>
   </coverage>
   <php>
@@ -35,6 +45,6 @@
     </testsuite>
   </testsuites>
   <logging>
-    <junit outputFile="build/logs/junit.xml"/>
+    <junit outputFile=".phpunit.cache/junit.xml"/>
   </logging>
 </phpunit>

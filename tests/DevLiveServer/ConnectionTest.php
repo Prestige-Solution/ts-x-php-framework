@@ -4,8 +4,8 @@ namespace PlanetTeamSpeak\TeamSpeak3Framework\Tests\DevLiveServer;
 
 use PHPUnit\Framework\TestCase;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
-use PlanetTeamSpeak\TeamSpeak3Framework\Exception\HelperException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\ServerQueryException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\TransportException;
 use PlanetTeamSpeak\TeamSpeak3Framework\TeamSpeak3;
 
 class ConnectionTest extends TestCase
@@ -28,8 +28,6 @@ class ConnectionTest extends TestCase
 
     private string $ts3_server_uri;
 
-    private string $ts3_server_uri_ssh;
-
     public function setUp(): void
     {
         //proof test active
@@ -47,44 +45,16 @@ class ConnectionTest extends TestCase
 
         $this->ts3_server_uri = 'serverquery://'.$this->user.':'.$this->password.'@'.$this->host.':'.$this->queryPort.
             '/?server_port=9987'.
-            '&ssh=0'.
             '&no_query_clients=0'.
             '&blocking=0'.
-            '&timeout=30'.
-            '&nickname=UnitTestBot';
-
-        $this->ts3_server_uri_ssh = 'serverquery://'.$this->user.':'.$this->password.'@'.$this->host.':10022'.
-            '/?server_port=9987'.
-            '&ssh=1'.
-            '&no_query_clients=0'.
-            '&blocking=0'.
-            '&timeout=30'.
-            '&nickname=UnitTestBot';
+            '&timeout=30';
     }
 
     /**
      * @throws AdapterException
      * @throws ServerQueryException
-     * @throws HelperException
-     */
-    public function test_can_raw_connect()
-    {
-        if ($this->active == 'false') {
-            $this->markTestSkipped('DevLiveServer ist not active');
-        }
-
-        //TODO: infinity connection on connection without access or wrong port
-        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
-        $nodeInfo = $ts3_VirtualServer->getInfo();
-
-        $ts3_VirtualServer->getParent()->getAdapter()->getTransport()->disconnect();
-        $this->assertEquals('Linux', $nodeInfo['virtualserver_platform']);
-    }
-
-    /**
-     * @throws AdapterException
-     * @throws ServerQueryException
-     * @throws HelperException
+     * @throws TransportException
+     * @throws \Exception
      */
     public function test_can_ssh_connect()
     {
@@ -92,11 +62,71 @@ class ConnectionTest extends TestCase
             $this->markTestSkipped('DevLiveServer ist not active');
         }
 
-        //TODO: infinity connection on connection without access or wrong port
-        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri_ssh);
-        $nodeInfo = $ts3_VirtualServer->getInfo();
+        $ts3_Host = TeamSpeak3::factory($this->ts3_server_uri);
+        $nodeInfo = $ts3_Host->getInfo();
+        $whoami = $ts3_Host->whoami();
 
-        $ts3_VirtualServer->getParent()->getAdapter()->getTransport()->disconnect();
+        $ts3_Host->getAdapter()->getTransport()->disconnect();
+
         $this->assertEquals('Linux', $nodeInfo['virtualserver_platform']);
+        $this->assertEquals($this->user, $whoami['client_nickname']);
+    }
+
+    /**
+     * @throws AdapterException
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws \Exception
+     */
+    public function test_can_ssh_connect_with_nickname()
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $testUri = $this->ts3_server_uri.'&nickname=UnitTestBot';
+
+        $ts3_Host = TeamSpeak3::factory($testUri);
+        $nodeInfo = $ts3_Host->getInfo();
+        $whoami = $ts3_Host->whoami();
+
+        $ts3_Host->getAdapter()->getTransport()->disconnect();
+
+        $this->assertEquals('UnitTestBot', $whoami['client_nickname']);
+        $this->assertEquals('Linux', $nodeInfo['virtualserver_platform']);
+    }
+
+    /**
+     * @throws AdapterException
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws \Exception
+     */
+    public function test_can_ssh_multiple_connect_with_different_nicknames()
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $conn1 = $this->ts3_server_uri.'&nickname=UnitTestBot1';
+        $conn2 = $this->ts3_server_uri.'&nickname=UnitTestBot2';
+        $conn3 = $this->ts3_server_uri.'&nickname=UnitTestBot3';
+
+        $ts3_Host1 = TeamSpeak3::factory($conn1);
+        $whoami1 = $ts3_Host1->whoami();
+
+        $ts3_Host2 = TeamSpeak3::factory($conn2);
+        $whoami2 = $ts3_Host2->whoami();
+
+        $ts3_Host3 = TeamSpeak3::factory($conn3);
+        $whoami3 = $ts3_Host3->whoami();
+
+        $ts3_Host1->getAdapter()->getTransport()->disconnect();
+        $ts3_Host2->getAdapter()->getTransport()->disconnect();
+        $ts3_Host3->getAdapter()->getTransport()->disconnect();
+
+        $this->assertEquals('UnitTestBot1', $whoami1['client_nickname']);
+        $this->assertEquals('UnitTestBot2', $whoami2['client_nickname']);
+        $this->assertEquals('UnitTestBot3', $whoami3['client_nickname']);
     }
 }

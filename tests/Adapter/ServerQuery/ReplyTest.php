@@ -100,10 +100,10 @@ class ReplyTest extends TestCase
 
         $this->assertEquals(4, count($reply->toLines()));
         $lineResults = $reply->toLines();
-        $this->assertEquals('cldbid=28 client_nickname=M client_unique_identifier=E', $lineResults[0]);
-        $this->assertEquals('cldbid=24 client_nickname=A client_unique_identifier=j', $lineResults[1]);
-        $this->assertEquals('cldbid=18 client_nickname=D client_unique_identifier=b', $lineResults[2]);
-        $this->assertEquals('cldbid=17 client_nickname=N client_unique_identifier=Q', $lineResults[3]);
+        $this->assertEquals('cldbid=28 client_nickname=M client_unique_identifier=E', $lineResults[0]->toString());
+        $this->assertEquals('cldbid=24 client_nickname=A client_unique_identifier=j', $lineResults[1]->toString());
+        $this->assertEquals('cldbid=18 client_nickname=D client_unique_identifier=b', $lineResults[2]->toString());
+        $this->assertEquals('cldbid=17 client_nickname=N client_unique_identifier=Q', $lineResults[3]->toString());
     }
 
     /**
@@ -119,21 +119,21 @@ class ReplyTest extends TestCase
         ]);
 
         $this->assertEquals(4, count($reply->toTable()));
-        $this->assertEquals('cldbid=28', $reply->toTable()[0][0]);
-        $this->assertEquals('client_nickname=M', $reply->toTable()[0][1]);
-        $this->assertEquals('client_unique_identifier=E', $reply->toTable()[0][2]);
+        $this->assertEquals('cldbid=28', $reply->toTable()[0][0]->toString());
+        $this->assertEquals('client_nickname=M', $reply->toTable()[0][1]->toString());
+        $this->assertEquals('client_unique_identifier=E', $reply->toTable()[0][2]->toString());
 
-        $this->assertEquals('cldbid=24', $reply->toTable()[1][0]);
-        $this->assertEquals('client_nickname=A', $reply->toTable()[1][1]);
-        $this->assertEquals('client_unique_identifier=j', $reply->toTable()[1][2]);
+        $this->assertEquals('cldbid=24', $reply->toTable()[1][0]->toString());
+        $this->assertEquals('client_nickname=A', $reply->toTable()[1][1]->toString());
+        $this->assertEquals('client_unique_identifier=j', $reply->toTable()[1][2]->toString());
 
-        $this->assertEquals('cldbid=18', $reply->toTable()[2][0]);
-        $this->assertEquals('client_nickname=D', $reply->toTable()[2][1]);
-        $this->assertEquals('client_unique_identifier=b', $reply->toTable()[2][2]);
+        $this->assertEquals('cldbid=18', $reply->toTable()[2][0]->toString());
+        $this->assertEquals('client_nickname=D', $reply->toTable()[2][1]->toString());
+        $this->assertEquals('client_unique_identifier=b', $reply->toTable()[2][2]->toString());
 
-        $this->assertEquals('cldbid=17', $reply->toTable()[3][0]);
-        $this->assertEquals('client_nickname=N', $reply->toTable()[3][1]);
-        $this->assertEquals('client_unique_identifier=Q', $reply->toTable()[3][2]);
+        $this->assertEquals('cldbid=17', $reply->toTable()[3][0]->toString());
+        $this->assertEquals('client_nickname=N', $reply->toTable()[3][1]->toString());
+        $this->assertEquals('client_unique_identifier=Q', $reply->toTable()[3][2]->toString());
     }
 
     /**
@@ -148,7 +148,7 @@ class ReplyTest extends TestCase
             new StringHelper(static::$S_ERROR_OK),
         ]);
 
-        $clientlist_array = $reply->toArray('clid')[0];
+        $clientlist_array = $reply->toArray()[0];
 
         $this->assertEquals(static::$E_CLIENTLIST_EXTENDED_SINGLE_CLID, (string) $clientlist_array['clid']);
         $this->assertEquals(static::$E_CLIENTLIST_EXTENDED_SINGLE_CLIENT_NICKNAME, (string) $clientlist_array['client_nickname']);
@@ -208,21 +208,6 @@ class ReplyTest extends TestCase
     public function testGetNotifyEvents()
     {
         $this->markTestSkipped('todo: testGetNotifyEvents');
-    }
-
-    public function testGetErrorProperty()
-    {
-        $this->markTestSkipped('todo: testGetErrorProperty');
-    }
-
-    public function testFetchError()
-    {
-        $this->markTestSkipped('todo: testFetchError');
-        //$this->assertInstanceOf(\TeamSpeak3_Adapter_ServerQuery_Reply::class, $reply);
-        //$this->assertInternalType(PHPUnit_IsType::TYPE_INT, $reply->getErrorProperty('id'));
-        //$this->assertEquals(0, $reply->getErrorProperty('id'));
-        //$this->assertInternalType(PHPUnit_IsType::TYPE_STRING, $reply->getErrorProperty('msg'));
-        //$this->assertEquals('ok', $reply->getErrorProperty('msg'));
     }
 
     public function testFetchReply()

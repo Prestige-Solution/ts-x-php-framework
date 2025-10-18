@@ -1,26 +1,5 @@
 <?php
 
-/**
- * @file
- * TeamSpeak 3 PHP Framework
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- * @author    Sven 'ScP' Paulsen
- * @copyright Copyright (c) Planet TeamSpeak. All rights reserved.
- */
-
 namespace PlanetTeamSpeak\TeamSpeak3Framework\Helper;
 
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\HelperException;
@@ -61,22 +40,23 @@ class Signal
             return null;
         }
 
-        if (! is_array($params)) {
+        // Always ensure that $params is flat bevor handler get [[$idle_seconds, $this]] instead of [$idle_seconds, $this]
+        if (is_array($params) && count($params) === 1 && is_array($params[0])) {
+            $params = $params[0];
+        } elseif (! is_array($params)) {
             $params = func_get_args();
             $params = array_slice($params, 1);
         }
 
+        /** @var mixed|null $lastResult */
+        $lastResult = null;
+
         foreach ($this->sigslots[$signal] as $slot) {
-            //TODO Cant find the call method
-            $signals = $slot->call($params);
+            // We know: $slot->call() returns something
+            $lastResult = $slot->call($params);
         }
 
-        //TODO at this point, $signals if only null but $params has defined array elements
-        if (empty($signals)) {
-            return null;
-        } else {
-            return $signals;
-        }
+        return $lastResult;
     }
 
     /**

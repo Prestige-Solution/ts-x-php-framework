@@ -19,23 +19,23 @@ class ConvertTest extends TestCase
         $this->assertIsString($output);
 
         $output = Convert::bytes(1000);
-        $this->assertEquals('1000 B', $output);
+        $this->assertEquals('1000.00 B', $output);
         $this->assertIsString($output);
 
         $output = Convert::bytes(1000 * 1000);
-        $this->assertEquals('976.5625 KiB', $output);
+        $this->assertEquals('976.56 KiB', $output);
         $this->assertIsString($output);
 
         $output = Convert::bytes(1000 * 1000 * 1000);
-        $this->assertEquals('953.6743164063 MiB', $output);
+        $this->assertEquals('953.67 MiB', $output);
         $this->assertIsString($output);
 
         $output = Convert::bytes(1000 * 1000 * 1000 * 1000);
-        $this->assertEquals('931.3225746155 GiB', $output);
+        $this->assertEquals('931.32 GiB', $output);
         $this->assertIsString($output);
 
         $output = Convert::bytes(1000 * 1000 * 1000 * 1000 * 1000);
-        $this->assertEquals('909.4947017729 TiB', $output);
+        $this->assertEquals('909.49 TiB', $output);
         $this->assertIsString($output);
     }
 
@@ -46,30 +46,30 @@ class ConvertTest extends TestCase
         $this->assertIsString($output);
 
         $output = Convert::bytes(1024);
-        $this->assertEquals('1 KiB', $output);
+        $this->assertEquals('1.00 KiB', $output);
         $this->assertIsString($output);
 
         $output = Convert::bytes(1024 * 1024);
-        $this->assertEquals('1 MiB', $output);
+        $this->assertEquals('1.00 MiB', $output);
         $this->assertIsString($output);
 
         $output = Convert::bytes(1024 * 1024 * 1024);
-        $this->assertEquals('1 GiB', $output);
+        $this->assertEquals('1.00 GiB', $output);
         $this->assertIsString($output);
 
         $output = Convert::bytes(1024 * 1024 * 1024 * 1024);
-        $this->assertEquals('1 TiB', $output);
+        $this->assertEquals('1.00 TiB', $output);
         $this->assertIsString($output);
 
         $output = Convert::bytes(1024 * 1024 * 1024 * 1024 * 1024);
-        $this->assertEquals('1 PiB', $output);
+        $this->assertEquals('1.00 PiB', $output);
         $this->assertIsString($output);
     }
 
     public function testConvertBytesToHumanReadableWithOddNumbers()
     {
         $output = Convert::bytes(1);
-        $this->assertEquals('1 B', $output);
+        $this->assertEquals('1.00 B', $output);
         $this->assertIsString($output);
 
         $output = Convert::bytes(1024 + 256);
@@ -77,19 +77,19 @@ class ConvertTest extends TestCase
         $this->assertIsString($output);
 
         $output = Convert::bytes(1024 * 1024 + 256);
-        $this->assertEquals('1.0002441406 MiB', $output);
+        $this->assertEquals('1.00 MiB', $output);
         $this->assertIsString($output);
 
         $output = Convert::bytes(1024 * 1024 * 1024 + 256);
-        $this->assertEquals('1.0000002384 GiB', $output);
+        $this->assertEquals('1.00 GiB', $output);
         $this->assertIsString($output);
 
         $output = Convert::bytes(1024 * 1024 * 1024 * 1024 + 256);
-        $this->assertEquals('1.0000000002 TiB', $output);
+        $this->assertEquals('1.00 TiB', $output);
         $this->assertIsString($output);
 
         $output = Convert::bytes(1024 * 1024 * 1024 * 1024 * 1024 + (256 * 1024 * 1024 * 1024));
-        $this->assertEquals('1.0002441406 PiB', $output);
+        $this->assertEquals('1.00 PiB', $output);
         $this->assertIsString($output);
     }
 
@@ -100,35 +100,35 @@ class ConvertTest extends TestCase
         $this->assertIsString($output);
 
         $output = Convert::bytes(-1000);
-        $this->assertEquals('-1000 B', $output);
+        $this->assertEquals('-1000.00 B', $output);
         $this->assertIsString($output);
 
         $output = Convert::bytes(-1024);
-        $this->assertEquals('-1 KiB', $output);
+        $this->assertEquals('-1.00 KiB', $output);
         $this->assertIsString($output);
 
         $output = Convert::bytes(-1000 * 1000);
-        $this->assertEquals('-976.5625 KiB', $output);
+        $this->assertEquals('-976.56 KiB', $output);
         $this->assertIsString($output);
 
         $output = Convert::bytes(-1000 * 1000 * 1000);
-        $this->assertEquals('-953.6743164063 MiB', $output);
+        $this->assertEquals('-953.67 MiB', $output);
         $this->assertIsString($output);
 
         $output = Convert::bytes(-1024 * 1024);
-        $this->assertEquals('-1 MiB', $output);
+        $this->assertEquals('-1.00 MiB', $output);
         $this->assertIsString($output);
 
         $output = Convert::bytes(-1024 * 1024 * 1024);
-        $this->assertEquals('-1 GiB', $output);
+        $this->assertEquals('-1.00 GiB', $output);
         $this->assertIsString($output);
 
         $output = Convert::bytes(-1024 * 1024 * 1024 * 1024);
-        $this->assertEquals('-1 TiB', $output);
+        $this->assertEquals('-1.00 TiB', $output);
         $this->assertIsString($output);
 
         $output = Convert::bytes(-1024 * 1024 * 1024 * 1024 - 256);
-        $this->assertEquals('-1.0000000002 TiB', $output);
+        $this->assertEquals('-1.00 TiB', $output);
         $this->assertIsString($output);
     }
 
@@ -405,7 +405,7 @@ class ConvertTest extends TestCase
 
     public function testDetectImageMimeType()
     {
-        // Test image binary base64 encoded is 1px by 1px GIF
+        // Test image binary base64 encoded is 1 px by 1 px GIF
         $this->assertEquals(
             'image/gif',
             Convert::imageMimeType(

@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 use PlanetTeamSpeak\TeamSpeak3Framework\Adapter\MockServerQuery;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\TransportException;
-use PlanetTeamSpeak\TeamSpeak3Framework\Transport\TCP;
+use PlanetTeamSpeak\TeamSpeak3Framework\Transport\TSssh;
 
 class TCPTest extends TestCase
 {
@@ -29,10 +29,10 @@ class TCPTest extends TestCase
      */
     public function testConstructorNoException()
     {
-        $adapter = new TCP(
+        $adapter = new TSssh(
             ['host' => $this->host, 'port' => $this->port]
         );
-        $this->assertInstanceOf(TCP::class, $adapter);
+        $this->assertInstanceOf(TSssh::class, $adapter);
 
         $this->assertArrayHasKey('host', $adapter->getConfig());
         $this->assertEquals($this->host, $adapter->getConfig('host'));
@@ -52,7 +52,7 @@ class TCPTest extends TestCase
         $this->expectException(TransportException::class);
         $this->expectExceptionMessage("config must have a key for 'host'");
 
-        new TCP(['port' => $this->port]);
+        new TSssh(['port' => $this->port]);
     }
 
     public function testConstructorExceptionNoPort()
@@ -60,7 +60,7 @@ class TCPTest extends TestCase
         $this->expectException(TransportException::class);
         $this->expectExceptionMessage("config must have a key for 'port'");
 
-        new TCP(['host' => $this->host]);
+        new TSssh(['host' => $this->host]);
     }
 
     /**
@@ -68,7 +68,7 @@ class TCPTest extends TestCase
      */
     public function testGetConfig()
     {
-        $adapter = new TCP(
+        $adapter = new TSssh(
             ['host' => $this->host, 'port' => $this->port]
         );
 
@@ -84,7 +84,7 @@ class TCPTest extends TestCase
      */
     public function testGetStream()
     {
-        $transport = new TCP(
+        $transport = new TSssh(
             ['host' => $this->host, 'port' => $this->port]
         );
         $this->assertNull($transport->getStream());
@@ -115,7 +115,7 @@ class TCPTest extends TestCase
      */
     public function testDisconnect()
     {
-        $transport = new TCP(
+        $transport = new TSssh(
             ['host' => $this->host, 'port' => $this->port]
         );
         $transport->disconnect();
@@ -127,7 +127,7 @@ class TCPTest extends TestCase
      */
     public function testDisconnectNoConnection()
     {
-        $transport = new TCP(
+        $transport = new TSssh(
             ['host' => $this->host, 'port' => $this->port]
         );
         $this->assertNull($transport->getStream());

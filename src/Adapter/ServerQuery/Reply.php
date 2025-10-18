@@ -1,26 +1,5 @@
 <?php
 
-/**
- * @file
- * TeamSpeak 3 PHP Framework
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- * @author    Sven 'ScP' Paulsen
- * @copyright Copyright (c) Planet TeamSpeak. All rights reserved.
- */
-
 namespace PlanetTeamSpeak\TeamSpeak3Framework\Adapter\ServerQuery;
 
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
@@ -67,7 +46,7 @@ class Reply
     protected array $err = [];
 
     /**
-     * Sotres an array of events that occured before or during this reply.
+     * Sotres an array of events that occurred before or during this reply.
      *
      * @var array
      */
@@ -79,6 +58,8 @@ class Reply
      * @var bool
      */
     protected bool $exp = true;
+
+    protected array $error = [];
 
     /**
      * Creates a new PlanetTeamSpeak\TeamSpeak3Framework\Adapter\ServerQuery\Reply object.
@@ -97,12 +78,24 @@ class Reply
         $this->con = $con;
         $this->exp = $exp;
 
-        $this->fetchError(array_pop($rpl));
+        $err = array_pop($rpl);
+
+        // Validate error object
+        if ($err instanceof StringHelper) {
+            $this->fetchError($err);
+        } else {
+            // Fallback: no error returned → initialize as empty
+            $this->error = [
+                'id'  => 0,
+                'msg' => 'ok',
+            ];
+        }
+
         $this->fetchReply($rpl);
     }
 
     /**
-     * Returns the reply as an PlanetTeamSpeak\TeamSpeak3Framework\Helper\StringHelper object.
+     * Returns the reply as a PlanetTeamSpeak\TeamSpeak3Framework\Helper\StringHelper object.
      *
      * @return StringHelper|null
      */
@@ -126,36 +119,21 @@ class Reply
             return [];
         }
 
-        $list = $this->toString()->split(TeamSpeak3::SEPARATOR_LIST);
+        $linesRaw = explode(TeamSpeak3::SEPARATOR_LIST, $this->toString());
 
-        if (func_num_args() > 0) {
-            for ($i = 0; $i < count($list); $i++) {
-                $list[$i]->unescape();
-            }
-        }
-
-        return $list;
+        return array_map(fn ($line) => new NodeValue($line), $linesRaw);
     }
 
     /**
      * Returns the reply as a standard PHP array where each element represents one item in table format.
-     *
-     * @return array
      */
     public function toTable(): array
     {
         $table = [];
 
-        foreach ($this->toLines() as $cells) {
-            $pairs = $cells->split(TeamSpeak3::SEPARATOR_CELL);
-
-            if (func_get_args() > 0) {
-                for ($i = 0; $i < count($pairs); $i++) {
-                    $pairs[$i]->unescape();
-                }
-            }
-
-            $table[] = $pairs;
+        foreach ($this->toLines() as $line) {
+            $cells = $line->split(TeamSpeak3::SEPARATOR_CELL);
+            $table[] = $cells;
         }
 
         return $table;
@@ -169,11 +147,10 @@ class Reply
     public function toArray(): array
     {
         $array = [];
-        $table = $this->toTable();
 
-        for ($i = 0; $i < count($table); $i++) {
-            foreach ($table[$i] as $pair) {
-                if (! count($pair)) {
+        foreach ($this->toTable() as $i => $row) {
+            foreach ($row as $pair) {
+                if (! $pair->toString()) {
                     continue;
                 }
 
@@ -182,17 +159,10 @@ class Reply
                 } else {
                     list($ident, $value) = $pair->split(TeamSpeak3::SEPARATOR_PAIR, 2);
 
-                    //get count of arguments there passed to this function / 0 is similar to !func_num_args() but this variant results in bool(false)
-                    //let us make the code more readable to understand what happened. Con is, there is a bit longer
-                    $arrayArgs = func_get_args();
-                    if ($value->isInt() === true) {
+                    if (is_numeric($value->toString())) {
                         $array[$i][$ident->toString()] = $value->toInt();
                     } else {
-                        if ($arrayArgs >= 1) {
-                            $array[$i][$ident->toString()] = $value->unescape();
-                        } else {
-                            $array[$i][$ident->toString()] = $value;
-                        }
+                        $array[$i][$ident->toString()] = $value->unescape();
                     }
                 }
             }
@@ -203,26 +173,23 @@ class Reply
 
     /**
      * Returns a multidimensional assoc array containing the reply split in multiple rows and columns.
-     * The identifier specified by key will be used while indexing the array.
-     *
-     * @param  $ident
-     * @return array
-     * @throws ServerQueryException
+     * The identifier specified by a key will be used while indexing the array.
      */
     public function toAssocArray($ident): array
     {
-        $nodes = (func_num_args() > 1) ? $this->toArray(1) : $this->toArray();
-        $array = [];
+        $nodes = $this->toArray();
+        $assoc = [];
 
         foreach ($nodes as $node) {
-            if (isset($node[$ident])) {
-                $array[(is_object($node[$ident])) ? $node[$ident]->toString() : $node[$ident]] = $node;
-            } else {
-                throw new ServerQueryException("invalid parameter. ident '$ident' does not exist in node '".json_encode($node)."'", 0x602);
+            if (! isset($node[$ident])) {
+                continue;
             }
+
+            $key = $node[$ident];
+            $assoc[$key] = $node;
         }
 
-        return $array;
+        return $assoc;
     }
 
     /**
@@ -232,13 +199,9 @@ class Reply
      */
     public function toList(): array
     {
-        //changed $array = func_num_args() ? $this->toArray(1) : $this->toArray();
-        //TODO Documentation: not clear what func_num_args() will do it here.
-        //TODO func_num_args() results in 0 or greater than 0 but not false so this function result every time in $this->toArray()
-        //Reference Host.php line 513 and 971
         $array = $this->toArray();
 
-        if (count($array) == 1) {
+        if (count($array) === 1) {
             return array_shift($array);
         }
 
@@ -272,7 +235,7 @@ class Reply
     }
 
     /**
-     * Returns an array of events that occured before or during this reply.
+     * Returns an array of events that occurred before or during this reply.
      *
      * @return array
      */
@@ -281,16 +244,17 @@ class Reply
         return $this->evt;
     }
 
-    /**
-     * Returns the value for a specified error property.
-     *
-     * @param string $ident
-     * @param mixed|null $default
-     * @return mixed
-     */
     public function getErrorProperty(string $ident, mixed $default = null): mixed
     {
-        return (array_key_exists($ident, $this->err)) ? $this->err[$ident] : $default;
+        if (array_key_exists($ident, $this->err)) {
+            return $this->err[$ident];
+        }
+
+        if (array_key_exists($ident, $this->error)) {
+            return $this->error[$ident];
+        }
+
+        return $default ?? new StringHelper('');
     }
 
     /**
@@ -317,6 +281,10 @@ class Reply
 
         if ($this->getErrorProperty('id', 0x00) != 0x00 && $this->exp) {
             if ($permid = $this->getErrorProperty('failed_permid')) {
+                if ($permid instanceof StringHelper) {
+                    $permid = $permid->toInt();
+                }
+
                 if ($permsid = key($this->con->request('permget permid='.$permid, false)->toAssocArray('permsid'))) {
                     $suffix = ' (failed on '.$permsid.')';
                 } else {

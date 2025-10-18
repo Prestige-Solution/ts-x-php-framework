@@ -37,8 +37,6 @@ class SignalTest extends TestCase
 
     private string $ts3_server_uri;
 
-    private string $ts3_server_uri_ssh;
-
     private string $ts3_unit_test_signals;
 
     private int $duration;
@@ -63,19 +61,9 @@ class SignalTest extends TestCase
 
         $this->ts3_server_uri = 'serverquery://'.$this->user.':'.$this->password.'@'.$this->host.':'.$this->queryPort.
             '/?server_port=9987'.
-            '&ssh=0'.
             '&no_query_clients=0'.
             '&blocking=0'.
-            '&timeout=30'.
-            '&nickname=UnitTestBot';
-
-        $this->ts3_server_uri_ssh = 'serverquery://'.$this->user.':'.$this->password.'@'.$this->host.':10022'.
-            '/?server_port=9987'.
-            '&ssh=1'.
-            '&no_query_clients=0'.
-            '&blocking=0'.
-            '&timeout=30'.
-            '&nickname=UnitTestBot';
+            '&timeout=30';
 
         //set duration time
         $this->duration = strtotime('+1 minutes', time());
@@ -87,47 +75,7 @@ class SignalTest extends TestCase
      * @throws HelperException
      * @throws \Exception
      */
-    public function test_ssh_signal_on_wait_timeout()
-    {
-        if ($this->active == 'false' || $this->ts3_unit_test_signals == 'false') {
-            $this->markTestSkipped('DevLiveServer ist not active');
-        }
-
-        try {
-            // Connect to the specified server, authenticate and spawn an object for the virtual server
-            $this->ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri_ssh);
-        } catch(TeamSpeak3Exception $e) {
-            //catch exception
-            echo $e->getMessage();
-        }
-
-        // Register a callback for serverqueryWaitTimeout events
-        Signal::getInstance()->subscribe('serverqueryWaitTimeout', [$this, 'onWaitTimeout']);
-
-        // Register for server events
-        $this->ts3_VirtualServer->serverGetSelected()->notifyRegister('server');
-
-        try {
-            while (true) {
-                $this->ts3_VirtualServer->getParent()->getAdapter()->wait();
-            }
-        } catch(TeamSpeak3Exception $e) {
-            //catch disconnect exception when getParent()->getTransport()->disconnect() -> Sounds crazy TODO what happen here?
-            $this->assertEquals("node method 'getTransport()' does not exist", $e->getMessage());
-            $this->assertEquals(0, $e->getCode());
-        }
-
-        //the real Query Logout after exit the while() Loop
-        $this->ts3_VirtualServer->getParent()->getAdapter()->getTransport()->disconnect();
-    }
-
-    /**
-     * @throws AdapterException
-     * @throws ServerQueryException
-     * @throws HelperException
-     * @throws \Exception
-     */
-    public function test_raw_signal_on_wait_timeout()
+    public function test_ssh_signal_on_wait()
     {
         if ($this->active == 'false' || $this->ts3_unit_test_signals == 'false') {
             $this->markTestSkipped('DevLiveServer ist not active');
@@ -146,19 +94,19 @@ class SignalTest extends TestCase
 
         // Register for server events
         $this->ts3_VirtualServer->serverGetSelected()->notifyRegister('server');
+        $this->ts3_VirtualServer->serverGetSelected()->notifyRegister('channel');
 
         try {
-            while (true) {
+            while (time() <= $this->duration) {
                 $this->ts3_VirtualServer->getParent()->getAdapter()->wait();
             }
-        } catch(TeamSpeak3Exception $e) {
-            //catch disconnect exception when getParent()->getTransport()->disconnect() -> Sounds crazy TODO what happen here?
-            $this->assertEquals("node method 'getTransport()' does not exist", $e->getMessage());
-            $this->assertEquals(0, $e->getCode());
+        } catch (\phpseclib3\Exception\ConnectionClosedException $e) {
+            $this->assertEquals('Connection closed by server', $e->getMessage());
         }
 
-        //the real Query Logout after exit the while() Loop
-        $this->ts3_VirtualServer->getParent()->getAdapter()->getTransport()->disconnect();
+        $this->assertTrue($this->ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
+        $this->ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $this->assertFalse($this->ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
     }
 
     /**
@@ -166,8 +114,8 @@ class SignalTest extends TestCase
      * @param  ServerQuery  $serverquery
      * @throws AdapterException
      * @throws ServerQueryException
-     * @throws NodeException
      * @throws TransportException
+     * @throws NodeException
      */
     public function onWaitTimeout(int $idle_seconds, ServerQuery $serverquery): void
     {
@@ -177,8 +125,12 @@ class SignalTest extends TestCase
             $serverquery->request('clientupdate');
         }
 
+        // Get virtualserver info
+        $this->ts3_VirtualServer->getInfo();
+        $this->ts3_VirtualServer->connectionInfo();
+
         // Get data every minute
-        if ($idle_seconds % 60 == 0) {
+        if ($idle_seconds % 10 == 0) {
             // Resetting lists
             $this->ts3_VirtualServer->clientListReset();
             $this->ts3_VirtualServer->serverGroupListReset();
@@ -191,15 +143,6 @@ class SignalTest extends TestCase
             foreach ($servergrouplist as $servergroup) {
                 $servergroup_clientlist[$servergroup->sgid] = count($this->ts3_VirtualServer->serverGroupClientList($servergroup->sgid));
             }
-
-            // Get virtualserver info
-            $this->ts3_VirtualServer->getInfo(true, true);
-            $this->ts3_VirtualServer->connectionInfo();
-        }
-
-        if (time() >= $this->duration) {
-            //set transport to null
-            $this->ts3_VirtualServer->getParent()->getTransport()->disconnect();
         }
     }
 }

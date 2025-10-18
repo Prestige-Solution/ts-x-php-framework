@@ -258,13 +258,86 @@ class StringTest extends TestCase
 
     public function testToUft8()
     {
-        $notUtf8 = mb_convert_encoding('Äpfel', 'ISO-8859-1', 'UTF-8');
-        $stringNotUtf8 = new StringHelper($notUtf8);
-        $this->assertEquals(mb_convert_encoding($notUtf8, 'UTF-8', mb_list_encodings()), $stringNotUtf8->toUtf8()->toString());
+        $notUtf8 = new StringHelper('Äpfel');
+        $valueResult = $notUtf8->toUtf8()->toString();
+        $this->assertEquals('Äpfel', $valueResult);
 
-        $notUtf8 = mb_convert_encoding('¶', 'ISO-8859-1', 'UTF-8');
-        $stringNotUtf8 = new StringHelper($notUtf8);
-        $this->assertEquals(mb_convert_encoding($notUtf8, 'UTF-8', mb_list_encodings()), $stringNotUtf8->toUtf8()->toString());
+        $notUtf8 = new StringHelper('¶');
+        $valueResult = $notUtf8->toUtf8()->toString();
+        $this->assertEquals('¶', $valueResult);
+
+        //test a lot of converting
+        $nonUtfChars = [
+            // German / Western Europe
+            'Ä', 'Ö', 'Ü', 'ä', 'ö', 'ü', 'ß',
+            // French
+            'é', 'è', 'ê', 'ë', 'à', 'â', 'ç', 'ô', 'û', 'ù',
+            // Scandinavian
+            'å', 'Å', 'ø', 'Ø', 'æ', 'Æ',
+            // Eastern European
+            'č', 'ć', 'š', 'ž', 'ř', 'ł', 'ń', 'ą', 'ę', 'đ', 'ț', 'ș',
+            // Southern European
+            'ñ', 'á', 'í', 'ó', 'ú', 'Á', 'Í', 'Ó', 'Ú',
+            // Nordic / Baltic
+            'ð', 'þ', 'ĸ',
+            // Special characters / typical encoding pitfalls
+            '€', '£', '¥', '©', '®', '™', '°', '§', 'µ', '¶', '½', '¼', '¾',
+            // Advanced punctuation marks
+            '–', '—', '‚', '‘', '’', '„', '“', '”', '…', '‹', '›', '«', '»',
+            // Other more exotic examples
+            '¿', '¡', 'Ø', 'Å', 'œ', 'Œ', 'ß', 'ø', 'Ð',
+        ];
+
+        foreach ($nonUtfChars as $enc) {
+            $notUtf8 = new StringHelper($enc);
+            $valueResult = $notUtf8->toUtf8()->toString();
+            $this->assertTrue(mb_check_encoding($valueResult, 'UTF-8'));
+        }
+
+        $nonUtfWords = [
+            // German
+            'Größe', 'Schönbrunn', 'Käse', 'Fußgänger', 'Ärger', 'Übergrößen',
+            'Töpferei', 'Fähre', 'mäßig', 'Flöße',
+            // French
+            'École', 'français', 'garçon', 'crème brûlée', 'Noël', 'façade',
+            // Spanish / Portuguese
+            'señor', 'año', 'corazón', 'mañana', 'São Paulo', 'português',
+            // Scandinavian / Eastern European
+            'smörgåsbord', 'björk', 'Łódź', 'Český', 'Žižka', 'Dvořák', 'Kraków',
+
+            // Common punctuation problems (–, —, …, “, ”)
+            'Test – Bindestrich',
+            'Gedankenstrich — Beispiel',
+            '„Anführungszeichen“',
+            '»Französisch«',
+            'Café… lecker!',
+
+            // Special characters / symbols
+            'Preis € 12,99',
+            'Copyright © 2025',
+            'Marke™',
+            '50° Nord',
+            'Maßstab 1:1000',
+
+            // Frequently incorrect combinations (e.g., from old ISO/CP encodings)
+            'Schröder & Söhne',
+            'Müller’s Café',
+            'Köln – Düsseldorf',
+            'Büro für Öltechnik',
+            'Straße des 17. Juni',
+        ];
+
+        foreach ($nonUtfWords as $word) {
+            // deliberately generate broken Latin-1 bytes
+            $latin1 = iconv('UTF-8', 'ISO-8859-1//IGNORE', $word);
+            $nonUtfSamples[] = $latin1;
+        }
+
+        foreach ($nonUtfSamples as $enc) {
+            $notUtf8 = new StringHelper($enc);
+            $valueResult = $notUtf8->toUtf8()->toString();
+            $this->assertTrue(mb_check_encoding($valueResult, 'UTF-8'));
+        }
     }
 
     public function testPreventConvertIntToUtf8()

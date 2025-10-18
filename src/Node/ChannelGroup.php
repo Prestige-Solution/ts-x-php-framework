@@ -1,26 +1,5 @@
 <?php
 
-/**
- * @file
- * TeamSpeak 3 PHP Framework
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- * @author    Sven 'ScP' Paulsen
- * @copyright Copyright (c) Planet TeamSpeak. All rights reserved.
- */
-
 namespace PlanetTeamSpeak\TeamSpeak3Framework\Node;
 
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
@@ -32,7 +11,7 @@ use PlanetTeamSpeak\TeamSpeak3Framework\TeamSpeak3;
 /**
  * Class ChannelGroup
  * @class ChannelGroup
- * @brief Class describing a TeamSpeak 3 channel group and all it's parameters.
+ * @brief Class describing a TeamSpeak 3-channel group and all it's parameters.
  */
 class ChannelGroup extends Group
 {
@@ -132,17 +111,6 @@ class ChannelGroup extends Group
     }
 
     /**
-     * Alias for permAssign().
-     *
-     * @deprecated
-     * @throws
-     */
-    public function permAssignByName($permname, $permvalue): void
-    {
-        $this->permAssign($permname, $permvalue);
-    }
-
-    /**
      * Removes a set of specified permissions from the channel group. Multiple
      * permissions can be removed at once.
      *
@@ -155,17 +123,6 @@ class ChannelGroup extends Group
     public function permRemove(int $permid): void
     {
         $this->getParent()->channelGroupPermRemove($this->getId(), $permid);
-    }
-
-    /**
-     * Alias for permAssign().
-     *
-     * @deprecated
-     * @throws
-     */
-    public function permRemoveByName($permname): void
-    {
-        $this->permRemove($permname);
     }
 
     /**
@@ -182,17 +139,6 @@ class ChannelGroup extends Group
     public function clientList(int $cid = null, int $cldbid = null, bool $resolve = false): array
     {
         return $this->getParent()->channelGroupClientList($this->getId(), $cid, $cldbid, $resolve);
-    }
-
-    /**
-     * Alias for privilegeKeyCreate().
-     *
-     * @deprecated
-     * @throws
-     */
-    public function tokenCreate($cid, $description = null, $customset = null): StringHelper
-    {
-        return $this->privilegeKeyCreate($cid, $description, $customset);
     }
 
     /**

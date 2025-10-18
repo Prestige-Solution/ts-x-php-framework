@@ -11,7 +11,7 @@ Replace all `DEV_LIVE_SERVER_*` Variables with your Teamspeak Configuration
 |----------------------------------------|----------------------------------------------------------------------------------------------------------------------|
 | DEV_LIVE_SERVER_AVAILABLE=             | Activate Channel Tests (Default =  false). At false all Channel Tests will be skipped                                |
 | DEV_LIVE_SERVER_HOST=                  | Your Host Address (Recommended: IPv4)                                                                                |
-| DEV_LIVE_SERVER_QUERY_PORT=            | Raw = 10011 / ssh = 10022 (Recommended: Raw Mode)                                                                    |
+| DEV_LIVE_SERVER_QUERY_PORT=            | ssh = 10022                                                                                                          |
 | DEV_LIVE_SERVER_QUERY_USER=            | Your Query Username                                                                                                  |
 | DEV_LIVE_SERVER_QUERY_USER_PASSWORD=   | Password for the Query User                                                                                          |
 | DEV_LIVE_SERVER_UNIT_TEST_CHANNEL=     | Setup a Channelname for Channel Tests. The Live Server Tests will create channels under this configured Channelname* |
@@ -23,22 +23,26 @@ Replace all `DEV_LIVE_SERVER_*` Variables with your Teamspeak Configuration
 *Set Permission Change (Modify) Power and Delete Power to 75. Otherwise, the tests with channel permissions will be fail.
 
 ### Important Notes
-If you run this Live Server Tests the Clients see massive Server Log entrys with Anti-Flood errors.<br>
-The test are very quickly with a lot of connections from the bot (one connection and disconnection for each test).<br>
-The Serveradministrator has no Anti-Flood Permissions, so maybe you as Administrator cant see this entrys.
+If you run these Live Server Tests, the Clients see massive Server Log entrys with Anti-Flood errors. <br>
+The test is rapid with a lot of connections from the bot (one connection and disconnection for each test). <br>
+The Serveradministrator has no Anti-Flood Permissions, so maybe you as an Administrator can't see these entrys.
 
 ---
 
 ## Setup your Bot Identity
-### Setup Query / Bot Servergroup
-Create a new server group with the name psbot, bot or a name of your choice.<br>
-You find a set of rights (150) at [doc/query_user_servergroup_export](query_user_servergroup_export.csv) that the bot needs for secure operation.<br>
-The easiest way to set these settings is with [YaTQA](https://yat.qa/) as serveradmin.
+**NOTE:** YaTQA is not ready to use with Teamspeak 6 Servers.
 
-#### Import CSV with YaTQA
-Navigate with YaTQA to Servergroups **(1)**. Choose your created Servergroup for the query bot **(2)**. Right Click on Global and Click at Import Permissions **(3)**.
-Select and Import the CSV.<br>
-![import_permissions](img/query_import_permissions.png)
+### Scenario 1: Set up an individual query Servergroup
+If you want to test or use a specific Bot Identity, you have to create a new Servergroup for the bot.
+You can define all permissions there you want but be sure the permissions have enough power. Otherwise, you get insufficient_permissions errors.
+
+### Scenario 2: Use the serveradmin query (RECOMMENDED)
+If you want to test all functions without permissions issues, you should use the serveradmin query.
+When you want to migrate from Teamspeak Server 3 to 6, you need the serveradmin query, otherwise you run in permission issues.
+If you want to test both Servers at the same time, you can set the same serveradmin password for both Servers. 
+
+How can you do this?
+Check out the Documentation ![make-ts3-ssh-compatible](../doc/docker/make-ts3-ssh-compatible.md)
 
 ---
 

@@ -1,26 +1,5 @@
 <?php
 
-/**
- * @file
- * TeamSpeak 3 PHP Framework
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- * @author    Sven 'ScP' Paulsen
- * @copyright Copyright (c) Planet TeamSpeak. All rights reserved.
- */
-
 namespace PlanetTeamSpeak\TeamSpeak3Framework\Node;
 
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
@@ -133,17 +112,6 @@ class ServerGroup extends Group
     }
 
     /**
-     * Alias for permAssign().
-     *
-     * @deprecated
-     * @throws
-     */
-    public function permAssignByName($permname, $permvalue, $permnegated = false, $permskip = false): void
-    {
-        $this->permAssign($permname, $permvalue, $permnegated, $permskip);
-    }
-
-    /**
      * Removes a set of specified permissions from the server group. Multiple
      * permissions can be removed at once.
      *
@@ -156,17 +124,6 @@ class ServerGroup extends Group
     public function permRemove(int $permid): void
     {
         $this->getParent()->serverGroupPermRemove($this->getId(), $permid);
-    }
-
-    /**
-     * Alias for permRemove().
-     *
-     * @deprecated
-     * @throws
-     */
-    public function permRemoveByName($permname): void
-    {
-        $this->permRemove($permname);
     }
 
     /**
@@ -209,17 +166,6 @@ class ServerGroup extends Group
     public function clientDel(int $cldbid): void
     {
         $this->getParent()->serverGroupClientDel($this->getId(), $cldbid);
-    }
-
-    /**
-     * Alias for privilegeKeyCreate().
-     *
-     * @deprecated
-     * @throws
-     */
-    public function tokenCreate($description = null, $customset = null): string
-    {
-        return $this->privilegeKeyCreate($description, $customset);
     }
 
     /**
