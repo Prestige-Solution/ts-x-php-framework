@@ -136,8 +136,11 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
     public function iconGetName(string $key): StringHelper
     {
         $iconid = $this[$key];
-        if (! is_int($iconid)) {
+
+        if ($iconid instanceof StringHelper) {
             $iconid = $iconid->toInt();
+        } elseif (!is_int($iconid)) {
+            $iconid = (int) $iconid;
         }
 
         $iconid = $iconid < 0 ? pow(2, 32) - abs($iconid) : $iconid;
@@ -318,7 +321,7 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
                 } elseif (str_ends_with($key, '_version')) {
                     $info[$key] = Convert::version($val);
                 } elseif (str_ends_with($key, '_icon_id')) {
-                    $info[$key] = $this->iconGetName($key)->filterDigits();
+                    $info[$key] = $this->iconGetName($val)->filterDigits();
                 }
             }
         }
