@@ -70,13 +70,36 @@ class FoundIssuesOnPublicProjectsTest extends TestCase
 
         try {
             $this->ts3_VirtualServer->virtualserver_name;
-        }catch (TeamSpeak3Exception $e) {
+        } catch (TeamSpeak3Exception $e) {
             $this->assertEquals("node 'PlanetTeamSpeak\TeamSpeak3Framework\Node\Server' has no property named 'virtualserver_name'", $e->getMessage());
         }
 
-        $serverName =  $this->ts3_VirtualServer->getInfo()['virtualserver_name'];
+        $serverName = $this->ts3_VirtualServer->getInfo()['virtualserver_name'];
         $this->assertNotEmpty($serverName);
 
+        $this->ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $this->assertFalse($this->ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function test_can_getInfo_with_convert_option(): void
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        try {
+            $this->ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        } catch(TeamSpeak3Exception $e) {
+            echo $e->getMessage();
+        }
+
+        $serverinfo = $this->ts3_VirtualServer->getInfo(true, true);
+        $this->assertArrayHasKey('virtualserver_icon_id', $serverinfo);
+        $this->assertEquals(1, $serverinfo['virtualserver_icon_id']);
+        $this->assertIsInt($serverinfo['virtualserver_icon_id']);
 
         $this->ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
         $this->assertFalse($this->ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
