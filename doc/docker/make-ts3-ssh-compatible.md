@@ -1,4 +1,4 @@
-# Make Teamspeak3 compatible
+# Teamspeak 3 and Teamspeak 6 SSH Compatible
 ## Teamspeak 3 Server
 ### docker-compose.yml
 ```yaml
@@ -17,21 +17,22 @@ services:
       TS3SERVER_LICENSE: accept
       TS3SERVER_QUERY_PROTOCOLS: "raw,ssh"
       TS3SERVER_QUERY_SSH_PORT: "10022"
+      TS3SERVER_SERVERADMIN_PASSWORD: abc123
       #if you would use a seperate database with postgres
       #TS3SERVER_DB_PLUGIN: ts3db_postgresql
       #TS3SERVER_DB_HOST: '127.0.0.1'
       #TS3SERVER_DB_USER: 'query user'
-      #TS3SERVER_DB_PASSWORD: 'query user password'
+      #TS3SERVER_DB_PASSWORD: 'query user password' #You can set this option at anytime. During start the password will be changed during server start.
       #TS3SERVER_DB_NAME: 'database name'
       #TS3SERVER_DB_PORT: 5432   # optional, Standard: 5432
     restart: unless-stopped
 ```
 
 ### Setup a ssh_rsa_host_key
-go to ``ts3-docker/data`` and run ``ssh-keygen -t rsa -b 4096 -m PEM -f ssh_host_rsa_key -N ""``<br>
-This will create a compatible ssh_rsa_host_key for the teamspeak 3 server.<br>
+go to ``ts3-docker/data`` and run ``ssh-keygen -t rsa -b 4096 -m PEM -f ssh_host_rsa_key -N ""`` <br>
+This will create a compatible ssh_rsa_host_key for the teamspeak 3 server. <br>
 
-Start the server with ``docker-compose up -d``. The logs should not ``creating QUERY_SSH_RSA_HOST_KEY file…``<br>
+Start the server with ``docker-compose up -d``. The logs should not see ``creating QUERY_SSH_RSA_HOST_KEY file…`` <br>
 Be sure the correct permissions are set for the ssh_rsa_host_key file.
 ```shell
 docker-compose up -d ts3

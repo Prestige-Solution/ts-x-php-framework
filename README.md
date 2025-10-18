@@ -2,19 +2,19 @@
 
 > **_IMPORTANT CHANGE_**<br>
 > With Version 3.0.0 we refactored to integrate phpseclib3. This changes affects how TCP connections are established.
-> The "raw" mode was removed, and the support for only ssh mode was established to handel TS3 and TS6 Server connections.
+> The "raw" mode was removed, and the support for only ssh mode was established to handel Teamspeak 3 and Teamspeak 6 Server connections.
 
 
-The X stands for a non-specific Teamspeak Version. So we would handle all current and future Versions from a Teamspeak Server.
+The X stands for a non-specific Teamspeak Server Version. So we would handle all current and future Versions from a Teamspeak Server.
 
-Unfortunately, the original repository is no longer up to date and has not been maintained for 3 years. This is the reason why this project is being created.<br>
-The main goal is to bring the framework up to date and to equip it with extended unit tests which can also be carried out with tests for a live server.<br>
+Unfortunately, the original repository is no longer up to date and has not been maintained for 3 years. This is the reason why this project is being created. <br>
+The main goal is to bring the framework up to date and to equip it with extended unit tests which can also be carried out with tests for a live server. <br>
 The ideal is that this version can be integrated into your own project and the main functionalities can be tested with your Teamspeak server.
 
 ---
 
 # Installation
-With the Refactoring at Version 3.0.0, the Framework has a few updates. But most functionalities and namespaces are the same. 
+With the Refactoring at Version 3.0.0, the Framework has a lot of changes. But most functionalities and namespaces are the same. 
 
 **PHP Required Extensions**<br>
 ``apt install php8.3 php8.3-{common,mbstring,ssh2} -y``
@@ -23,22 +23,34 @@ With the Refactoring at Version 3.0.0, the Framework has a few updates. But most
 Current Version:<br>
 ``composer require prestige-solution/ts-x-php-framework``<br><br>
 or with a specific release<br> 
-``composer require prestige-solution/ts-x-php-framework:2.0.0-beta-2``<br><br>
+``composer require prestige-solution/ts-x-php-framework:latest``<br>
+``composer require prestige-solution/ts-x-php-framework:3.0.0-beta``<br><br>
 or with a specific branch<br>
 ``composer require prestige-solution/ts-x-php-framework:dev-ts-x-refactoring-dev``
 
 ---
 
 ## If your teamspeak 3 server is not running with version 3.x, check the rsa host key situation
-Check out the documentation [make-ts3-ssh-compatible.md](doc/ts3-docker/make-ts3-ssh-compatible.md)<br>
-There you can find instructions to setup a compatible rsa host key. I should work with docker and non-docker version.
+Check out the documentation [make-ts3-ssh-compatible.md](doc/docker/make-ts3-ssh-compatible.md)<br>
+There you can find instructions to set up a compatible rsa host key. It should work with docker and non-docker versions.
 
 # New test routines for future developments and improvements with live server testing
 **<u>Prepare your Environment</u>**<br>
-Before you start, make sure that you have set the environment variables. You find more information's at [testing-live-server](doc/testing-live-server.md)
+Before you start UnitTests, make sure that you have set the environment variables. You find more information's at [testing-live-server](doc/testing-live-server.md)
 
-**<u>Servergroup Permissions for Query User</u>**<br>
-Use the [Permissions](doc/query_user_servergroup_export.csv) which the query user is used. All tests will be using these Permissions to validate the functionalities with central defined query user permissions.
+**<u>Permissions for Query User</u>**<br>
+The best way to test all functionalities is to use the serveradmin query user. <br>
+The serveradmin is != Server Admin there you can find in your Teamspeak Client UI. <br>
+
+| serveradmin (Query)        | Server Admin (GUI)        |
+|----------------------------|---------------------------|
+| Max. permission value: 100 | Max. permission value: 75 |
+
+You can find more information in the Documentation [testing-live-server](doc/testing-live-server.md)
+
+**<u>Additional Node</u>** <br>
+- We know the serveradmin (query user) is a high-security risk if you use it over the internet. We would try to find a better solution with SSH public key authentication. <br>
+- Currently, you can improve fail2ban, query_ip_whitelist and query_ip_blacklist.
 
 **<u>Run Tests</u>**<br>
 To run all tests use `composer test`. <br>
