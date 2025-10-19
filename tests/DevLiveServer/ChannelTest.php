@@ -576,6 +576,65 @@ class ChannelTest extends TestCase
     }
 
     /**
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws AdapterException
+     * @throws HelperException
+     */
+    public function test_can_handle_file_directory()
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        $this->set_play_test_channel($ts3_VirtualServer);
+
+        $ts3_VirtualServer->channelDirCreate($this->test_cid, '', '/test_dir');
+        $fileList = $ts3_VirtualServer->channelFileList($this->test_cid);
+
+        foreach ($fileList as $file) {
+            $this->assertEquals('test_dir', $file['name']);
+            $this->assertIsString($file['name']);
+        }
+
+        $ts3_VirtualServer->channelFileDelete($this->test_cid, '', '/test_dir');
+        $fileList = $ts3_VirtualServer->channelFileList($this->test_cid);
+        $this->assertEmpty($fileList);
+
+        $this->unset_play_test_channel($ts3_VirtualServer);
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+    }
+
+    /**
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws AdapterException
+     * @throws HelperException
+     */
+    public function test_can_get_level()
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        $this->set_play_test_channel($ts3_VirtualServer);
+
+        //get level means hierarchy level
+        $getLevel = $ts3_VirtualServer->channelGetLevel($this->test_cid);
+        $this->assertEquals(1, $getLevel);
+
+        $channelCidLevelOne = $ts3_VirtualServer->channelgetByName('Play-Test')->getId();
+        $cidChannelLevelTwo = $ts3_VirtualServer->channelcreate(['channel_name' => 'Standard Channel Level 2', 'channel_flag_permanent' => 1, 'cpid' => $channelCidLevelOne]);
+        $getLevelTwo = $ts3_VirtualServer->channelGetLevel($cidChannelLevelTwo);
+        $this->assertEquals(2, $getLevelTwo);
+
+        $this->unset_play_test_channel($ts3_VirtualServer);
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+    }
+
+    /**
      * @throws AdapterException
      * @throws TransportException
      * @throws ServerQueryException
