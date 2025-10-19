@@ -476,14 +476,31 @@ class Server extends Node
      */
     public function channelFileList(int $cid, string $cpw = '', string $path = '/', bool $recursive = false): array
     {
-        $files = $this->execute('ftgetfilelist', ['cid' => $cid, 'cpw' => $cpw, 'path' => $path])->toArray();
+        try {
+            $files = $this->execute('ftgetfilelist', ['cid' => $cid, 'cpw' => $cpw, 'path' => $path])->toArray();
+        } catch (ServerQueryException $e) {
+            // only catch an empty result
+            if (str_contains($e->getMessage(), 'database empty result set')) {
+                return [];
+            }
+            throw $e;
+        }
+
         $count = count($files);
+        $flattened = [];
 
         for ($i = 0; $i < $count; $i++) {
+            // proof exists
+            if (empty($files[$i]['name'])) {
+                continue; // skip entry without a valid file extension
+            }
+
             $files[$i]['sid'] = $this->getId();
-            $files[$i]['cid'] = $files[0]['cid'];
-            $files[$i]['path'] = $files[0]['path'];
-            $files[$i]['src'] = new StringHelper($cid ? $files[$i]['path'] : '/');
+            $files[$i]['cid'] = $files[$i]['cid'] ?? $cid;
+            $files[$i]['path'] = $files[$i]['path'] ?? $path;
+
+            $src = $files[$i]['path'] ?? '/';
+            $files[$i]['src'] = StringHelper::factory($src);
 
             if (! $files[$i]['src']->endsWith('/')) {
                 $files[$i]['src']->append('/');
@@ -491,14 +508,17 @@ class Server extends Node
 
             $files[$i]['src']->append($files[$i]['name']);
 
-            if ($recursive && $files[$i]['type'] == TeamSpeak3::FILE_TYPE_DIRECTORY) {
-                $files = array_merge($files, $this->channelFileList($cid, $cpw, $path.$files[$i]['name'], $recursive));
+            $flattened[] = $files[$i];
+
+            if ($recursive && ($files[$i]['type'] ?? '') == TeamSpeak3::FILE_TYPE_DIRECTORY) {
+                $nested = $this->channelFileList($cid, $cpw, $files[$i]['path'].$files[$i]['name'], $recursive);
+                $flattened = array_merge($flattened, $nested);
             }
         }
 
-        uasort($files, [__CLASS__, 'sortFileList']);
+        uasort($flattened, [__CLASS__, 'sortFileList']);
 
-        return $files;
+        return $flattened;
     }
 
     /**
