@@ -12,26 +12,28 @@ on:
 
 jobs:
   test:
-    name: Run tests and collect coverage
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
         with:
-          python-version: '3.11'
+          php-version: '8.2'
+          coverage: xdebug
 
       - name: Install dependencies
-        run: pip install pytest pytest-cov
+        run: composer install --no-progress --prefer-dist
 
-      - name: Run tests
-        run: pytest --cov --cov-branch --cov-report=xml
+      - name: Run PHPUnit tests with coverage
+        run: |
+          vendor/bin/phpunit --coverage-clover=coverage.xml
 
-      - name: Upload results to Codecov
+      - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage.xml
+          fail_ci_if_error: true
