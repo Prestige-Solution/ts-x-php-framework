@@ -27,6 +27,9 @@ jobs:
       - name: Install dependencies
         run: composer install --no-progress --prefer-dist
 
+      - name: Setup environment
+        run: cp .env.testing.example .env.testing
+
       - name: Run PHPUnit tests with coverage
         run: |
           vendor/bin/phpunit --coverage-clover=coverage.xml
