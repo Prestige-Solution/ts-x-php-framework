@@ -46,6 +46,9 @@
       "Composer\\Config::disableProcessTimeout",
       "\"vendor/bin/phpunit\" --no-coverage"
     ],
-    "coverage": "\"vendor/bin/phpunit\""
+    "coverage": [
+      "Composer\\Config::disableProcessTimeout",
+      "\"vendor/bin/phpunit\" --configuration phpunit.xml.dist"
+    ]
   }
 }

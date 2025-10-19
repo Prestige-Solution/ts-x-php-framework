@@ -1,6 +1,8 @@
 # TeamSpeak X PHP Framework
 [![PHP-CS-Fixer](https://github.com/Prestige-Solution/ts-x-php-framework/actions/workflows/phpcsfixer.yml/badge.svg?branch=main)](https://github.com/Prestige-Solution/ts-x-php-framework/actions/workflows/phpcsfixer.yml)
 [![PHPUnit](https://github.com/Prestige-Solution/ts-x-php-framework/actions/workflows/phpunit.yml/badge.svg?branch=main)](https://github.com/Prestige-Solution/ts-x-php-framework/actions/workflows/phpunit.yml)
+![Coverage](doc/coverage/coverage-badge.svg)
+> [!CAUTION]
 > **_IMPORTANT CHANGE_**<br>
 > With Version 3.0.0 we refactored to integrate phpseclib3. This changes affects how TCP connections are established.
 > The "raw" mode was removed, and the support for only ssh mode was established to handel Teamspeak 3 and Teamspeak 6 Server connections.
