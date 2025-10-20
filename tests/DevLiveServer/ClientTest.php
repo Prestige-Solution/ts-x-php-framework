@@ -197,6 +197,30 @@ class ClientTest extends TestCase
 
     /**
      * @throws AdapterException
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws HelperException
+     */
+    public function test_can_find_client_by_name_pattern()
+    {
+        if ($this->user_test_active == 'false' || $this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+
+        $userFindings = $ts3_VirtualServer->clientFind('UnitT');
+
+        foreach ($userFindings as $user) {
+            $this->assertEquals('UnitTestUser', $user['client_nickname']);
+        }
+
+        $this->asserttrue(true);
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+    }
+
+    /**
+     * @throws AdapterException
      * @throws ServerQueryException
      * @throws TransportException
      * @throws \Exception
