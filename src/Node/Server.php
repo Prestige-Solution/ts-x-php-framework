@@ -2806,7 +2806,25 @@ class Server extends Node
      */
     protected function fetchNodeInfo(): void
     {
-        $this->nodeInfo = array_merge($this->nodeInfo, $this->request('serverinfo')->toList());
+        $serverInfo = $this->request('serverinfo')->toList();
+        $this->nodeInfo = array_merge($this->nodeInfo, $serverInfo);
+
+        // Ensure virtualserver_status is set
+        if (!isset($this->nodeInfo['virtualserver_status'])) {
+            // Try to get the status from the parent's server list if available
+            try {
+                $serverList = $this->getParent()->serverList();
+                if (isset($serverList[$this->getId()])) {
+                    $serverData = $serverList[$this->getId()]->getInfo(false);
+                    if (isset($serverData['virtualserver_status'])) {
+                        $this->nodeInfo['virtualserver_status'] = $serverData['virtualserver_status'];
+                    }
+                }
+            } catch (Exception) {
+                // If we can't get the status, assume it offline
+                $this->nodeInfo['virtualserver_status'] = 'offline';
+            }
+        }
     }
 
     /**
