@@ -252,7 +252,7 @@ class ClientTest extends TestCase
             $this->markTestSkipped('DevLiveServer ist not active');
         }
 
-        $clientInfoDB= [];
+        $clientInfoDB = [];
 
         $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
         $clientListDb = $ts3_VirtualServer->clientListDb();
@@ -289,6 +289,27 @@ class ClientTest extends TestCase
             var_dump($user);
             $this->assertEquals($this->ts3_unit_test_userName, $user['client_nickname']);
         }
+
+        $this->asserttrue(true);
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+    }
+
+    /**
+     * @throws AdapterException
+     * @throws HelperException
+     * @throws ServerQueryException
+     */
+    public function test_can_get_clientCount()
+    {
+        if ($this->user_test_active == 'false' || $this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+
+        $clientCount = $ts3_VirtualServer->clientCount();
+        $this->assertIsInt($clientCount);
+        $this->assertGreaterThan(0, $clientCount);
 
         $this->asserttrue(true);
         $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
