@@ -818,7 +818,33 @@ class Server extends Node
             return 0;
         }
 
-        return $this['virtualserver_clientsonline'] - $this['virtualserver_queryclientsonline'];
+        // Try direct access first
+        if (isset($this->nodeInfo[1]['virtualserver_clientsonline']) && isset($this->nodeInfo[1]['virtualserver_queryclientsonline'])) {
+            $clientsOnline = (int) $this->nodeInfo[1]['virtualserver_clientsonline'];
+            $queryClientsOnline = (int) $this->nodeInfo[1]['virtualserver_queryclientsonline'];
+            $result = $clientsOnline - $queryClientsOnline;
+
+            return max(0, $result);
+        }
+
+        // Fallback: try to refresh node info
+        try {
+            $this->fetchNodeInfo();
+
+            if (isset($this->nodeInfo[1]['virtualserver_clientsonline']) && isset($this->nodeInfo[1]['virtualserver_queryclientsonline'])) {
+                $clientsOnline = (int) $this->nodeInfo[1]['virtualserver_clientsonline'];
+                $queryClientsOnline = (int) $this->nodeInfo[1]['virtualserver_queryclientsonline'];
+                $result = $clientsOnline - $queryClientsOnline;
+
+                return max(0, $result);
+            }
+        } catch (Exception) {
+            // If fetching fails, return 0
+            return 0;
+        }
+
+        // Last fallback
+        return 0;
     }
 
     /**
@@ -2810,7 +2836,7 @@ class Server extends Node
         $this->nodeInfo = array_merge($this->nodeInfo, $serverInfo);
 
         // Ensure virtualserver_status is set
-        if (!isset($this->nodeInfo['virtualserver_status'])) {
+        if (! isset($this->nodeInfo['virtualserver_status'])) {
             // Try to get the status from the parent's server list if available
             try {
                 $serverList = $this->getParent()->serverList();
