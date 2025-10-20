@@ -786,8 +786,25 @@ class Server extends Node
      */
     public function clientFindDb(string $pattern, bool $uid = false): array
     {
-        return array_keys($this->execute('clientdbfind', ['pattern' => $pattern, ($uid) ? '-uid' : null, '-details'])
-            ->toAssocArray('cldbid'));
+        $args = ['pattern' => $pattern];
+
+        // Flags must be appended as separate parameters
+        if ($uid) {
+            $args['-uid'] = null;
+        }
+
+        $args['-details'] = null;
+
+        try {
+            $result = $this->execute('clientdbfind', $args)->toAssocArray('cldbid');
+        } catch (ServerQueryException $e) {
+            if (str_contains($e->getMessage(), 'database empty result set')) {
+                return [];
+            }
+            throw $e;
+        }
+
+        return array_keys($result);
     }
 
     /**
