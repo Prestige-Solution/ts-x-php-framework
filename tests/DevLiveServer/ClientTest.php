@@ -221,6 +221,56 @@ class ClientTest extends TestCase
 
     /**
      * @throws AdapterException
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws HelperException
+     */
+    public function test_can_get_clientListDB()
+    {
+        if ($this->user_test_active == 'false' || $this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+
+        $clientListDb = $ts3_VirtualServer->clientListDb();
+        $this->assertIsArray($clientListDb);
+
+        $this->asserttrue(true);
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+    }
+
+    /**
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws AdapterException
+     * @throws HelperException
+     */
+    public function test_can_get_clientInfoDB()
+    {
+        if ($this->user_test_active == 'false' || $this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $clientInfoDB= [];
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        $clientListDb = $ts3_VirtualServer->clientListDb();
+
+        foreach ($clientListDb as $client) {
+            if ($client['client_nickname'] == 'UnitTestUser') {
+                $clientInfoDB = $ts3_VirtualServer->clientInfoDb($client['cldbid']);
+            }
+        }
+
+        $this->assertIsArray($clientInfoDB);
+
+        $this->asserttrue(true);
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+    }
+
+    /**
+     * @throws AdapterException
      * @throws ServerQueryException
      * @throws TransportException
      * @throws \Exception
