@@ -166,7 +166,9 @@ class ClientTest extends TestCase
         $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
 
         $userID = $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->getId();
+        $this->assertIsInt($userID);
         $userID = $ts3_VirtualServer->clientGetById($userID);
+        $this->assertIsObject($userID);
         $userID->message('Hello World');
 
         $this->asserttrue(true);
