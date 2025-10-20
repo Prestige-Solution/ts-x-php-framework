@@ -2894,7 +2894,21 @@ class Server extends Node
      */
     public function isOffline(): bool
     {
-        return $this['virtualserver_status'] == 'offline';
+        // First, try to get the property without forcing a refresh
+        $status = $this->getProperty('virtualserver_status');
+
+        if ($status === null) {
+            // Force refresh the node info
+            try {
+                $this->fetchNodeInfo();
+                $status = $this->getProperty('virtualserver_status', 'offline');
+            } catch (Exception) {
+                // If fetching fails, assume it offline
+                return true;
+            }
+        }
+
+        return $status === 'offline';
     }
 
     /**
