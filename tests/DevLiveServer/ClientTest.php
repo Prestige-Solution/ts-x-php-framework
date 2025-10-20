@@ -212,7 +212,7 @@ class ClientTest extends TestCase
         $userFindings = $ts3_VirtualServer->clientFind('UnitT');
 
         foreach ($userFindings as $user) {
-            $this->assertEquals('UnitTestUser', $user['client_nickname']);
+            $this->assertEquals($this->ts3_unit_test_userName, $user['client_nickname']);
         }
 
         $this->asserttrue(true);
@@ -258,7 +258,7 @@ class ClientTest extends TestCase
         $clientListDb = $ts3_VirtualServer->clientListDb();
 
         foreach ($clientListDb as $client) {
-            if ($client['client_nickname'] == 'UnitTestUser') {
+            if ($client['client_nickname'] == $this->ts3_unit_test_userName) {
                 $clientInfoDB = $ts3_VirtualServer->clientInfoDb($client['cldbid']);
             }
         }
@@ -287,7 +287,7 @@ class ClientTest extends TestCase
 
         foreach ($resultArray as $user) {
             var_dump($user);
-            $this->assertEquals('UnitTestUser', $user['client_nickname']);
+            $this->assertEquals($this->ts3_unit_test_userName, $user['client_nickname']);
         }
 
         $this->asserttrue(true);
