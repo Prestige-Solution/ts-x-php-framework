@@ -273,4 +273,29 @@ class RefactorFunctionsTest extends TestCase
         $this->ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
         $this->assertFalse($this->ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
     }
+
+    /**
+     * @throws \Exception
+     */
+    public function test_can_get_isOnline_isOffline(): void
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        try {
+            $this->ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        } catch(TeamSpeak3Exception $e) {
+            echo $e->getMessage();
+        }
+
+        $statusOnline = $this->ts3_VirtualServer->isOnline();
+        $statusOffline = $this->ts3_VirtualServer->isOffline();
+
+        $this->assertTrue($statusOnline);
+        $this->assertFalse($statusOffline);
+
+        $this->ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $this->assertFalse($this->ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
+    }
 }
