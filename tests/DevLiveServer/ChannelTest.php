@@ -598,7 +598,8 @@ class ChannelTest extends TestCase
             $this->assertIsString($file['name']);
         }
 
-        $ts3_VirtualServer->channelFileDelete($this->test_cid, '', '/test_dir');
+        $ts3_VirtualServer->channelFileRename($this->test_cid, '', '/test_dir', '/test_dir_renamed');
+        $ts3_VirtualServer->channelFileDelete($this->test_cid, '', '/test_dir_renamed');
         $fileList = $ts3_VirtualServer->channelFileList($this->test_cid);
         $this->assertEmpty($fileList);
 
