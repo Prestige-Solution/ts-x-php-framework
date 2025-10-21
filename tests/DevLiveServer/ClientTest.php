@@ -147,6 +147,12 @@ class ClientTest extends TestCase
         $userMoved = $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->getInfo();
         $this->assertEquals($userMoved['cid'], $testCid);
 
+        //get client by channel list
+        $clientChannelList = $ts3_VirtualServer->channelGetById($testCid)->clientList();
+        foreach ($clientChannelList as $client) {
+            $this->assertEquals($this->ts3_unit_test_userName, $client['client_nickname']);
+        }
+
         $this->unset_play_test_channel($ts3_VirtualServer);
         $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
     }
