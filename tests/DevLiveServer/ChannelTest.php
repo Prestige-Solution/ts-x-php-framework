@@ -602,6 +602,20 @@ class ChannelTest extends TestCase
         $fileList = $ts3_VirtualServer->channelFileList($this->test_cid);
         $this->assertEmpty($fileList);
 
+        //enhance test to validate over channel.php
+        $ts3_VirtualServer->channelGetById($this->test_cid)->dirCreate('', '/test_dir');
+        $fileListGetByChannelID = $ts3_VirtualServer->channelGetById($this->test_cid)->fileList();
+
+        foreach ($fileListGetByChannelID as $fileGetByChannelID) {
+            $this->assertEquals('test_dir', $fileGetByChannelID['name']);
+            $this->assertIsString($fileGetByChannelID['name']);
+        }
+
+        $ts3_VirtualServer->channelGetById($this->test_cid)->fileDelete('', '/test_dir');
+        $fileList = $ts3_VirtualServer->channelFileList($this->test_cid);
+        $this->assertEmpty($fileList);
+
+
         $this->unset_play_test_channel($ts3_VirtualServer);
         $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
     }
