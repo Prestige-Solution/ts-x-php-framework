@@ -635,6 +635,31 @@ class ChannelTest extends TestCase
     }
 
     /**
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws AdapterException
+     * @throws HelperException
+     */
+    public function test_can_get_subChannelList()
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        $this->set_play_test_channel($ts3_VirtualServer);
+
+        $subChannelList = $ts3_VirtualServer->channelGetByName('UnitTest')->subChannelList();
+
+        foreach ($subChannelList as $subChannel) {
+            $this->assertEquals('Play-Test', $subChannel['channel_name']);
+        }
+
+        $this->unset_play_test_channel($ts3_VirtualServer);
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+    }
+
+    /**
      * @throws AdapterException
      * @throws TransportException
      * @throws ServerQueryException
