@@ -74,11 +74,13 @@ class Channel extends Node
      */
     public function subChannelGetById(int $cid): self
     {
-        if (! array_key_exists($cid, $this->subChannelList())) {
+        $subChannels = $this->subChannelList();
+
+        if (! array_key_exists($cid, $subChannels)) {
             throw new ServerQueryException('invalid channelID', 0x300);
         }
 
-        return $this->channelList[$cid];
+        return $subChannels[$cid];
     }
 
     /**
