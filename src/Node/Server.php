@@ -1269,14 +1269,32 @@ class Server extends Node
     {
         $this->serverGroupListReset();
 
-        $sgid = $this->execute('servergroupcopy', ['ssgid' => $ssgid, 'tsgid' => $tsgid, 'name' => $name, 'type' => $type])
-            ->toList();
+        $result = $this->execute('servergroupcopy', ['ssgid' => $ssgid, 'tsgid' => $tsgid, 'name' => $name, 'type' => $type])->toList();
 
         if ($tsgid && $name) {
             $this->serverGroupRename($tsgid, $name);
         }
 
-        return count($sgid) ? $sgid['sgid'] : $tsgid;
+        // Search for the new sgid in all elements of the result array
+        $sgid = null;
+
+        for ($i = count($result) - 1; $i >= 0; $i--) {
+            foreach ($result[$i] as $key => $value) {
+                if (stripos($key, 'sgid') !== false) {
+                    // Extrahiere nur die führenden Ziffern
+                    if (preg_match('/\d+/', $value, $matches)) {
+                        $sgid = (int) $matches[0];
+                        break 2;
+                    }
+                }
+            }
+        }
+
+        if ($sgid === null) {
+            throw new \RuntimeException('serverGroupCopy: Could not determine a valid server group ID.');
+        }
+
+        return $sgid;
     }
 
     /**

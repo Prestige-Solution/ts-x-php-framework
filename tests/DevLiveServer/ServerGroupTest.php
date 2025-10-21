@@ -1,0 +1,154 @@
+<?php
+
+namespace PlanetTeamSpeak\TeamSpeak3Framework\Tests\DevLiveServer;
+
+use PHPUnit\Framework\TestCase;
+use PlanetTeamSpeak\TeamSpeak3Framework\Adapter\Adapter;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\HelperException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\NodeException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\ServerQueryException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\TransportException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Node\Host;
+use PlanetTeamSpeak\TeamSpeak3Framework\Node\Node;
+use PlanetTeamSpeak\TeamSpeak3Framework\Node\Server;
+use PlanetTeamSpeak\TeamSpeak3Framework\TeamSpeak3;
+
+class ServerGroupTest extends TestCase
+{
+    /**
+     * ATTENTION
+     * Use the .env.testing Variable "DEV_LIVE_SERVER_AVAILABLE" to activate this Test
+     * Use this Testcase only with a development Teamspeak Server
+     * Otherwise the TS3 Server can be destroyed
+     */
+    private string $active;
+
+    private string $host;
+
+    private string $queryPort;
+
+    private string $user;
+
+    private string $password;
+
+    private string $ts3_server_uri;
+
+    private int $sgid;
+
+    private Server|Adapter|Node|Host $ts3_VirtualServer;
+
+    public function setUp(): void
+    {
+        //proof test active
+        if (file_exists('./.env.testing')) {
+            $env = file('./.env.testing');
+            //get live server is available
+            $this->active = str_replace('DEV_LIVE_SERVER_AVAILABLE=', '', preg_replace('#\n(?!\n)#', '', $env[2]));
+            $this->host = str_replace('DEV_LIVE_SERVER_HOST=', '', preg_replace('#\n(?!\n)#', '', $env[3]));
+            $this->queryPort = str_replace('DEV_LIVE_SERVER_QUERY_PORT=', '', preg_replace('#\n(?!\n)#', '', $env[4]));
+            $this->user = str_replace('DEV_LIVE_SERVER_QUERY_USER=', '', preg_replace('#\n(?!\n)#', '', $env[5]));
+            $this->password = str_replace('DEV_LIVE_SERVER_QUERY_USER_PASSWORD=', '', preg_replace('#\n(?!\n)#', '', $env[6]));
+        } else {
+            $this->active = 'false';
+        }
+
+        $this->ts3_server_uri = 'serverquery://'.$this->user.':'.$this->password.'@'.$this->host.':'.$this->queryPort.
+            '/?server_port=9987'.
+            '&no_query_clients=0'.
+            '&timeout=30';
+    }
+
+    /**
+     * @throws AdapterException
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws \Exception
+     */
+    public function test_can_rename_servergroup()
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $this->ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        $this->set_play_test_servergroup($this->ts3_VirtualServer);
+
+        $this->ts3_VirtualServer->servergrouprename($this->sgid, 'UnitTest-Renamed');
+        $renamedServerGroup = $this->ts3_VirtualServer->serverGroupGetById($this->sgid);
+        $this->assertEquals('UnitTest-Renamed', $renamedServerGroup['name']);
+
+        $this->unset_play_test_servergroup($this->ts3_VirtualServer);
+        $this->ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $this->assertFalse($this->ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
+    }
+
+    /**
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws AdapterException
+     * @throws NodeException
+     * @throws HelperException
+     */
+    public function test_can_copy_servergroup()
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $this->ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        $this->set_play_test_servergroup($this->ts3_VirtualServer);
+
+        $duplicatedSGID = $this->ts3_VirtualServer->serverGroupCopy($this->sgid, 'UnitTest-Copy');
+        $getDuplicatedServerGroup = $this->ts3_VirtualServer->serverGroupGetById($duplicatedSGID);
+        $this->assertEquals('UnitTest-Copy', $getDuplicatedServerGroup['name']);
+
+        $this->ts3_VirtualServer->serverGroupDelete($duplicatedSGID);
+        try {
+            $this->ts3_VirtualServer->serverGroupGetById($duplicatedSGID);
+            $this->fail('ServerGroup should not exist');
+        } catch (ServerQueryException $e) {
+            $this->assertEquals('invalid groupID', $e->getMessage());
+        }
+
+        $this->unset_play_test_servergroup($this->ts3_VirtualServer);
+        $this->ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $this->assertFalse($this->ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
+    }
+
+    /**
+     * @throws AdapterException
+     * @throws ServerQueryException
+     * @throws TransportException
+     */
+    private function set_play_test_servergroup(Server $ts3VirtualServer): void
+    {
+        $this->sgid = $ts3VirtualServer->serverGroupCreate('UnitTest', 1);
+    }
+
+    /**
+     * @throws AdapterException
+     * @throws ServerQueryException
+     * @throws HelperException
+     */
+    public function unset_play_test_servergroup($ts3_VirtualServer): void
+    {
+        $ts3_VirtualServer->serverGroupDelete($this->sgid);
+    }
+
+    /**
+     * @throws AdapterException
+     * @throws NodeException
+     * @throws TransportException
+     * @throws ServerQueryException
+     */
+    public function dev_rest_servergroup(): void
+    {
+        $servergrouplist = $this->ts3_VirtualServer->serverGroupList(['type' => 1]);
+        foreach ($servergrouplist as $servergroup) {
+            if ($servergroup['name'] != 'Server Admin' && $servergroup['name'] != 'Guest') {
+                $this->ts3_VirtualServer->serverGroupDelete($servergroup['sgid']);
+            }
+        }
+    }
+}
