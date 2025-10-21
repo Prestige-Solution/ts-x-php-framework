@@ -645,6 +645,10 @@ class ChannelTest extends TestCase
         $getLevelTwo = $ts3_VirtualServer->channelGetLevel($cidChannelLevelTwo);
         $this->assertEquals(2, $getLevelTwo);
 
+        //enhance test to validate over channel.php
+        $getLevelOverChannel = $ts3_VirtualServer->channelGetByName('Standard Channel Level 2')->getLevel();
+        $this->assertEquals(2, $getLevelOverChannel);
+
         $this->unset_play_test_channel($ts3_VirtualServer);
         $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
     }
