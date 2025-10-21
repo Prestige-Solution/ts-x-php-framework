@@ -136,11 +136,13 @@ class Channel extends Node
      */
     public function clientGetById(int $clid): Client
     {
-        if (! array_key_exists($clid, $this->clientList())) {
+        $clientList = $this->clientList();
+
+        if (! array_key_exists($clid, $clientList)) {
             throw new ServerQueryException('invalid clientID', 0x200);
         }
 
-        return $this->clientList[$clid];
+        return $clientList[$clid];
     }
 
     /**
