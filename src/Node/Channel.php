@@ -148,13 +148,13 @@ class Channel extends Node
     /**
      * Returns the PlanetTeamSpeak\TeamSpeak3Framework\Node\Client object matching the given name.
      *
-     * @param  int  $name
+     * @param  string  $name
      * @return Client
      * @throws AdapterException
      * @throws ServerQueryException
      * @throws TransportException
      */
-    public function clientGetByName(int $name): Client
+    public function clientGetByName(string $name): Client
     {
         foreach ($this->clientList() as $client) {
             if ($client['client_nickname'] == $name) {
