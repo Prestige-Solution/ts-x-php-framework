@@ -86,13 +86,13 @@ class Channel extends Node
     /**
      * Returns the PlanetTeamSpeak\TeamSpeak3Framework\Node\Channel object matching the given name.
      *
-     * @param  int  $name
+     * @param  string  $name
      * @return Channel
      * @throws AdapterException
      * @throws ServerQueryException
      * @throws TransportException
      */
-    public function subChannelGetByName(int $name): self
+    public function subChannelGetByName(string $name): self
     {
         foreach ($this->subChannelList() as $channel) {
             if ($channel['channel_name'] == $name) {
