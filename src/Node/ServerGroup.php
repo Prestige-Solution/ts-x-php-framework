@@ -97,7 +97,7 @@ class ServerGroup extends Group
      * Adds a set of specified permissions to the server group. Multiple permissions
      * can be added by providing the four parameters of each permission in separate arrays.
      *
-     * @param  int  $permid
+     * @param  int|array  $permid
      * @param  int  $permvalue
      * @param  int  $permnegated
      * @param  int  $permskip
@@ -106,7 +106,7 @@ class ServerGroup extends Group
      * @throws ServerQueryException
      * @throws TransportException
      */
-    public function permAssign(int $permid, int $permvalue, int $permnegated = 0, int $permskip = 0): void
+    public function permAssign(int|array $permid, int $permvalue, int $permnegated = 0, int $permskip = 0): void
     {
         $this->getParent()->serverGroupPermAssign($this->getId(), $permid, $permvalue, $permnegated, $permskip);
     }
