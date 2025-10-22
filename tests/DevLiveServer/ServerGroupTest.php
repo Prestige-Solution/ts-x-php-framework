@@ -60,6 +60,31 @@ class ServerGroupTest extends TestCase
     }
 
     /**
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws AdapterException
+     * @throws NodeException
+     * @throws HelperException
+     */
+    public function test_can_get_servergroup_by_name()
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $this->ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        $this->set_play_test_servergroup($this->ts3_VirtualServer);
+
+        $serverGroupName = $this->ts3_VirtualServer->serverGroupGetByName('UnitTest');
+        $this->assertEquals('UnitTest', $serverGroupName['name']);
+        $this->assertIsString($serverGroupName['name']);
+
+        $this->unset_play_test_servergroup($this->ts3_VirtualServer);
+        $this->ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $this->assertFalse($this->ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
+    }
+
+    /**
      * @throws AdapterException
      * @throws TransportException
      * @throws ServerQueryException
