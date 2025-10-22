@@ -104,6 +104,14 @@ class ServerGroupTest extends TestCase
         $this->assertEquals('UnitTest-Renamed', $renamedServerGroup['name']);
 
         $this->unset_play_test_servergroup($this->ts3_VirtualServer);
+
+        //test by ServerGroup Class
+        $this->set_play_test_servergroup($this->ts3_VirtualServer);
+        $this->ts3_VirtualServer->serverGroupGetById($this->sgid)->rename('UnitTest-Renamed');
+        $renamedByChain = $this->ts3_VirtualServer->serverGroupGetById($this->sgid);
+        $this->assertEquals('UnitTest-Renamed', $renamedByChain['name']);
+
+        $this->unset_play_test_servergroup($this->ts3_VirtualServer);
         $this->ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
         $this->assertFalse($this->ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
     }
