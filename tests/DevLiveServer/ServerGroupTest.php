@@ -159,6 +159,35 @@ class ServerGroupTest extends TestCase
     }
 
     /**
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws AdapterException
+     * @throws NodeException
+     * @throws HelperException
+     */
+    public function test_can_assign_permissions_to_servergroup()
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $this->ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        $this->set_play_test_servergroup($this->ts3_VirtualServer);
+
+        $this->ts3_VirtualServer->serverGroupPermAssign($this->sgid, ['i_client_private_textmessage_power'], [75],[0],[0]);
+        $this->ts3_VirtualServer->serverGroupGetById($this->sgid)->permAssign(['i_client_talk_power'], 75,0,0);
+
+        $permList = $this->ts3_VirtualServer->serverGroupGetById($this->sgid)->permList(true);
+        $this->assertEquals(75, $permList['i_client_talk_power']['permvalue']);
+        $this->assertEquals(75, $permList['i_client_private_textmessage_power']['permvalue']);
+
+
+        $this->unset_play_test_servergroup($this->ts3_VirtualServer);
+        $this->ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $this->assertFalse($this->ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
+    }
+
+    /**
      * @throws AdapterException
      * @throws ServerQueryException
      * @throws TransportException
