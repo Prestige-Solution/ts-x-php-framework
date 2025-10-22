@@ -16,7 +16,8 @@ $metrics = $clover->project->metrics;
 $elements = (int) $metrics['elements'];
 $covered = (int) $metrics['coveredelements'];
 
-$coverage = $elements > 0 ? round($covered / $elements * 100) : 0;
+$preciseCoverage = $elements > 0 ? ($covered / $elements * 100) : 0;
+$coverage = round($preciseCoverage);
 
 if ($coverage >= 90) {
     $color = '#4c1';
