@@ -137,6 +137,23 @@ class ServerGroupTest extends TestCase
         }
 
         $this->unset_play_test_servergroup($this->ts3_VirtualServer);
+
+        //test by ServerGroup Class
+        $this->set_play_test_servergroup($this->ts3_VirtualServer);
+
+        $duplicatedSGIDChain = $this->ts3_VirtualServer->serverGroupGetById($this->sgid)->copy( 'UnitTest-Copy');
+        $getDuplicatedServerGroupChain = $this->ts3_VirtualServer->serverGroupGetById($duplicatedSGIDChain);
+        $this->assertEquals('UnitTest-Copy', $getDuplicatedServerGroupChain['name']);
+
+        $this->ts3_VirtualServer->serverGroupDelete($getDuplicatedServerGroupChain->getId());
+        try {
+            $this->ts3_VirtualServer->serverGroupGetById($getDuplicatedServerGroupChain->getId());
+            $this->fail('ServerGroup should not exist');
+        } catch (ServerQueryException $e) {
+            $this->assertEquals('invalid groupID', $e->getMessage());
+        }
+
+        $this->unset_play_test_servergroup($this->ts3_VirtualServer);
         $this->ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
         $this->assertFalse($this->ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
     }
