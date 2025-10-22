@@ -115,13 +115,13 @@ class ServerGroup extends Group
      * Removes a set of specified permissions from the server group. Multiple
      * permissions can be removed at once.
      *
-     * @param  int  $permid
+     * @param  int|array  $permid
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
      * @throws TransportException
      */
-    public function permRemove(int $permid): void
+    public function permRemove(int|array $permid): void
     {
         $this->getParent()->serverGroupPermRemove($this->getId(), $permid);
     }
