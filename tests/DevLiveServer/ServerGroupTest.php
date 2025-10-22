@@ -36,10 +36,6 @@ class ServerGroupTest extends TestCase
 
     private int $sgid;
 
-    private string $user_test_active;
-
-    private string $ts3_unit_test_userName;
-
     private Server|Adapter|Node|Host $ts3_VirtualServer;
 
     public function setUp(): void
@@ -53,8 +49,6 @@ class ServerGroupTest extends TestCase
             $this->queryPort = str_replace('DEV_LIVE_SERVER_QUERY_PORT=', '', preg_replace('#\n(?!\n)#', '', $env[4]));
             $this->user = str_replace('DEV_LIVE_SERVER_QUERY_USER=', '', preg_replace('#\n(?!\n)#', '', $env[5]));
             $this->password = str_replace('DEV_LIVE_SERVER_QUERY_USER_PASSWORD=', '', preg_replace('#\n(?!\n)#', '', $env[6]));
-            $this->user_test_active = str_replace('DEV_LIVE_SERVER_UNIT_TEST_USER_ACTIVE=', '', preg_replace('#\n(?!\n)#', '', $env[8]));
-            $this->ts3_unit_test_userName = str_replace('DEV_LIVE_SERVER_UNIT_TEST_USER=', '', preg_replace('#\n(?!\n)#', '', $env[9]));
         } else {
             $this->active = 'false';
         }
@@ -203,41 +197,6 @@ class ServerGroupTest extends TestCase
         $this->assertArrayNotHasKey('i_client_talk_power', $permListKeyRemoved);
         $this->assertArrayNotHasKey('i_client_private_textmessage_power', $permListKeyRemoved);
 
-        $this->unset_play_test_servergroup($this->ts3_VirtualServer);
-        $this->ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
-        $this->assertFalse($this->ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
-    }
-
-    /**
-     * @throws TransportException
-     * @throws ServerQueryException
-     * @throws AdapterException
-     * @throws HelperException
-     * @throws NodeException
-     */
-    public function test_can_add_list_del_client_to_servergroup()
-    {
-        if ($this->active == 'false' || $this->user_test_active == 'false') {
-            $this->markTestSkipped('DevLiveServer ist not active');
-        }
-
-        $this->ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
-        $this->set_play_test_servergroup($this->ts3_VirtualServer);
-
-        $user = $this->ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName);
-        $clidDB = $this->ts3_VirtualServer->clientGetByUid($user['client_unique_identifier']);
-
-        $this->ts3_VirtualServer->serverGroupGetById($this->sgid)->clientAdd($clidDB['client_database_id']);
-        $clientList = $this->ts3_VirtualServer->serverGroupGetById($this->sgid)->clientList();
-
-        foreach ($clientList as $client) {
-            $this->assertEquals($this->ts3_unit_test_userName, $client['client_nickname']);
-        }
-
-        $this->ts3_VirtualServer->serverGroupGetById($this->sgid)->clientDel($clidDB['client_database_id']);
-
-        //remember at this point the test will fail if the user is still in the servergroup
-        // unset will not force delete the user from the servergroup
         $this->unset_play_test_servergroup($this->ts3_VirtualServer);
         $this->ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
         $this->assertFalse($this->ts3_VirtualServer->getAdapter()->getTransport()->isConnected());

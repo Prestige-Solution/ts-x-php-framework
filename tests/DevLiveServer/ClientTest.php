@@ -332,6 +332,41 @@ class ClientTest extends TestCase
     }
 
     /**
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws AdapterException
+     * @throws HelperException
+     * @throws NodeException
+     */
+    public function test_can_add_list_del_client_to_servergroup()
+    {
+        if ($this->active == 'false' || $this->user_test_active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        $sgid = $ts3_VirtualServer->serverGroupCreate('UnitTest', 1);
+
+        $user = $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName);
+        $clidDB = $ts3_VirtualServer->clientGetByUid($user['client_unique_identifier']);
+
+        $ts3_VirtualServer->serverGroupGetById($sgid)->clientAdd($clidDB['client_database_id']);
+        $clientList = $ts3_VirtualServer->serverGroupGetById($sgid)->clientList();
+
+        foreach ($clientList as $client) {
+            $this->assertEquals($this->ts3_unit_test_userName, $client['client_nickname']);
+        }
+
+        $ts3_VirtualServer->serverGroupGetById($sgid)->clientDel($clidDB['client_database_id']);
+
+        //remember at this point the test will fail if the user is still in the servergroup
+        // unset will not force delete the user from the servergroup
+        $ts3_VirtualServer->serverGroupDelete($sgid);
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $this->assertFalse($ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
+    }
+
+    /**
      * @throws AdapterException
      * @throws ServerQueryException
      * @throws TransportException
