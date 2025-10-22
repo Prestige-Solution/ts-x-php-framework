@@ -45,9 +45,9 @@ Before you start UnitTests, make sure that you have set the environment variable
 The best way to test all functionalities is to use the serveradmin query user. <br>
 The serveradmin is != Server Admin there you can find in your Teamspeak Client UI. <br>
 
-| serveradmin (Query)        | Server Admin (GUI)        |
-|----------------------------|---------------------------|
-| Max. permission value: 100 | Max. permission value: 75 |
+| serveradmin (Query)                 | Server Admin (GUI)                 |
+|-------------------------------------|------------------------------------|
+| Max. permission value: 100 (=grant) | Max. permission value: 75 (=grant) |
 
 You can find more information in the Documentation [testing-live-server](doc/testing-live-server.md)
 
