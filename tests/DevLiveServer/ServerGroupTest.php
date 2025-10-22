@@ -165,7 +165,7 @@ class ServerGroupTest extends TestCase
      * @throws NodeException
      * @throws HelperException
      */
-    public function test_can_assign_permissions_to_servergroup()
+    public function test_can_assign_remove_permissions_to_servergroup()
     {
         if ($this->active == 'false') {
             $this->markTestSkipped('DevLiveServer ist not active');
@@ -175,12 +175,19 @@ class ServerGroupTest extends TestCase
         $this->set_play_test_servergroup($this->ts3_VirtualServer);
 
         $this->ts3_VirtualServer->serverGroupPermAssign($this->sgid, ['i_client_private_textmessage_power'], [75],[0],[0]);
-        $this->ts3_VirtualServer->serverGroupGetById($this->sgid)->permAssign(['i_client_talk_power'], 75,0,0);
+        $this->ts3_VirtualServer->serverGroupGetById($this->sgid)->permAssign(['i_client_talk_power'], 75);
 
         $permList = $this->ts3_VirtualServer->serverGroupGetById($this->sgid)->permList(true);
         $this->assertEquals(75, $permList['i_client_talk_power']['permvalue']);
         $this->assertEquals(75, $permList['i_client_private_textmessage_power']['permvalue']);
 
+        $this->ts3_VirtualServer->serverGroupGetById($this->sgid)->permRemove(['i_client_private_textmessage_power']);
+        $this->ts3_VirtualServer->serverGroupGetById($this->sgid)->permRemove(['i_client_talk_power']);
+
+        $permListKeyRemoved = $this->ts3_VirtualServer->serverGroupGetById($this->sgid)->permList(true);
+
+        $this->assertArrayNotHasKey('i_client_talk_power',$permListKeyRemoved);
+        $this->assertArrayNotHasKey('i_client_private_textmessage_power',$permListKeyRemoved);
 
         $this->unset_play_test_servergroup($this->ts3_VirtualServer);
         $this->ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
