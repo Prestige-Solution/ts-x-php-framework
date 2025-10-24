@@ -148,6 +148,49 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
         return new StringHelper('/icon_'.$iconid);
     }
 
+    public function iconList(): array
+    {
+        $iconBasePath = '/icons';
+
+        try {
+            $files = $this->execute('ftgetfilelist', [
+                'cid' => 0,
+                'cpw' => '',
+                'path' => $iconBasePath,
+            ])->toArray();
+        } catch (\Exception $e) {
+            return [];
+        }
+
+        $result = [];
+
+        foreach ($files as $file) {
+            // Skip meta entry (“ftgetfilelist” exists)
+            if (isset($file['ftgetfilelist']) || ! isset($file['name'])) {
+                continue;
+            }
+
+            // Set a fallback path
+            $file['path'] = $file['path'] ?? $iconBasePath;
+            $file['cid'] = 0;
+            $file['sid'] = $this->getId();
+
+            // Create StringHelper
+            $src = new StringHelper('/'.ltrim($file['path'], '/'));
+            if (! $src->endsWith('/')) {
+                $src->append('/');
+            }
+            if (! empty($file['name'])) {
+                $src->append($file['name']);
+            }
+            $file['src'] = $src;
+
+            $result[] = $file;
+        }
+
+        return $result;
+    }
+
     /**
      * Returns a possible classname for the node which can be used as an HTML property.
      *
