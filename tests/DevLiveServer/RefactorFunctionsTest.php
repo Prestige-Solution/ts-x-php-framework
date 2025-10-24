@@ -7,7 +7,6 @@ use PlanetTeamSpeak\TeamSpeak3Framework\Adapter\Adapter;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\NodeException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\ServerQueryException;
-use PlanetTeamSpeak\TeamSpeak3Framework\Exception\TeamSpeak3Exception;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\TransportException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Node\Host;
 use PlanetTeamSpeak\TeamSpeak3Framework\Node\Node;
@@ -69,13 +68,7 @@ class RefactorFunctionsTest extends TestCase
             $this->markTestSkipped('DevLiveServer ist not active');
         }
 
-        try {
-            // Connect to the specified server, authenticate and spawn an object for the virtual server
-            $this->ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
-        } catch(TeamSpeak3Exception $e) {
-            //catch exception
-            echo $e->getMessage();
-        }
+        $this->ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
 
         $clientUpdate = $this->ts3_VirtualServer->getAdapter()->request('clientupdate');
         $clientUpdateResult = $clientUpdate->getErrorProperty('msg')->toString();
@@ -99,13 +92,7 @@ class RefactorFunctionsTest extends TestCase
             $this->markTestSkipped('DevLiveServer ist not active');
         }
 
-        try {
-            // Connect to the specified server, authenticate and spawn an object for the virtual server
-            $this->ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
-        } catch(TeamSpeak3Exception $e) {
-            //catch exception
-            echo $e->getMessage();
-        }
+        $this->ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
 
         // Resetting lists
         $this->ts3_VirtualServer->clientListReset();
@@ -142,13 +129,7 @@ class RefactorFunctionsTest extends TestCase
             $this->markTestSkipped('DevLiveServer ist not active');
         }
 
-        try {
-            // Connect to the specified server, authenticate and spawn an object for the virtual server
-            $this->ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
-        } catch(TeamSpeak3Exception $e) {
-            //catch exception
-            echo $e->getMessage();
-        }
+        $this->ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
 
         // Resetting lists
         $this->ts3_VirtualServer->clientListReset();
@@ -179,11 +160,7 @@ class RefactorFunctionsTest extends TestCase
             $this->markTestSkipped('DevLiveServer ist not active');
         }
 
-        try {
-            $this->ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
-        } catch(TeamSpeak3Exception $e) {
-            echo $e->getMessage();
-        }
+        $this->ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
 
         $sid = $this->ts3_VirtualServer->serverGroupCreate('UniTest', 1);
         $this->ts3_VirtualServer->serverGroupDelete($sid);
@@ -204,11 +181,7 @@ class RefactorFunctionsTest extends TestCase
             $this->markTestSkipped('DevLiveServer ist not active');
         }
 
-        try {
-            $this->ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
-        } catch(TeamSpeak3Exception $e) {
-            echo $e->getMessage();
-        }
+        $this->ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
 
         $cgid = $this->ts3_VirtualServer->channelGroupCreate('UniTest', 1);
         $this->ts3_VirtualServer->channelGroupDelete($cgid);
@@ -229,11 +202,7 @@ class RefactorFunctionsTest extends TestCase
             $this->markTestSkipped('DevLiveServer ist not active');
         }
 
-        try {
-            $this->ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
-        } catch(TeamSpeak3Exception $e) {
-            echo $e->getMessage();
-        }
+        $this->ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
 
         //#channel name
         //30 chars
@@ -269,6 +238,27 @@ class RefactorFunctionsTest extends TestCase
         $this->assertEquals(30, strlen($result));
         $this->assertEquals('--Lorem ipsum dolür sit amet,', $result);
         $this->ts3_VirtualServer->serverGroupDelete($sid);
+
+        $this->ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $this->assertFalse($this->ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function test_can_get_isOnline_isOffline(): void
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $this->ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+
+        $statusOnline = $this->ts3_VirtualServer->isOnline();
+        $statusOffline = $this->ts3_VirtualServer->isOffline();
+
+        $this->assertTrue($statusOnline);
+        $this->assertFalse($statusOffline);
 
         $this->ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
         $this->assertFalse($this->ts3_VirtualServer->getAdapter()->getTransport()->isConnected());

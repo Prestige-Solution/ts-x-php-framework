@@ -136,13 +136,59 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
     public function iconGetName(string $key): StringHelper
     {
         $iconid = $this[$key];
-        if (! is_int($iconid)) {
+
+        if ($iconid instanceof StringHelper) {
             $iconid = $iconid->toInt();
+        } elseif (! is_int($iconid)) {
+            $iconid = (int) $iconid;
         }
 
         $iconid = $iconid < 0 ? pow(2, 32) - abs($iconid) : $iconid;
 
         return new StringHelper('/icon_'.$iconid);
+    }
+
+    public function iconList(): array
+    {
+        $iconBasePath = '/icons';
+
+        try {
+            $files = $this->execute('ftgetfilelist', [
+                'cid' => 0,
+                'cpw' => '',
+                'path' => $iconBasePath,
+            ])->toArray();
+        } catch (\Exception $e) {
+            return [];
+        }
+
+        $result = [];
+
+        foreach ($files as $file) {
+            // Skip meta entry (“ftgetfilelist” exists)
+            if (isset($file['ftgetfilelist']) || ! isset($file['name'])) {
+                continue;
+            }
+
+            // Set a fallback path
+            $file['path'] = $file['path'] ?? $iconBasePath;
+            $file['cid'] = 0;
+            $file['sid'] = $this->getId();
+
+            // Create StringHelper
+            $src = new StringHelper('/'.ltrim($file['path'], '/'));
+            if (! $src->endsWith('/')) {
+                $src->append('/');
+            }
+            if (! empty($file['name'])) {
+                $src->append($file['name']);
+            }
+            $file['src'] = $src;
+
+            $result[] = $file;
+        }
+
+        return $result;
     }
 
     /**
@@ -318,7 +364,7 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
                 } elseif (str_ends_with($key, '_version')) {
                     $info[$key] = Convert::version($val);
                 } elseif (str_ends_with($key, '_icon_id')) {
-                    $info[$key] = $this->iconGetName($key)->filterDigits();
+                    $info[$key] = $this->iconGetName($val)->filterDigits()->toInt();
                 }
             }
         }
@@ -339,51 +385,6 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
                     }
                 } catch (\Exception) {
                     continue;
-                }
-            }
-        }
-
-        return $info;
-    }
-
-    /**
-     * Returns information about the host node and optionally the selected virtual server.
-     */
-    public function getFullInfo(?int $serverPort = null, bool $convert = false): array
-    {
-        // Retrieve host/node information
-        $this->fetchNodeInfo();
-        $info = $this->nodeInfo;
-
-        // Retrieve VirtualServer if port has been specified
-        if ($serverPort !== null) {
-            try {
-                $virtualServer = $this->serverGetByPort($serverPort); //polymorphic call is okay because we use strict analysis
-                $vsInfo = $virtualServer->getInfo(false, false); // raw value
-                $info = array_merge($info, $vsInfo);
-            } catch (\Exception $e) {
-                $info['virtualserver_error'] = $e->getMessage();
-            }
-        }
-
-        if ($convert) {
-            foreach ($info as $key => $val) {
-                $keyObj = StringHelper::factory($key);
-
-                if ($keyObj->contains('_bytes_')) {
-                    $info[$keyObj->toString()] = Convert::bytes($val);
-                } elseif ($keyObj->contains('_bandwidth_')) {
-                    $info[$keyObj->toString()] = Convert::bytes($val).'/s';
-                } elseif ($keyObj->contains('_packets_')) {
-                    $info[$keyObj->toString()] = number_format($val, 0, null, '.');
-                } elseif ($keyObj->contains('_packetloss_')) {
-                    $info[$keyObj->toString()] = sprintf('%01.2f', floatval($val instanceof StringHelper ? $val->toString() : strval($val)) * 100).'%';
-                } elseif ($keyObj->endsWith('_uptime')) {
-                    $info[$keyObj->toString()] = Convert::seconds($val);
-                } elseif ($keyObj->endsWith('_version')) {
-                    $info[$keyObj->toString()] = Convert::version($val);
-                } elseif ($keyObj->endsWith('_icon_id')) {
-                    $info[$keyObj->toString()] = $this->iconGetName($key)->filterDigits();
                 }
             }
         }

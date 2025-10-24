@@ -476,14 +476,31 @@ class Server extends Node
      */
     public function channelFileList(int $cid, string $cpw = '', string $path = '/', bool $recursive = false): array
     {
-        $files = $this->execute('ftgetfilelist', ['cid' => $cid, 'cpw' => $cpw, 'path' => $path])->toArray();
+        try {
+            $files = $this->execute('ftgetfilelist', ['cid' => $cid, 'cpw' => $cpw, 'path' => $path])->toArray();
+        } catch (ServerQueryException $e) {
+            // only catch an empty result
+            if (str_contains($e->getMessage(), 'database empty result set')) {
+                return [];
+            }
+            throw $e;
+        }
+
         $count = count($files);
+        $flattened = [];
 
         for ($i = 0; $i < $count; $i++) {
+            // proof exists
+            if (empty($files[$i]['name'])) {
+                continue; // skip entry without a valid file extension
+            }
+
             $files[$i]['sid'] = $this->getId();
-            $files[$i]['cid'] = $files[0]['cid'];
-            $files[$i]['path'] = $files[0]['path'];
-            $files[$i]['src'] = new StringHelper($cid ? $files[$i]['path'] : '/');
+            $files[$i]['cid'] = $files[$i]['cid'] ?? $cid;
+            $files[$i]['path'] = $files[$i]['path'] ?? $path;
+
+            $src = $files[$i]['path'] ?? '/';
+            $files[$i]['src'] = StringHelper::factory($src);
 
             if (! $files[$i]['src']->endsWith('/')) {
                 $files[$i]['src']->append('/');
@@ -491,14 +508,17 @@ class Server extends Node
 
             $files[$i]['src']->append($files[$i]['name']);
 
-            if ($recursive && $files[$i]['type'] == TeamSpeak3::FILE_TYPE_DIRECTORY) {
-                $files = array_merge($files, $this->channelFileList($cid, $cpw, $path.$files[$i]['name'], $recursive));
+            $flattened[] = $files[$i];
+
+            if ($recursive && ($files[$i]['type'] ?? '') == TeamSpeak3::FILE_TYPE_DIRECTORY) {
+                $nested = $this->channelFileList($cid, $cpw, $files[$i]['path'].$files[$i]['name'], $recursive);
+                $flattened = array_merge($flattened, $nested);
             }
         }
 
-        uasort($files, [__CLASS__, 'sortFileList']);
+        uasort($flattened, [__CLASS__, 'sortFileList']);
 
-        return $files;
+        return $flattened;
     }
 
     /**
@@ -766,8 +786,25 @@ class Server extends Node
      */
     public function clientFindDb(string $pattern, bool $uid = false): array
     {
-        return array_keys($this->execute('clientdbfind', ['pattern' => $pattern, ($uid) ? '-uid' : null, '-details'])
-            ->toAssocArray('cldbid'));
+        $args = ['pattern' => $pattern];
+
+        // Flags must be appended as separate parameters
+        if ($uid) {
+            $args['-uid'] = null;
+        }
+
+        $args['-details'] = null;
+
+        try {
+            $result = $this->execute('clientdbfind', $args)->toAssocArray('cldbid');
+        } catch (ServerQueryException $e) {
+            if (str_contains($e->getMessage(), 'database empty result set')) {
+                return [];
+            }
+            throw $e;
+        }
+
+        return array_keys($result);
     }
 
     /**
@@ -781,7 +818,33 @@ class Server extends Node
             return 0;
         }
 
-        return $this['virtualserver_clientsonline'] - $this['virtualserver_queryclientsonline'];
+        // Try direct access first
+        if (isset($this->nodeInfo[1]['virtualserver_clientsonline']) && isset($this->nodeInfo[1]['virtualserver_queryclientsonline'])) {
+            $clientsOnline = (int) $this->nodeInfo[1]['virtualserver_clientsonline'];
+            $queryClientsOnline = (int) $this->nodeInfo[1]['virtualserver_queryclientsonline'];
+            $result = $clientsOnline - $queryClientsOnline;
+
+            return max(0, $result);
+        }
+
+        // Fallback: try to refresh node info
+        try {
+            $this->fetchNodeInfo();
+
+            if (isset($this->nodeInfo[1]['virtualserver_clientsonline']) && isset($this->nodeInfo[1]['virtualserver_queryclientsonline'])) {
+                $clientsOnline = (int) $this->nodeInfo[1]['virtualserver_clientsonline'];
+                $queryClientsOnline = (int) $this->nodeInfo[1]['virtualserver_queryclientsonline'];
+                $result = $clientsOnline - $queryClientsOnline;
+
+                return max(0, $result);
+            }
+        } catch (Exception) {
+            // If fetching fails, return 0
+            return 0;
+        }
+
+        // Last fallback
+        return 0;
     }
 
     /**
@@ -1206,14 +1269,32 @@ class Server extends Node
     {
         $this->serverGroupListReset();
 
-        $sgid = $this->execute('servergroupcopy', ['ssgid' => $ssgid, 'tsgid' => $tsgid, 'name' => $name, 'type' => $type])
-            ->toList();
+        $result = $this->execute('servergroupcopy', ['ssgid' => $ssgid, 'tsgid' => $tsgid, 'name' => $name, 'type' => $type])->toList();
 
         if ($tsgid && $name) {
             $this->serverGroupRename($tsgid, $name);
         }
 
-        return count($sgid) ? $sgid['sgid'] : $tsgid;
+        // Search for the new sgid in all elements of the result array
+        $sgid = null;
+
+        for ($i = count($result) - 1; $i >= 0; $i--) {
+            foreach ($result[$i] as $key => $value) {
+                if (stripos($key, 'sgid') !== false) {
+                    // Extrahiere nur die führenden Ziffern
+                    if (preg_match('/\d+/', $value, $matches)) {
+                        $sgid = (int) $matches[0];
+                        break 2;
+                    }
+                }
+            }
+        }
+
+        if ($sgid === null) {
+            throw new \RuntimeException('serverGroupCopy: Could not determine a valid server group ID.');
+        }
+
+        return $sgid;
     }
 
     /**
@@ -2769,7 +2850,25 @@ class Server extends Node
      */
     protected function fetchNodeInfo(): void
     {
-        $this->nodeInfo = array_merge($this->nodeInfo, $this->request('serverinfo')->toList());
+        $serverInfo = $this->request('serverinfo')->toList();
+        $this->nodeInfo = array_merge($this->nodeInfo, $serverInfo);
+
+        // Ensure virtualserver_status is set
+        if (! isset($this->nodeInfo['virtualserver_status'])) {
+            // Try to get the status from the parent's server list if available
+            try {
+                $serverList = $this->getParent()->serverList();
+                if (isset($serverList[$this->getId()])) {
+                    $serverData = $serverList[$this->getId()]->getInfo(false);
+                    if (isset($serverData['virtualserver_status'])) {
+                        $this->nodeInfo['virtualserver_status'] = $serverData['virtualserver_status'];
+                    }
+                }
+            } catch (Exception) {
+                // If we can't get the status, assume it offline
+                $this->nodeInfo['virtualserver_status'] = 'offline';
+            }
+        }
     }
 
     /**
@@ -2847,7 +2946,21 @@ class Server extends Node
      */
     public function isOnline(): bool
     {
-        return $this['virtualserver_status'] == 'online';
+        // First, try to get the property without forcing a refresh
+        $status = $this->getProperty('virtualserver_status');
+
+        if ($status === null) {
+            // Force refresh the node info
+            try {
+                $this->fetchNodeInfo();
+                $status = $this->getProperty('virtualserver_status', 'offline');
+            } catch (Exception) {
+                // If fetching fails, assume it offline
+                return false;
+            }
+        }
+
+        return $status === 'online';
     }
 
     /**
@@ -2857,7 +2970,21 @@ class Server extends Node
      */
     public function isOffline(): bool
     {
-        return $this['virtualserver_status'] == 'offline';
+        // First, try to get the property without forcing a refresh
+        $status = $this->getProperty('virtualserver_status');
+
+        if ($status === null) {
+            // Force refresh the node info
+            try {
+                $this->fetchNodeInfo();
+                $status = $this->getProperty('virtualserver_status', 'offline');
+            } catch (Exception) {
+                // If fetching fails, assume it offline
+                return true;
+            }
+        }
+
+        return $status === 'offline';
     }
 
     /**

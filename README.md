@@ -1,8 +1,11 @@
 # TeamSpeak X PHP Framework
-
+[![PHP-CS-Fixer](https://github.com/Prestige-Solution/ts-x-php-framework/actions/workflows/phpcsfixer.yml/badge.svg?branch=main)](https://github.com/Prestige-Solution/ts-x-php-framework/actions/workflows/phpcsfixer.yml)
+[![PHPUnit](https://github.com/Prestige-Solution/ts-x-php-framework/actions/workflows/phpunit.yml/badge.svg?branch=main)](https://github.com/Prestige-Solution/ts-x-php-framework/actions/workflows/phpunit.yml)
+![Coverage](doc/coverage/coverage-badge.svg)
+> [!CAUTION]
 > **_IMPORTANT CHANGE_**<br>
-> With Version 3.0.0 we refactored to integrate phpseclib3. This changes affects how TCP connections are established.
-> The "raw" mode was removed, and the support for only ssh mode was established to handel Teamspeak 3 and Teamspeak 6 Server connections.
+> With Version 3.x we refactored to integrate phpseclib3. This changes affects how TCP connections are established.
+> The "raw" mode was removed, and the support for only ssh mode was established to handel Teamspeak 3 and Teamspeak 6 Server API connections.
 
 
 The X stands for a non-specific Teamspeak Server Version. So we would handle all current and future Versions from a Teamspeak Server.
@@ -14,7 +17,7 @@ The ideal is that this version can be integrated into your own project and the m
 ---
 
 # Installation
-With the Refactoring at Version 3.0.0, the Framework has a lot of changes. But most functionalities and namespaces are the same. 
+With the Refactoring at Version 3.x, the Framework has a lot of changes. But most functionalities and namespaces are the same. 
 
 **PHP Required Extensions**<br>
 ``apt install php8.3 php8.3-{common,mbstring,ssh2} -y``
@@ -42,9 +45,9 @@ Before you start UnitTests, make sure that you have set the environment variable
 The best way to test all functionalities is to use the serveradmin query user. <br>
 The serveradmin is != Server Admin there you can find in your Teamspeak Client UI. <br>
 
-| serveradmin (Query)        | Server Admin (GUI)        |
-|----------------------------|---------------------------|
-| Max. permission value: 100 | Max. permission value: 75 |
+| serveradmin (Query)                 | Server Admin (GUI)                 |
+|-------------------------------------|------------------------------------|
+| Max. permission value: 100 (=grant) | Max. permission value: 75 (=grant) |
 
 You can find more information in the Documentation [testing-live-server](doc/testing-live-server.md)
 

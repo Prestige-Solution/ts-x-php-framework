@@ -160,11 +160,6 @@ class ReplyTest extends TestCase
         $this->assertEquals(static::$E_CLIENTLIST_EXTENDED_SINGLE_CLIENT_BADGES, (string) $clientlist_array['client_badges']);
     }
 
-    public function testToAssocArray()
-    {
-        $this->markTestSkipped('todo: testToTable');
-    }
-
     /**
      * @throws AdapterException
      * @throws ServerQueryException
@@ -193,25 +188,5 @@ class ReplyTest extends TestCase
         $this->assertEquals('17', $reply->toList()[3]['cldbid']);
         $this->assertEquals('N', $reply->toList()[3]['client_nickname']);
         $this->assertEquals('Q', $reply->toList()[3]['client_unique_identifier']);
-    }
-
-    public function testToObjectArray()
-    {
-        $this->markTestSkipped('todo: testToObjectArray');
-    }
-
-    public function testGetCommandString()
-    {
-        $this->markTestSkipped('todo: testGetCommandString');
-    }
-
-    public function testGetNotifyEvents()
-    {
-        $this->markTestSkipped('todo: testGetNotifyEvents');
-    }
-
-    public function testFetchReply()
-    {
-        $this->markTestSkipped('todo: testFetchReply');
     }
 }

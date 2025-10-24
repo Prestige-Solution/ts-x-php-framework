@@ -147,8 +147,223 @@ class ClientTest extends TestCase
         $userMoved = $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->getInfo();
         $this->assertEquals($userMoved['cid'], $testCid);
 
+        //get client by channel list
+        $clientChannelList = $ts3_VirtualServer->channelGetById($testCid)->clientList();
+        foreach ($clientChannelList as $client) {
+            $this->assertEquals($this->ts3_unit_test_userName, $client['client_nickname']);
+        }
+
+        //get client by channel clientGetById
+        $clientChannelByID = $ts3_VirtualServer->channelGetById($testCid)->clientGetById($userID);
+        $this->assertEquals($this->ts3_unit_test_userName, $clientChannelByID['client_nickname']);
+
+        //get client by channel clientGetByName
+        $clientChannelByName = $ts3_VirtualServer->channelGetById($testCid)->clientGetByName($this->ts3_unit_test_userName);
+        $this->assertEquals($this->ts3_unit_test_userName, $clientChannelByName['client_nickname']);
+
         $this->unset_play_test_channel($ts3_VirtualServer);
         $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+    }
+
+    /**
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws AdapterException
+     * @throws HelperException
+     */
+    public function test_can_send_client_text_message()
+    {
+        if ($this->user_test_active == 'false' || $this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+
+        $userID = $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->getId();
+        $this->assertIsInt($userID);
+        $userID = $ts3_VirtualServer->clientGetById($userID);
+        $this->assertIsObject($userID);
+        $userID->message('Hello World');
+
+        $this->asserttrue(true);
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+    }
+
+    /**
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws AdapterException
+     * @throws HelperException
+     */
+    public function test_can_send_client_poke()
+    {
+        if ($this->user_test_active == 'false' || $this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+
+        $userID = $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->getId();
+        $userID = $ts3_VirtualServer->clientGetById($userID);
+        $userID->poke('UnitTest');
+
+        $this->asserttrue(true);
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+    }
+
+    /**
+     * @throws AdapterException
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws HelperException
+     */
+    public function test_can_find_client_by_name_pattern()
+    {
+        if ($this->user_test_active == 'false' || $this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+
+        $userFindings = $ts3_VirtualServer->clientFind('UnitT');
+
+        foreach ($userFindings as $user) {
+            $this->assertEquals($this->ts3_unit_test_userName, $user['client_nickname']);
+        }
+
+        $this->asserttrue(true);
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+    }
+
+    /**
+     * @throws AdapterException
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws HelperException
+     */
+    public function test_can_get_clientListDB()
+    {
+        if ($this->user_test_active == 'false' || $this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+
+        $clientListDb = $ts3_VirtualServer->clientListDb();
+        $this->assertIsArray($clientListDb);
+
+        $this->asserttrue(true);
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+    }
+
+    /**
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws AdapterException
+     * @throws HelperException
+     */
+    public function test_can_get_clientInfoDB()
+    {
+        if ($this->user_test_active == 'false' || $this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $clientInfoDB = [];
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        $clientListDb = $ts3_VirtualServer->clientListDb();
+
+        foreach ($clientListDb as $client) {
+            if ($client['client_nickname'] == $this->ts3_unit_test_userName) {
+                $clientInfoDB = $ts3_VirtualServer->clientInfoDb($client['cldbid']);
+            }
+        }
+
+        $this->assertIsArray($clientInfoDB);
+
+        $this->asserttrue(true);
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+    }
+
+    /**
+     * @throws AdapterException
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws HelperException
+     */
+    public function test_can_clientFindDb_by_name_pattern()
+    {
+        if ($this->user_test_active == 'false' || $this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+
+        $resultArray = $ts3_VirtualServer->clientFindDb('UnitT');
+
+        foreach ($resultArray as $user) {
+            var_dump($user);
+            $this->assertEquals($this->ts3_unit_test_userName, $user['client_nickname']);
+        }
+
+        $this->asserttrue(true);
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+    }
+
+    /**
+     * @throws AdapterException
+     * @throws HelperException
+     * @throws ServerQueryException
+     */
+    public function test_can_get_clientCount()
+    {
+        if ($this->user_test_active == 'false' || $this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+
+        $clientCount = $ts3_VirtualServer->clientCount();
+        $this->assertIsInt($clientCount);
+        $this->assertGreaterThan(0, $clientCount);
+
+        $this->asserttrue(true);
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+    }
+
+    /**
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws AdapterException
+     * @throws HelperException
+     * @throws NodeException
+     */
+    public function test_can_add_list_del_client_to_servergroup()
+    {
+        if ($this->active == 'false' || $this->user_test_active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        $sgid = $ts3_VirtualServer->serverGroupCreate('UnitTest', 1);
+
+        $user = $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName);
+        $clidDB = $ts3_VirtualServer->clientGetByUid($user['client_unique_identifier']);
+
+        $ts3_VirtualServer->serverGroupGetById($sgid)->clientAdd($clidDB['client_database_id']);
+        $clientList = $ts3_VirtualServer->serverGroupGetById($sgid)->clientList();
+
+        foreach ($clientList as $client) {
+            $this->assertEquals($this->ts3_unit_test_userName, $client['client_nickname']);
+        }
+
+        $ts3_VirtualServer->serverGroupGetById($sgid)->clientDel($clidDB['client_database_id']);
+
+        //remember at this point the test will fail if the user is still in the servergroup
+        // unset will not force delete the user from the servergroup
+        $ts3_VirtualServer->serverGroupDelete($sgid);
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $this->assertFalse($ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
     }
 
     /**

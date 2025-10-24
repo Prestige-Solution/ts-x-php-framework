@@ -576,6 +576,157 @@ class ChannelTest extends TestCase
     }
 
     /**
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws AdapterException
+     * @throws HelperException
+     */
+    public function test_can_handle_file_directory()
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        $this->set_play_test_channel($ts3_VirtualServer);
+
+        $ts3_VirtualServer->channelDirCreate($this->test_cid, '', '/test_dir');
+        $fileList = $ts3_VirtualServer->channelFileList($this->test_cid);
+
+        foreach ($fileList as $file) {
+            $this->assertEquals('test_dir', $file['name']);
+            $this->assertIsString($file['name']);
+        }
+
+        $ts3_VirtualServer->channelFileRename($this->test_cid, '', '/test_dir', '/test_dir_renamed');
+        $ts3_VirtualServer->channelFileDelete($this->test_cid, '', '/test_dir_renamed');
+        $fileList = $ts3_VirtualServer->channelFileList($this->test_cid);
+        $this->assertEmpty($fileList);
+
+        //enhance test to validate over channel.php
+        $ts3_VirtualServer->channelGetById($this->test_cid)->dirCreate('', '/test_dir');
+        $fileListGetByChannelID = $ts3_VirtualServer->channelGetById($this->test_cid)->fileList();
+        $ts3_VirtualServer->channelGetById($this->test_cid)->fileRename('', '/test_dir', '/test_dir_renamed');
+
+        foreach ($fileListGetByChannelID as $fileGetByChannelID) {
+            $this->assertEquals('test_dir', $fileGetByChannelID['name']);
+            $this->assertIsString($fileGetByChannelID['name']);
+        }
+
+        $ts3_VirtualServer->channelGetById($this->test_cid)->fileDelete('', '/test_dir_renamed');
+        $fileList = $ts3_VirtualServer->channelGetById($this->test_cid)->fileList();
+        $this->assertEmpty($fileList);
+
+        $this->unset_play_test_channel($ts3_VirtualServer);
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+    }
+
+    /**
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws AdapterException
+     * @throws HelperException
+     */
+    public function test_can_get_level()
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        $this->set_play_test_channel($ts3_VirtualServer);
+
+        //get level means hierarchy level
+        $getLevel = $ts3_VirtualServer->channelGetLevel($this->test_cid);
+        $this->assertEquals(1, $getLevel);
+
+        $channelCidLevelOne = $ts3_VirtualServer->channelgetByName('Play-Test')->getId();
+        $cidChannelLevelTwo = $ts3_VirtualServer->channelcreate(['channel_name' => 'Standard Channel Level 2', 'channel_flag_permanent' => 1, 'cpid' => $channelCidLevelOne]);
+        $getLevelTwo = $ts3_VirtualServer->channelGetLevel($cidChannelLevelTwo);
+        $this->assertEquals(2, $getLevelTwo);
+
+        //enhance test to validate over channel.php
+        $getLevelOverChannel = $ts3_VirtualServer->channelGetByName('Standard Channel Level 2')->getLevel();
+        $this->assertEquals(2, $getLevelOverChannel);
+
+        $this->unset_play_test_channel($ts3_VirtualServer);
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+    }
+
+    /**
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws AdapterException
+     * @throws HelperException
+     */
+    public function test_can_get_subChannelList()
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        $this->set_play_test_channel($ts3_VirtualServer);
+
+        $subChannelList = $ts3_VirtualServer->channelGetByName('UnitTest')->subChannelList();
+
+        foreach ($subChannelList as $subChannel) {
+            $this->assertEquals('Play-Test', $subChannel['channel_name']);
+        }
+
+        $this->unset_play_test_channel($ts3_VirtualServer);
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+    }
+
+    /**
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws AdapterException
+     * @throws HelperException
+     */
+    public function test_can_get_subChannelGetById()
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        $this->set_play_test_channel($ts3_VirtualServer);
+
+        $subChannel = $ts3_VirtualServer->channelGetByName('UnitTest')->subChannelGetById($this->test_cid);
+
+        $this->assertEquals('Play-Test', $subChannel['channel_name']);
+        $this->assertIsInt($subChannel['cid']);
+
+        $this->unset_play_test_channel($ts3_VirtualServer);
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+    }
+
+    /**
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws AdapterException
+     * @throws HelperException
+     */
+    public function test_can_get_subChannelGetByName()
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        $this->set_play_test_channel($ts3_VirtualServer);
+
+        $subChannel = $ts3_VirtualServer->channelGetByName('UnitTest')->subChannelGetByName('Play-Test');
+
+        $this->assertEquals('Play-Test', $subChannel['channel_name']);
+        $this->assertIsInt($subChannel['cid']);
+
+        $this->unset_play_test_channel($ts3_VirtualServer);
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+    }
+
+    /**
      * @throws AdapterException
      * @throws TransportException
      * @throws ServerQueryException

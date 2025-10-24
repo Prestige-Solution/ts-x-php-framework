@@ -19,7 +19,7 @@
 >
   <source>
     <include>
-      <directory>./</directory>
+      <directory>./src</directory>
     </include>
     <exclude>
       <directory>./images</directory>

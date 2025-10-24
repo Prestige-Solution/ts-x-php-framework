@@ -74,23 +74,25 @@ class Channel extends Node
      */
     public function subChannelGetById(int $cid): self
     {
-        if (! array_key_exists($cid, $this->subChannelList())) {
+        $subChannels = $this->subChannelList();
+
+        if (! array_key_exists($cid, $subChannels)) {
             throw new ServerQueryException('invalid channelID', 0x300);
         }
 
-        return $this->channelList[$cid];
+        return $subChannels[$cid];
     }
 
     /**
      * Returns the PlanetTeamSpeak\TeamSpeak3Framework\Node\Channel object matching the given name.
      *
-     * @param  int  $name
+     * @param  string  $name
      * @return Channel
      * @throws AdapterException
      * @throws ServerQueryException
      * @throws TransportException
      */
-    public function subChannelGetByName(int $name): self
+    public function subChannelGetByName(string $name): self
     {
         foreach ($this->subChannelList() as $channel) {
             if ($channel['channel_name'] == $name) {
@@ -134,23 +136,25 @@ class Channel extends Node
      */
     public function clientGetById(int $clid): Client
     {
-        if (! array_key_exists($clid, $this->clientList())) {
+        $clientList = $this->clientList();
+
+        if (! array_key_exists($clid, $clientList)) {
             throw new ServerQueryException('invalid clientID', 0x200);
         }
 
-        return $this->clientList[$clid];
+        return $clientList[$clid];
     }
 
     /**
      * Returns the PlanetTeamSpeak\TeamSpeak3Framework\Node\Client object matching the given name.
      *
-     * @param  int  $name
+     * @param  string  $name
      * @return Client
      * @throws AdapterException
      * @throws ServerQueryException
      * @throws TransportException
      */
-    public function clientGetByName(int $name): Client
+    public function clientGetByName(string $name): Client
     {
         foreach ($this->clientList() as $client) {
             if ($client['client_nickname'] == $name) {
