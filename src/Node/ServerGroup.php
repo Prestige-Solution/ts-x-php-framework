@@ -216,6 +216,7 @@ class ServerGroup extends Group
      */
     public function getIcon(): string
     {
+        //TODO: HÄ whats this?
         return 'group_server';
     }
 }
