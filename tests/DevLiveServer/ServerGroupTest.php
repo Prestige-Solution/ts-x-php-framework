@@ -204,6 +204,30 @@ class ServerGroupTest extends TestCase
 
     /**
      * @throws AdapterException
+     * @throws HelperException
+     * @throws ServerQueryException
+     * @throws TransportException
+     */
+    public function test_can_get_iconList()
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $this->ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        $this->set_play_test_servergroup($this->ts3_VirtualServer);
+
+        //memo: an array can be empty if no icons uploaded
+        $iconList = $this->ts3_VirtualServer->iconList();
+        $this->assertIsarray($iconList);
+
+        $this->unset_play_test_servergroup($this->ts3_VirtualServer);
+        $this->ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $this->assertFalse($this->ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
+    }
+
+    /**
+     * @throws AdapterException
      * @throws ServerQueryException
      * @throws TransportException
      */
