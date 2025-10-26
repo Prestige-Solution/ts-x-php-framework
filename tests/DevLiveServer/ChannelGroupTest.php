@@ -181,6 +181,31 @@ class ChannelGroupTest extends TestCase
 
     /**
      * @throws AdapterException
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws HelperException
+     */
+    public function test_channelGroupList()
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $this->ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        $channelgrouplist = $this->ts3_VirtualServer->channelGroupList(['type' => 1]);
+
+        foreach ($channelgrouplist as $channelgroup) {
+            $this->assertContains($channelgroup['name'], ['Channel Admin', 'Guest', 'Operator']);
+            $this->assertIsInt($channelgroup['cgid']);
+        }
+
+
+        $this->ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $this->assertFalse($this->ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
+    }
+
+    /**
+     * @throws AdapterException
      * @throws ServerQueryException
      * @throws TransportException
      */
