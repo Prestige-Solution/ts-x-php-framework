@@ -123,7 +123,7 @@ class ServerGroupTest extends TestCase
      * @throws NodeException
      * @throws HelperException
      */
-    public function test_can_copy_servergroup()
+    public function test_can_copy_delete_servergroup()
     {
         if ($this->active == 'false') {
             $this->markTestSkipped('DevLiveServer ist not active');
@@ -136,7 +136,7 @@ class ServerGroupTest extends TestCase
         $getDuplicatedServerGroup = $this->ts3_VirtualServer->serverGroupGetById($duplicatedSGID);
         $this->assertEquals('UnitTest-Copy', $getDuplicatedServerGroup['name']);
 
-        $this->ts3_VirtualServer->serverGroupDelete($duplicatedSGID);
+        $this->ts3_VirtualServer->serverGroupGetById($duplicatedSGID)->delete();
         try {
             $this->ts3_VirtualServer->serverGroupGetById($duplicatedSGID);
             $this->fail('ServerGroup should not exist');
