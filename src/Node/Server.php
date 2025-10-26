@@ -1147,10 +1147,16 @@ class Server extends Node
      */
     public function clientPermList(int $cldbid, bool $permsid = false): array
     {
-        $this->clientListReset();
+        try {
+            $result = $this->execute('clientpermlist', ['cldbid' => $cldbid, $permsid ? '-permsid' : null])->toAssocArray($permsid ? 'permsid' : 'permid');
+        }catch (ServerQueryException $e) {
+            if (str_contains($e->getMessage(), 'database empty result set')) {
+                return [];
+            }
+            throw $e;
+        }
 
-        return $this->execute('clientpermlist', ['cldbid' => $cldbid, $permsid ? '-permsid' : null])
-            ->toAssocArray($permsid ? 'permsid' : 'permid');
+        return $result;
     }
 
     /**
