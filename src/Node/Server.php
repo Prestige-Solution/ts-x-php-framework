@@ -1312,7 +1312,7 @@ class Server extends Node
         for ($i = count($result) - 1; $i >= 0; $i--) {
             foreach ($result[$i] as $key => $value) {
                 if (stripos($key, 'sgid') !== false) {
-                    // Extrahiere nur die führenden Ziffern
+                    // Extract only the leading digits
                     if (preg_match('/\d+/', $value, $matches)) {
                         $sgid = (int) $matches[0];
                         break 2;
