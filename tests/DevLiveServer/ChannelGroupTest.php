@@ -71,10 +71,73 @@ class ChannelGroupTest extends TestCase
         }
 
         $this->ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
-        $this->dev_reset_channelgroup();
         $this->set_play_test_channelgroup($this->ts3_VirtualServer);
 
+        $channelgroup = $this->ts3_VirtualServer->channelGroupGetByName('UnitTest');
 
+        $this->assertIsString($channelgroup['name']);
+        $this->assertEquals('UnitTest', $channelgroup['name']);
+
+        $this->unset_play_test_channelgroup($this->ts3_VirtualServer);
+        $this->ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $this->assertFalse($this->ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
+    }
+
+    /**
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws AdapterException
+     * @throws HelperException
+     */
+    public function test_can_rename_channelgroup()
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $this->ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        $this->set_play_test_channelgroup($this->ts3_VirtualServer);
+
+        $channelgroup = $this->ts3_VirtualServer->channelGroupGetByName('UnitTest');
+        $channelgroup->rename('UnitTest-Renamed');
+        $renamedChannelGroup = $this->ts3_VirtualServer->channelGroupGetByName('UnitTest-Renamed');
+
+        $this->assertIsString($renamedChannelGroup['name']);
+        $this->assertEquals('UnitTest-Renamed', $renamedChannelGroup['name']);
+
+        $this->unset_play_test_channelgroup($this->ts3_VirtualServer);
+        $this->ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $this->assertFalse($this->ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
+    }
+
+    /**
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws AdapterException
+     * @throws HelperException
+     */
+    public function test_can_copy_delete_channelgroup()
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $this->ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        $this->set_play_test_channelgroup($this->ts3_VirtualServer);
+
+        $this->ts3_VirtualServer->channelGroupGetByName('UnitTest')->copy('UnitTest-Copy');
+        $copiedChannelGroup = $this->ts3_VirtualServer->channelGroupGetByName('UnitTest-Copy');
+
+        $this->assertIsString($copiedChannelGroup['name']);
+        $this->assertEquals('UnitTest-Copy', $copiedChannelGroup['name']);
+        $this->ts3_VirtualServer->channelGroupGetByName('UnitTest-Copy')->delete();
+
+        try {
+            $this->ts3_VirtualServer->channelGroupGetByName('UnitTest-Copy');
+            $this->fail('ServerGroup should not exist');
+        } catch (ServerQueryException $e) {
+            $this->assertEquals('invalid groupID', $e->getMessage());
+        }
 
         $this->unset_play_test_channelgroup($this->ts3_VirtualServer);
         $this->ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
