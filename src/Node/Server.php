@@ -1161,20 +1161,28 @@ class Server extends Node
      * @param  int|int[]  $permid
      * @param  int|int[]  $permvalue
      * @param  bool|bool[]  $permskip
+     * @param  bool  $continueonerror
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
      * @throws TransportException
      */
-    public function clientPermAssign(int $cldbid, int|array $permid, int|array $permvalue, bool|array $permskip = false): void
+    public function clientPermAssign(int $cldbid, int|array $permid, int|array $permvalue, bool|array $permskip = false, bool $continueonerror = false): void
     {
+        if ($continueonerror) {
+            $continueError = '-continueonerror';
+        }else
+        {
+            $continueError = null;
+        }
+
         if (! is_array($permid)) {
             $permident = (is_numeric($permid)) ? 'permid' : 'permsid';
         } else {
             $permident = (is_numeric(current($permid))) ? 'permid' : 'permsid';
         }
 
-        $this->execute('clientaddperm -continueonerror', ['cldbid' => $cldbid, $permident => $permid, 'permvalue' => $permvalue, 'permskip' => $permskip]);
+        $this->execute('clientaddperm',[$continueError, 'cldbid' => $cldbid, $permident => $permid, 'permvalue' => $permvalue, 'permskip' => $permskip]);
     }
 
     /**
