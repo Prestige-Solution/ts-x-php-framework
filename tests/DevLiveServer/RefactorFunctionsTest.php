@@ -136,7 +136,7 @@ class RefactorFunctionsTest extends TestCase
         $this->ts3_VirtualServer->channelGroupListReset();
 
         // Get servergroup client info
-        $channelGroupList = $this->ts3_VirtualServer->channelGroupClientList(null,null,null,true);
+        $channelGroupList = $this->ts3_VirtualServer->channelGroupClientList(null, null, null, true);
 
         $channelgroup_clientlist = [];
         foreach ($channelGroupList as $channelgroup) {

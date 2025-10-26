@@ -1657,7 +1657,7 @@ class Server extends Node
                 $group = [];
                 $pairs = explode(' ', $line);
                 foreach ($pairs as $pair) {
-                    if (!str_contains($pair, '=')) {
+                    if (! str_contains($pair, '=')) {
                         continue;
                     }
 
@@ -1672,7 +1672,7 @@ class Server extends Node
                     $group[$key] = $value;
                 }
 
-                if (!isset($group['cgid'])) {
+                if (! isset($group['cgid'])) {
                     continue;
                 }
 

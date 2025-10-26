@@ -199,7 +199,6 @@ class ChannelGroupTest extends TestCase
             $this->assertIsInt($channelgroup['cgid']);
         }
 
-
         $this->ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
         $this->assertFalse($this->ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
     }
