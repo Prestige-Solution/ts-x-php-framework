@@ -367,6 +367,30 @@ class ClientTest extends TestCase
     }
 
     /**
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws AdapterException
+     * @throws HelperException
+     */
+    public function test_can_get_by_clientGetByDbid()
+    {
+        if ($this->active == 'false' || $this->user_test_active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+
+        $user = $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName);
+
+        $cliByDBid = $ts3_VirtualServer->clientGetByDbid($user['client_database_id']);
+        $this->assertIsString($cliByDBid['client_nickname']);
+        $this->assertEquals($this->ts3_unit_test_userName, $cliByDBid['client_nickname']);
+
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $this->assertFalse($ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
+    }
+
+    /**
      * @throws AdapterException
      * @throws ServerQueryException
      * @throws TransportException
