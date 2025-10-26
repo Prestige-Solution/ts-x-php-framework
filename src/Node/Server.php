@@ -1149,7 +1149,7 @@ class Server extends Node
     {
         try {
             $result = $this->execute('clientpermlist', ['cldbid' => $cldbid, $permsid ? '-permsid' : null])->toAssocArray($permsid ? 'permsid' : 'permid');
-        }catch (ServerQueryException $e) {
+        } catch (ServerQueryException $e) {
             if (str_contains($e->getMessage(), 'database empty result set')) {
                 return [];
             }
@@ -1177,8 +1177,7 @@ class Server extends Node
     {
         if ($continueonerror) {
             $continueError = '-continueonerror';
-        }else
-        {
+        } else {
             $continueError = null;
         }
 
@@ -1188,7 +1187,7 @@ class Server extends Node
             $permident = (is_numeric(current($permid))) ? 'permid' : 'permsid';
         }
 
-        $this->execute('clientaddperm',[$continueError, 'cldbid' => $cldbid, $permident => $permid, 'permvalue' => $permvalue, 'permskip' => $permskip]);
+        $this->execute('clientaddperm', [$continueError, 'cldbid' => $cldbid, $permident => $permid, 'permvalue' => $permvalue, 'permskip' => $permskip]);
     }
 
     /**

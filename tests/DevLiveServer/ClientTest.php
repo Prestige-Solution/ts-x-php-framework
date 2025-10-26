@@ -454,7 +454,7 @@ class ClientTest extends TestCase
 
         $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
         $user = $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName);
-        $permList = $ts3_VirtualServer->clientPermList($user['client_database_id'],true);
+        $permList = $ts3_VirtualServer->clientPermList($user['client_database_id'], true);
 
         //expect the client itself has no permissions
         $this->assertIsArray($permList);
@@ -488,7 +488,6 @@ class ClientTest extends TestCase
         $result = $ts3_VirtualServer->clientPermList($user['client_database_id'], true);
         $this->assertIsArray($result);
         $this->assertEmpty($result);
-
 
         $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
         $this->assertFalse($ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
