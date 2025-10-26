@@ -237,11 +237,12 @@ class ServerGroupTest extends TestCase
     }
 
     /**
+     * @param  Server  $ts3_VirtualServer
      * @throws AdapterException
      * @throws ServerQueryException
-     * @throws HelperException
+     * @throws TransportException
      */
-    public function unset_play_test_servergroup($ts3_VirtualServer): void
+    public function unset_play_test_servergroup(Server $ts3_VirtualServer): void
     {
         $ts3_VirtualServer->serverGroupDelete($this->sgid);
     }
