@@ -1737,14 +1737,32 @@ class Server extends Node
     {
         $this->channelGroupListReset();
 
-        $cgid = $this->execute('channelgroupcopy', ['scgid' => $scgid, 'tcgid' => $tcgid, 'name' => $name, 'type' => $type])
-            ->toList();
+        $result = $this->execute('channelgroupcopy', ['scgid' => $scgid, 'tcgid' => $tcgid, 'name' => $name, 'type' => $type])->toList();
 
         if ($tcgid && $name) {
             $this->channelGroupRename($tcgid, $name);
         }
 
-        return count($cgid) ? $cgid['cgid'] : $tcgid;
+        // Search for the new scgid in all elements of the result array
+        $cgid = null;
+
+        for ($i = count($result) - 1; $i >= 0; $i--) {
+            foreach ($result[$i] as $key => $value) {
+                if (stripos($key, 'scgid') !== false) {
+                    // Extract only the leading digits
+                    if (preg_match('/\d+/', $value, $matches)) {
+                        $cgid = (int) $matches[0];
+                        break 2;
+                    }
+                }
+            }
+        }
+
+        if ($cgid === null) {
+            throw new \RuntimeException('channelGroupCopy: Could not determine a valid server group ID.');
+        }
+
+        return $cgid;
     }
 
     /**
