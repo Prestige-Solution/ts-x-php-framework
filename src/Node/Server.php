@@ -927,17 +927,26 @@ class Server extends Node
 
     /**
      * Returns an array containing the last known nickname and the database ID of the client matching
-     * the unique identifier specified with $cluid.
+     * the unique identifier specified with $uid.
      *
-     * @param  string  $cluid
+     * @param  string  $uid
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
      * @throws TransportException
      */
-    public function clientGetNameByUid(string $cluid): array
+    public function clientGetNameByUid(string $uid): array
     {
-        return $this->execute('clientgetnamefromuid', ['cluid' => $cluid])->toList();
+        $result = [];
+
+        foreach ($this->clientList() as $client) {
+            if ($client['client_unique_identifier'] == $uid) {
+                $result['client_nickname'] = $client['client_nickname'];
+                $result['client_database_id'] = $client['client_database_id'];
+            }
+        }
+
+        return $result;
     }
 
     /**
