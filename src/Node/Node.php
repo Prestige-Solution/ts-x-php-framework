@@ -192,30 +192,6 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
     }
 
     /**
-     * Returns a possible classname for the node which can be used as an HTML property.
-     *
-     * @param string $prefix
-     * @return string
-     */
-    public function getClass(string $prefix = 'ts3_'): string
-    {
-        if ($this instanceof Channel && $this->isSpacer()) {
-            return $prefix.'spacer';
-        } elseif ($this instanceof Client && $this['client_type']) {
-            return $prefix.'query';
-        }
-
-        return $prefix.StringHelper::factory(get_class($this))->section('_', 2)->toLower();
-    }
-
-    /**
-     * Returns a unique identifier for the node which can be used as an HTML property.
-     *
-     * @return string
-     */
-    abstract public function getUniqueId(): string;
-
-    /**
      * Returns the name of a possible icon to display the node object.
      *
      * @return string

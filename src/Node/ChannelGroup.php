@@ -173,16 +173,6 @@ class ChannelGroup extends Group
     }
 
     /**
-     * Returns a unique identifier for the node which can be used as an HTML property.
-     *
-     * @return string
-     */
-    public function getUniqueId(): string
-    {
-        return $this->getParent()->getUniqueId().'_cg'.$this->getId();
-    }
-
-    /**
      * Returns the name of a possible icon to display the node object.
      *
      * @return string
