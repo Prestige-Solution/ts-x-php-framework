@@ -441,6 +441,60 @@ class ClientTest extends TestCase
     }
 
     /**
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws AdapterException
+     * @throws HelperException
+     */
+    public function test_can_handle_permission()
+    {
+        if ($this->active == 'false' || $this->user_test_active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        $user = $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName);
+        $permList = $ts3_VirtualServer->clientPermList($user['client_database_id'],true);
+
+        //expect the client itself has no permissions
+        $this->assertIsArray($permList);
+        $this->assertEmpty($permList);
+
+        //now add permission at the client level
+        $ts3_VirtualServer->clientPermAssign($user['client_database_id'], ['i_client_poke_power'], 75);
+        $result = $ts3_VirtualServer->clientPermList($user['client_database_id'], true);
+
+        $this->assertIsArray($result);
+        $this->assertNotEmpty($result);
+
+        foreach ($result as $perm) {
+            $this->assertEquals('i_client_poke_power', $perm['permsid']);
+            $this->assertEquals(75, $perm['permvalue']);
+        }
+
+        $ts3_VirtualServer->clientPermAssign($user['client_database_id'], ['i_client_poke_power'], 40);
+        $result2 = $ts3_VirtualServer->clientPermList($user['client_database_id'], true);
+
+        $this->assertIsArray($result2);
+        $this->assertNotEmpty($result2);
+
+        foreach ($result2 as $perm) {
+            $this->assertEquals('i_client_poke_power', $perm['permsid']);
+            $this->assertEquals(40, $perm['permvalue']);
+        }
+
+        //remove permission
+        $ts3_VirtualServer->clientPermRemove($user['client_database_id'], ['i_client_poke_power']);
+        $result = $ts3_VirtualServer->clientPermList($user['client_database_id'], true);
+        $this->assertIsArray($result);
+        $this->assertEmpty($result);
+
+
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $this->assertFalse($ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
+    }
+
+    /**
      * @throws AdapterException
      * @throws ServerQueryException
      * @throws TransportException
