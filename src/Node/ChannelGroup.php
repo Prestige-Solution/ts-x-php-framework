@@ -98,14 +98,14 @@ class ChannelGroup extends Group
      * Adds a set of specified permissions to the channel group. Multiple permissions
      * can be added by providing the two parameters of each permission in separate arrays.
      *
-     * @param  int  $permid
-     * @param  int  $permvalue
+     * @param  int|array  $permid
+     * @param  int|array  $permvalue
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
      * @throws TransportException
      */
-    public function permAssign(int $permid, int $permvalue): void
+    public function permAssign(int|array $permid, int|array $permvalue): void
     {
         $this->getParent()->channelGroupPermAssign($this->getId(), $permid, $permvalue);
     }
@@ -114,13 +114,13 @@ class ChannelGroup extends Group
      * Removes a set of specified permissions from the channel group. Multiple
      * permissions can be removed at once.
      *
-     * @param  int  $permid
+     * @param  int|array  $permid
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
      * @throws TransportException
      */
-    public function permRemove(int $permid): void
+    public function permRemove(int|array $permid): void
     {
         $this->getParent()->channelGroupPermRemove($this->getId(), $permid);
     }
