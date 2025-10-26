@@ -123,7 +123,7 @@ class RefactorFunctionsTest extends TestCase
      * @throws AdapterException
      * @throws \Exception
      */
-    public function test_channelGroupList_channelGroupClientList()
+    public function test_channelGroupClientList()
     {
         if ($this->active == 'false') {
             $this->markTestSkipped('DevLiveServer ist not active');
@@ -136,13 +136,16 @@ class RefactorFunctionsTest extends TestCase
         $this->ts3_VirtualServer->channelGroupListReset();
 
         // Get servergroup client info
-        $this->ts3_VirtualServer->clientList(['client_type' => 0]);
-        $channelGroupList = $this->ts3_VirtualServer->channelGroupList();
+        $channelGroupList = $this->ts3_VirtualServer->channelGroupClientList(null,null,null,true);
 
         $channelgroup_clientlist = [];
         foreach ($channelGroupList as $channelgroup) {
-            $channelgroup_clientlist[$channelgroup->cgid] = count($this->ts3_VirtualServer->channelGroupClientList($channelgroup->cgid));
+            $channelgroup_clientlist[$channelgroup['cgid']] = count($this->ts3_VirtualServer->channelGroupClientList($channelgroup['cgid']));
         }
+
+        //IMPORTANT set the UnitTestuser at a channel as operator
+        $this->assertIsArray($channelgroup_clientlist);
+        $this->assertEquals(1, $channelgroup_clientlist[6]);
 
         $this->ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
         $this->assertFalse($this->ts3_VirtualServer->getAdapter()->getTransport()->isConnected());

@@ -1941,9 +1941,29 @@ class Server extends Node
             throw $e;
         }
 
+        // Remove the meta-entry "channelgroupclientlist"
+        $result = array_values(array_filter($result, static function ($row) {
+            // Only keep if these keys exist → real data record
+            return isset($row['cid'], $row['cldbid'], $row['cgid']);
+        }));
+
         if ($resolve) {
             foreach ($result as $k => $v) {
-                $result[$k] = array_merge($v, $this->clientInfoDb($v['cldbid']));
+                $clientInfo = $this->clientInfoDb($v['cldbid']);
+
+                // Remove meta entry “clientdbinfo” + filter empty entries
+                $clientInfo = array_values(array_filter($clientInfo, static function ($row) {
+                    return isset($row['client_database_id']) || isset($row['client_unique_identifier']);
+                }));
+
+                // Flatten if clientInfoDb returns multiple rows
+                $flattened = [];
+                foreach ($clientInfo as $row) {
+                    $flattened = array_merge($flattened, $row);
+                }
+
+                // Now insert the client info block into the actual data record.
+                $result[$k] = array_merge($v, $flattened);
             }
         }
 
