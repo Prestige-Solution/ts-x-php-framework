@@ -145,6 +145,41 @@ class ChannelGroupTest extends TestCase
     }
 
     /**
+     * @throws HelperException
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws AdapterException
+     */
+    public function test_can_assign_remove_permissions_to_channelgroup()
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $this->ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        $this->set_play_test_channelgroup($this->ts3_VirtualServer);
+
+        $this->ts3_VirtualServer->channelGroupPermAssign($this->cgid, ['i_client_private_textmessage_power'], [75]);
+        $this->ts3_VirtualServer->channelGroupGetById($this->cgid)->permAssign(['i_client_talk_power'], 75);
+
+        $permList = $this->ts3_VirtualServer->channelGroupGetById($this->cgid)->permList(true);
+        $this->assertEquals(75, $permList['i_client_talk_power']['permvalue']);
+        $this->assertEquals(75, $permList['i_client_private_textmessage_power']['permvalue']);
+
+        $this->ts3_VirtualServer->channelGroupGetById($this->cgid)->permRemove(['i_client_private_textmessage_power']);
+        $this->ts3_VirtualServer->channelGroupGetById($this->cgid)->permRemove(['i_client_talk_power']);
+
+        $permListKeyRemoved = $this->ts3_VirtualServer->channelGroupGetById($this->cgid)->permList(true);
+
+        $this->assertArrayNotHasKey('i_client_talk_power', $permListKeyRemoved);
+        $this->assertArrayNotHasKey('i_client_private_textmessage_power', $permListKeyRemoved);
+
+        $this->unset_play_test_channelgroup($this->ts3_VirtualServer);
+        $this->ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $this->assertFalse($this->ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
+    }
+
+    /**
      * @throws AdapterException
      * @throws ServerQueryException
      * @throws TransportException
