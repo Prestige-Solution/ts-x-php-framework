@@ -1,0 +1,118 @@
+<?php
+
+namespace PlanetTeamSpeak\TeamSpeak3Framework\Tests\DevLiveServer;
+
+use PHPUnit\Framework\TestCase;
+use PlanetTeamSpeak\TeamSpeak3Framework\Adapter\Adapter;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\HelperException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\ServerQueryException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\TransportException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Node\Host;
+use PlanetTeamSpeak\TeamSpeak3Framework\Node\Node;
+use PlanetTeamSpeak\TeamSpeak3Framework\Node\Server;
+use PlanetTeamSpeak\TeamSpeak3Framework\TeamSpeak3;
+
+class ChannelGroupTest extends TestCase
+{
+    /**
+     * ATTENTION
+     * Use the .env.testing Variable "DEV_LIVE_SERVER_AVAILABLE" to activate this Test
+     * Use this Testcase only with a development Teamspeak Server
+     * Otherwise the TS3 Server can be destroyed
+     */
+    private string $active;
+
+    private string $host;
+
+    private string $queryPort;
+
+    private string $user;
+
+    private string $password;
+
+    private string $ts3_server_uri;
+
+    private int $cgid;
+
+    private Server|Adapter|Node|Host $ts3_VirtualServer;
+
+    public function setUp(): void
+    {
+        //proof test active
+        if (file_exists('./.env.testing')) {
+            $env = file('./.env.testing');
+            //get live server is available
+            $this->active = str_replace('DEV_LIVE_SERVER_AVAILABLE=', '', preg_replace('#\n(?!\n)#', '', $env[2]));
+            $this->host = str_replace('DEV_LIVE_SERVER_HOST=', '', preg_replace('#\n(?!\n)#', '', $env[3]));
+            $this->queryPort = str_replace('DEV_LIVE_SERVER_QUERY_PORT=', '', preg_replace('#\n(?!\n)#', '', $env[4]));
+            $this->user = str_replace('DEV_LIVE_SERVER_QUERY_USER=', '', preg_replace('#\n(?!\n)#', '', $env[5]));
+            $this->password = str_replace('DEV_LIVE_SERVER_QUERY_USER_PASSWORD=', '', preg_replace('#\n(?!\n)#', '', $env[6]));
+        } else {
+            $this->active = 'false';
+        }
+
+        $this->ts3_server_uri = 'serverquery://'.$this->user.':'.$this->password.'@'.$this->host.':'.$this->queryPort.
+            '/?server_port=9987'.
+            '&no_query_clients=0'.
+            '&timeout=30';
+    }
+
+    /**
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws AdapterException
+     * @throws HelperException
+     */
+    public function test_can_get_channelgroup_by_name()
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $this->ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        $this->dev_reset_channelgroup();
+        $this->set_play_test_channelgroup($this->ts3_VirtualServer);
+
+
+
+        $this->unset_play_test_channelgroup($this->ts3_VirtualServer);
+        $this->ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $this->assertFalse($this->ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
+    }
+
+    /**
+     * @throws AdapterException
+     * @throws ServerQueryException
+     * @throws TransportException
+     */
+    private function set_play_test_channelgroup(Server $ts3VirtualServer): void
+    {
+        $this->cgid = $ts3VirtualServer->channelGroupCreate('UnitTest', 1);
+    }
+
+    /**
+     * @throws AdapterException
+     * @throws ServerQueryException
+     * @throws TransportException
+     */
+    public function unset_play_test_channelgroup(Server $ts3_VirtualServer): void
+    {
+        $ts3_VirtualServer->channelGroupDelete($this->cgid);
+    }
+
+    /**
+     * @throws AdapterException
+     * @throws TransportException
+     * @throws ServerQueryException
+     */
+    public function dev_reset_channelgroup(): void
+    {
+        $channelgrouplist = $this->ts3_VirtualServer->channelGroupList(['type' => 1]);
+        foreach ($channelgrouplist as $channelgroup) {
+            if ($channelgroup['name'] != 'Channel Admin' && $channelgroup['name'] != 'Guest' && $channelgroup['name'] != 'Operator') {
+                $this->ts3_VirtualServer->channelGroupDelete($channelgroup['cgid'], true);
+            }
+        }
+    }
+}
