@@ -976,7 +976,16 @@ class Server extends Node
      */
     public function clientGetNameByDbid(string $cldbid): array
     {
-        return $this->execute('clientgetnamefromdbid', ['cldbid' => $cldbid])->toList();
+        $result = [];
+
+        foreach ($this->clientList() as $client) {
+            if ($client['client_database_id'] == $cldbid) {
+                $result['client_nickname'] = $client['client_nickname'];
+                $result['client_unique_identifier'] = $client['client_unique_identifier'];
+            }
+        }
+
+        return $result;
     }
 
     /**
