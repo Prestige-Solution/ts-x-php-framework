@@ -517,6 +517,9 @@ class ClientTest extends TestCase
             $ts3_VirtualServer->clientGetById($userID)->ban(600, 'Unittest');
         }
 
+        //advanced test @TODO uncomment only when you has a second Testuser
+        $ts3_VirtualServer->clientGetByName('UnitTestUser2')->kick(TeamSpeak3::KICK_SERVER, 'Unittest');
+
         $banlist = $ts3_VirtualServer->banList();
         $this->assertIsArray($banlist);
         $this->assertEquals(1, $ts3_VirtualServer->banCount());
