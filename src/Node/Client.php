@@ -293,13 +293,13 @@ class Client extends Node
     /**
      * Removes a set of specified permissions from a client. Multiple permissions can be removed at once.
      *
-     * @param  int  $permid
+     * @param  array|int  $permid
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
      * @throws TransportException
      */
-    public function permRemove(int $permid): void
+    public function permRemove(array|int $permid): void
     {
         $this->getParent()->clientPermRemove($this['client_database_id'], $permid);
     }
