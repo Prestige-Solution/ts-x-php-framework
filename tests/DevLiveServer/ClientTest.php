@@ -361,6 +361,10 @@ class ClientTest extends TestCase
 
         $ts3_VirtualServer->serverGroupGetById($sgid)->clientDel($clidDB['client_database_id']);
 
+        //test over Client.php
+        $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->addServerGroup($sgid);
+        $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->remServerGroup($sgid);
+
         //remember at this point the test will fail if the user is still in the servergroup
         // unset will not force delete the user from the servergroup
         $ts3_VirtualServer->serverGroupDelete($sgid);
