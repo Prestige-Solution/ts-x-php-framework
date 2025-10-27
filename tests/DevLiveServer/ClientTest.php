@@ -142,7 +142,7 @@ class ClientTest extends TestCase
 
         $testCid = $ts3_VirtualServer->channelCreate(['channel_name' => 'Standard Channel', 'channel_flag_permanent' => 1, 'cpid' => $this->test_cid]);
         $userID = $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->getId();
-        $ts3_VirtualServer->clientMove($userID, $testCid);
+        $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->move($testCid);
 
         $userMoved = $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->getInfo();
         $this->assertEquals($userMoved['cid'], $testCid);
