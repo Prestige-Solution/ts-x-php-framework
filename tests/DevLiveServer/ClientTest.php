@@ -495,6 +495,43 @@ class ClientTest extends TestCase
     }
 
     /**
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws AdapterException
+     * @throws \Exception
+     */
+    public function test_channelGroupClientList()
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        $this->set_play_test_channel($ts3_VirtualServer);
+
+        // Resetting lists
+        $ts3_VirtualServer->clientListReset();
+        $ts3_VirtualServer->channelGroupListReset();
+
+        // Get servergroup client info
+        $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->move($this->test_cid);
+        $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->setChannelGroup($this->test_cid, 6);
+        $channelGroupList = $ts3_VirtualServer->channelGroupClientList(null, null, null, true);
+
+        $channelgroup_clientlist = [];
+        foreach ($channelGroupList as $channelgroup) {
+            $channelgroup_clientlist[$channelgroup['cgid']] = count($ts3_VirtualServer->channelGroupClientList($channelgroup['cgid']));
+        }
+
+        $this->assertIsArray($channelgroup_clientlist);
+        $this->assertGreaterThan(0, $channelgroup_clientlist[6]);
+
+        $this->unset_play_test_channel($ts3_VirtualServer);
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $this->assertFalse($ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
+    }
+
+    /**
      * @throws AdapterException
      * @throws ServerQueryException
      * @throws TransportException

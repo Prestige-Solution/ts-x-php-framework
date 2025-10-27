@@ -118,40 +118,6 @@ class RefactorFunctionsTest extends TestCase
     }
 
     /**
-     * @throws TransportException
-     * @throws ServerQueryException
-     * @throws AdapterException
-     * @throws \Exception
-     */
-    public function test_channelGroupClientList()
-    {
-        if ($this->active == 'false') {
-            $this->markTestSkipped('DevLiveServer ist not active');
-        }
-
-        $this->ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
-
-        // Resetting lists
-        $this->ts3_VirtualServer->clientListReset();
-        $this->ts3_VirtualServer->channelGroupListReset();
-
-        // Get servergroup client info
-        $channelGroupList = $this->ts3_VirtualServer->channelGroupClientList(null, null, null, true);
-
-        $channelgroup_clientlist = [];
-        foreach ($channelGroupList as $channelgroup) {
-            $channelgroup_clientlist[$channelgroup['cgid']] = count($this->ts3_VirtualServer->channelGroupClientList($channelgroup['cgid']));
-        }
-
-        //IMPORTANT set the UnitTestuser at a channel as operator
-        $this->assertIsArray($channelgroup_clientlist);
-        $this->assertGreaterThan(0, $channelgroup_clientlist[6]);
-
-        $this->ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
-        $this->assertFalse($this->ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
-    }
-
-    /**
      * @throws AdapterException
      * @throws TransportException
      * @throws ServerQueryException
