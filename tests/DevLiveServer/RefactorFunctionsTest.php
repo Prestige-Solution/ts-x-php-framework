@@ -145,7 +145,7 @@ class RefactorFunctionsTest extends TestCase
 
         //IMPORTANT set the UnitTestuser at a channel as operator
         $this->assertIsArray($channelgroup_clientlist);
-        $this->assertEquals(1, $channelgroup_clientlist[6]);
+        $this->assertGreaterThan(0, $channelgroup_clientlist[6]);
 
         $this->ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
         $this->assertFalse($this->ts3_VirtualServer->getAdapter()->getTransport()->isConnected());

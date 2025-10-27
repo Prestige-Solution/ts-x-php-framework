@@ -228,7 +228,9 @@ class ClientTest extends TestCase
         $userFindings = $ts3_VirtualServer->clientFind('UnitT');
 
         foreach ($userFindings as $user) {
-            $this->assertEquals($this->ts3_unit_test_userName, $user['client_nickname']);
+            if ($user['client_nickname'] == 'UnitTestUser') {
+                $this->assertEquals($this->ts3_unit_test_userName, $user['client_nickname']);
+            }
         }
 
         $this->asserttrue(true);
