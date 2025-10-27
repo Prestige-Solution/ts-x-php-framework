@@ -514,7 +514,7 @@ class ClientTest extends TestCase
         }
 
         if (isset($userID)) {
-            $ts3_VirtualServer->clientBan($userID, 600, 'Unittest');
+            $ts3_VirtualServer->clientGetById($userID)->ban(600, 'Unittest');
         }
 
         $banlist = $ts3_VirtualServer->banList();
