@@ -537,6 +537,27 @@ class ClientTest extends TestCase
 
     /**
      * @throws AdapterException
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws HelperException
+     */
+    public function test_has_overwolf()
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+
+        $result = $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->hasOverwolf();
+        $this->assertFalse($result);
+
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $this->assertFalse($ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
+    }
+
+    /**
+     * @throws AdapterException
      * @throws ServerQueryException
      * @throws TransportException
      * @throws \Exception
