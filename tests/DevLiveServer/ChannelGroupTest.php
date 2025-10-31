@@ -35,6 +35,10 @@ class ChannelGroupTest extends TestCase
 
     private int $cgid;
 
+    private string $ts3_unit_test_userName;
+
+    private string $ts3_unit_test_channel_name;
+
     private Server|Adapter|Node|Host $ts3_VirtualServer;
 
     public function setUp(): void
@@ -48,6 +52,8 @@ class ChannelGroupTest extends TestCase
             $this->queryPort = str_replace('DEV_LIVE_SERVER_QUERY_PORT=', '', preg_replace('#\n(?!\n)#', '', $env[4]));
             $this->user = str_replace('DEV_LIVE_SERVER_QUERY_USER=', '', preg_replace('#\n(?!\n)#', '', $env[5]));
             $this->password = str_replace('DEV_LIVE_SERVER_QUERY_USER_PASSWORD=', '', preg_replace('#\n(?!\n)#', '', $env[6]));
+            $this->ts3_unit_test_channel_name = str_replace('DEV_LIVE_SERVER_UNIT_TEST_CHANNEL=', '', preg_replace('#\n(?!\n)#', '', $env[7]));
+            $this->ts3_unit_test_userName = str_replace('DEV_LIVE_SERVER_UNIT_TEST_USER=', '', preg_replace('#\n(?!\n)#', '', $env[9]));
         } else {
             $this->active = 'false';
         }
@@ -204,6 +210,40 @@ class ChannelGroupTest extends TestCase
     }
 
     /**
+     * @throws HelperException
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws AdapterException
+     */
+    public function test_channelGroupClientList()
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $this->ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+
+        //prepare
+        $cid = $this->ts3_VirtualServer->channelGetByName($this->ts3_unit_test_channel_name)->getId();
+        $this->set_play_test_channelgroup($this->ts3_VirtualServer);
+
+        $createdCID = $this->ts3_VirtualServer->channelCreate(['channel_name' => 'Play-Test', 'channel_flag_permanent' => 1, 'cpid' => $cid]);
+        $this->ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->move($createdCID);
+        $this->ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->setChannelGroup($createdCID,$this->cgid);
+
+        $channelGroupClientList = $this->ts3_VirtualServer->channelGroupGetById($this->cgid)->clientList(null, null, true);
+
+        foreach ($channelGroupClientList as $client) {
+            $this->assertEquals($this->ts3_unit_test_userName, $client['client_nickname']);
+        }
+
+        $this->ts3_VirtualServer->channeldelete($createdCID, true);
+        $this->unset_play_test_channelgroup($this->ts3_VirtualServer);
+        $this->ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $this->assertFalse($this->ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
+    }
+
+    /**
      * @throws AdapterException
      * @throws ServerQueryException
      * @throws TransportException
@@ -220,7 +260,7 @@ class ChannelGroupTest extends TestCase
      */
     public function unset_play_test_channelgroup(Server $ts3_VirtualServer): void
     {
-        $ts3_VirtualServer->channelGroupDelete($this->cgid);
+        $ts3_VirtualServer->channelGroupDelete($this->cgid, true);
     }
 
     /**
