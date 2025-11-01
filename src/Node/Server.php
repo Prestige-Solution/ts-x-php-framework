@@ -412,8 +412,16 @@ class Server extends Node
      */
     public function channelClientPermList(int $cid, int $cldbid, bool $permsid = false): array
     {
-        return $this->execute('channelclientpermlist', ['cid' => $cid, 'cldbid' => $cldbid, $permsid ? '-permsid' : null])
-            ->toAssocArray($permsid ? 'permsid' : 'permid');
+        try {
+            $result = $this->execute('channelclientpermlist', ['cid' => $cid, 'cldbid' => $cldbid, $permsid ? '-permsid' : null])->toAssocArray($permsid ? 'permsid' : 'permid');
+        } catch (ServerQueryException $e) {
+            if (str_contains($e->getMessage(), 'database empty result set')) {
+                return [];
+            }
+            throw $e;
+        }
+
+        return $result;
     }
 
     /**
