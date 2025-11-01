@@ -790,7 +790,20 @@ class Server extends Node
      */
     public function clientInfoDb(int $cldbid): array
     {
-        return $this->execute('clientdbinfo', ['cldbid' => $cldbid])->toList();
+        $result = $this->execute('clientdbinfo', ['cldbid' => $cldbid])->toList();
+
+        // Removes meta-entries such as [“clientdbinfo” => null] and flatten
+        $filtered = array_values(array_filter($result, static function ($row) {
+            return isset($row['client_database_id']) || isset($row['client_unique_identifier']);
+        }));
+
+        // Flatten if there are multiple layers (usually only one)
+        $flat = [];
+        foreach ($filtered as $row) {
+            $flat = array_merge($flat, $row);
+        }
+
+        return $flat;
     }
 
     /**
