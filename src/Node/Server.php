@@ -764,7 +764,20 @@ class Server extends Node
      */
     public function clientCountDb(): int
     {
-        return current($this->execute('clientdblist -count', ['duration' => 1])->toList());
+        $result = $this->execute('clientdblist -count', ['duration' => 1])->toList();
+
+        if (isset($result[1]['count'])) {
+            return (int) $result[1]['count'];
+        }
+
+        // If the framework returns something different (e.g., flat)
+        if (isset($result['count'])) {
+            return (int) $result['count'];
+        }
+
+        // Fallback – if the result contains only one number
+        $value = current($result);
+        return is_numeric($value) ? (int) $value : 0;
     }
 
     /**
