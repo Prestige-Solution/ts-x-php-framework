@@ -395,14 +395,21 @@ class ChannelTest extends TestCase
         $this->set_play_test_channel($ts3_VirtualServer);
 
         $testCid = $ts3_VirtualServer->channelCreate(['channel_name' => 'Standard Channel', 'channel_flag_permanent' => 1, 'cpid' => $this->test_cid]);
-        $ts3_VirtualServer->channelPermAssign($testCid, ['i_channel_needed_join_power'], [50]);
-        $ts3_VirtualServer->channelPermAssign($testCid, ['i_channel_needed_subscribe_power'], [50]);
+        $ts3_VirtualServer->channelGetById($testCid)->permAssign(['i_channel_needed_join_power'], [50]);
+        $ts3_VirtualServer->channelGetById($testCid)->permAssign(['i_channel_needed_subscribe_power'], [50]);
 
-        $channel = $ts3_VirtualServer->channelGetById($testCid);
-        $channelPermission = $channel->permList(true);
+        $channelPermission = $ts3_VirtualServer->channelGetById($testCid)->permList(true);
 
         $this->assertEquals(50, $channelPermission['i_channel_needed_join_power']['permvalue']);
         $this->assertEquals(50, $channelPermission['i_channel_needed_subscribe_power']['permvalue']);
+
+        $ts3_VirtualServer->channelGetById($testCid)->permRemove(['i_channel_needed_join_power']);
+        $ts3_VirtualServer->channelGetById($testCid)->permRemove(['i_channel_needed_subscribe_power']);
+
+        $channelPermissionRemoved = $ts3_VirtualServer->channelGetById($testCid)->permList(true);
+
+        $this->assertArrayNotHasKey('i_channel_needed_join_power', $channelPermissionRemoved);
+        $this->assertArrayNotHasKey('i_channel_needed_subscribe_power', $channelPermissionRemoved);
 
         $this->unset_play_test_channel($ts3_VirtualServer);
         $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
