@@ -503,6 +503,74 @@ class ClientTest extends TestCase
 
     /**
      * @throws TransportException
+     * @throws HelperException
+     * @throws ServerQueryException
+     * @throws AdapterException
+     */
+    public function test_can_handle_permission_chain_channel()
+    {
+        if ($this->active == 'false' || $this->user_test_active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+
+        //prepare
+        $cid = $ts3_VirtualServer->channelGetByName($this->ts3_unit_test_channel_name)->getId();
+        $createdCID = $ts3_VirtualServer->channelCreate(['channel_name' => 'Play-Test', 'channel_flag_permanent' => 1, 'cpid' => $cid]);
+        $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->move($createdCID);
+
+        $clientList = $ts3_VirtualServer->channelGetById($createdCID)->clientList();
+
+        foreach ($clientList as $client) {
+            if($client['client_nickname'] == $this->ts3_unit_test_userName)
+            {
+                $clcbid = $client['client_database_id'];
+            }
+        }
+
+        $channelPermList = $ts3_VirtualServer->channelGetById($createdCID)->clientPermList($clcbid, true);
+
+        //expect the client itself has no permissions
+        $this->assertIsArray($channelPermList);
+        $this->assertEmpty($channelPermList);
+
+        //now add permission at the client-channel level
+        $ts3_VirtualServer->channelGetById($createdCID)->clientPermAssign($clcbid, ['i_client_poke_power'], 75);
+        $result = $ts3_VirtualServer->channelGetById($createdCID)->clientPermList($clcbid, true);
+
+        $this->assertIsArray($result);
+        $this->assertNotEmpty($result);
+
+        foreach ($result as $perm) {
+            $this->assertEquals('i_client_poke_power', $perm['permsid']);
+            $this->assertEquals(75, $perm['permvalue']);
+        }
+
+        $ts3_VirtualServer->channelGetById($createdCID)->clientPermAssign($clcbid, ['i_client_poke_power'], 40);
+        $result2 = $ts3_VirtualServer->channelGetById($createdCID)->clientPermList($clcbid, true);
+
+        $this->assertIsArray($result2);
+        $this->assertNotEmpty($result2);
+
+        foreach ($result2 as $perm) {
+            $this->assertEquals('i_client_poke_power', $perm['permsid']);
+            $this->assertEquals(40, $perm['permvalue']);
+        }
+
+        //remove permission
+        $ts3_VirtualServer->channelGetById($createdCID)->clientPermRemove($clcbid, ['i_client_poke_power']);
+        $result3 = $ts3_VirtualServer->channelGetById($createdCID)->clientPermList($clcbid,true);
+        $this->assertIsArray($result3);
+        $this->assertEmpty($result3);
+
+        $ts3_VirtualServer->channelGetById($createdCID)->delete(true);
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $this->assertFalse($ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
+    }
+
+    /**
+     * @throws TransportException
      * @throws ServerQueryException
      * @throws AdapterException
      * @throws \Exception
