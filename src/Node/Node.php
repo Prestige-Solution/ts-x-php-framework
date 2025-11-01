@@ -12,9 +12,7 @@ use PlanetTeamSpeak\TeamSpeak3Framework\Exception\ServerQueryException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\TransportException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Helper\Convert;
 use PlanetTeamSpeak\TeamSpeak3Framework\Helper\StringHelper;
-use PlanetTeamSpeak\TeamSpeak3Framework\Viewer\ViewerInterface;
 use RecursiveIterator;
-use RecursiveIteratorIterator;
 
 /**
  * Class Node
@@ -204,42 +202,6 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
      * @return string
      */
     abstract public function getSymbol(): string;
-
-    /**
-     * Returns the HTML code to display a TeamSpeak 3 viewer.
-     *
-     * @param ViewerInterface $viewer
-     * @return string
-     */
-    public function getViewer(ViewerInterface $viewer): string
-    {
-        // Basic HTML from the root object
-        $html = $viewer->fetchObject($this);
-
-        // Recursive iterator over all children
-        $iterator = new RecursiveIteratorIterator($this, RecursiveIteratorIterator::SELF_FIRST);
-
-        /** @var Node $node */
-        foreach ($iterator as $node) {
-            $siblings = [];
-
-            // Check for each level whether additional elements are present.
-            for ($level = 0; $level < $iterator->getDepth(); $level++) {
-                $siblings[] = $iterator->getSubIterator($level)->valid() ? 1 : 0;
-            }
-
-            $siblings[] = ! $iterator->getSubIterator($level)->valid() ? 1 : 0;
-
-            $html .= $viewer->fetchObject($node, $siblings);
-        }
-
-        // Fallback: Empty output
-        if (empty($html) && method_exists($viewer, 'toString')) {
-            return $viewer->toString();
-        }
-
-        return $html;
-    }
 
     /**
      * Filters given a node list array using specified filter rules.
