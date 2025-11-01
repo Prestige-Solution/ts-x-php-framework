@@ -188,8 +188,7 @@ class ClientTest extends TestCase
         $this->assertIsInt($userID);
         $ts3_VirtualServer->clientGetById($userID)->message('Hello World');
 
-        if ($this->ts3_unit_test_userName2 !== '')
-        {
+        if ($this->ts3_unit_test_userName2 !== '') {
             $this->dev_reset_channelgroup($ts3_VirtualServer);
             //send a message via a group
             $this->set_play_test_channelgroup($ts3_VirtualServer);
@@ -550,8 +549,7 @@ class ClientTest extends TestCase
         $clientList = $ts3_VirtualServer->channelGetById($createdCID)->clientList();
 
         foreach ($clientList as $client) {
-            if($client['client_nickname'] == $this->ts3_unit_test_userName)
-            {
+            if ($client['client_nickname'] == $this->ts3_unit_test_userName) {
                 $cldbid = $client['client_database_id'];
                 $channelPermList = $ts3_VirtualServer->channelGetById($createdCID)->clientPermList($client['client_database_id'], true);
             }
@@ -586,7 +584,7 @@ class ClientTest extends TestCase
 
         //remove permission
         $ts3_VirtualServer->channelGetById($createdCID)->clientPermRemove($cldbid, ['i_client_poke_power']);
-        $result3 = $ts3_VirtualServer->channelGetById($createdCID)->clientPermList($cldbid,true);
+        $result3 = $ts3_VirtualServer->channelGetById($createdCID)->clientPermList($cldbid, true);
         $this->assertIsArray($result3);
         $this->assertEmpty($result3);
 
@@ -678,8 +676,7 @@ class ClientTest extends TestCase
             $ts3_VirtualServer->clientGetById($userID)->ban(600, 'Unittest');
         }
 
-        if($this->ts3_unit_test_userName2 !== '')
-        {
+        if ($this->ts3_unit_test_userName2 !== '') {
             $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName2)->kick(TeamSpeak3::KICK_SERVER, 'Unittest');
         }
 

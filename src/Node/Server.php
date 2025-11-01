@@ -776,6 +776,7 @@ class Server extends Node
 
         // Fallback – if the result contains only one number
         $value = current($result);
+
         return is_numeric($value) ? (int) $value : 0;
     }
 
@@ -806,9 +807,9 @@ class Server extends Node
             $flat = array_merge($flat, $row);
         }
 
-        if (!isset($flat['cldbid']) && $metaCldbid !== null) {
+        if (! isset($flat['cldbid']) && $metaCldbid !== null) {
             $flat['cldbid'] = $metaCldbid;
-        } elseif (!isset($flat['cldbid'])) {
+        } elseif (! isset($flat['cldbid'])) {
             $flat['cldbid'] = $cldbid;
         }
 

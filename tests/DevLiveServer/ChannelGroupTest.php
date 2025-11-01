@@ -229,7 +229,7 @@ class ChannelGroupTest extends TestCase
 
         $createdCID = $this->ts3_VirtualServer->channelCreate(['channel_name' => 'Play-Test', 'channel_flag_permanent' => 1, 'cpid' => $cid]);
         $this->ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->move($createdCID);
-        $this->ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->setChannelGroup($createdCID,$this->cgid);
+        $this->ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->setChannelGroup($createdCID, $this->cgid);
 
         $channelGroupClientList = $this->ts3_VirtualServer->channelGroupGetById($this->cgid)->clientList(null, null, true);
 
