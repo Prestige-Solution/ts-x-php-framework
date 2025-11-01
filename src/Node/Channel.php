@@ -17,10 +17,6 @@ use PlanetTeamSpeak\TeamSpeak3Framework\TeamSpeak3;
  */
 class Channel extends Node
 {
-    private array|null $clientList = null;
-
-    private array $channelList = [];
-
     /**
      * Channel constructor.
      *
