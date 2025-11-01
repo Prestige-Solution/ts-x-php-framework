@@ -37,6 +37,8 @@ class ClientTest extends TestCase
 
     private string $ts3_unit_test_userName;
 
+    private string $ts3_unit_test_userName2 = '';
+
     private int $test_cid;
 
     public function setUp(): void
@@ -53,6 +55,7 @@ class ClientTest extends TestCase
             $this->ts3_unit_test_channel_name = str_replace('DEV_LIVE_SERVER_UNIT_TEST_CHANNEL=', '', preg_replace('#\n(?!\n)#', '', $env[7]));
             $this->user_test_active = str_replace('DEV_LIVE_SERVER_UNIT_TEST_USER_ACTIVE=', '', preg_replace('#\n(?!\n)#', '', $env[8]));
             $this->ts3_unit_test_userName = str_replace('DEV_LIVE_SERVER_UNIT_TEST_USER=', '', preg_replace('#\n(?!\n)#', '', $env[9]));
+            $this->ts3_unit_test_userName2 = str_replace('DEV_LIVE_SERVER_UNIT_TEST_USER_EXTEND=', '', preg_replace('#\n(?!\n)#', '', $env[11]));
         } else {
             $this->active = 'false';
         }
@@ -581,8 +584,10 @@ class ClientTest extends TestCase
             $ts3_VirtualServer->clientGetById($userID)->ban(600, 'Unittest');
         }
 
-        //advanced test @TODO uncomment only when you has a second Testuser
-        $ts3_VirtualServer->clientGetByName('UnitTestUser2')->kick(TeamSpeak3::KICK_SERVER, 'Unittest');
+        if($this->ts3_unit_test_userName2 !== '')
+        {
+            $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName2)->kick(TeamSpeak3::KICK_SERVER, 'Unittest');
+        }
 
         $banlist = $ts3_VirtualServer->banList();
         $this->assertIsArray($banlist);
