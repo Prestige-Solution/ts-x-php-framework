@@ -527,19 +527,18 @@ class ClientTest extends TestCase
         foreach ($clientList as $client) {
             if($client['client_nickname'] == $this->ts3_unit_test_userName)
             {
-                $clcbid = $client['client_database_id'];
+                $cldbid = $client['client_database_id'];
+                $channelPermList = $ts3_VirtualServer->channelGetById($createdCID)->clientPermList($client['client_database_id'], true);
             }
         }
-
-        $channelPermList = $ts3_VirtualServer->channelGetById($createdCID)->clientPermList($clcbid, true);
 
         //expect the client itself has no permissions
         $this->assertIsArray($channelPermList);
         $this->assertEmpty($channelPermList);
 
         //now add permission at the client-channel level
-        $ts3_VirtualServer->channelGetById($createdCID)->clientPermAssign($clcbid, ['i_client_poke_power'], 75);
-        $result = $ts3_VirtualServer->channelGetById($createdCID)->clientPermList($clcbid, true);
+        $ts3_VirtualServer->channelGetById($createdCID)->clientPermAssign($cldbid, ['i_client_poke_power'], 75);
+        $result = $ts3_VirtualServer->channelGetById($createdCID)->clientPermList($cldbid, true);
 
         $this->assertIsArray($result);
         $this->assertNotEmpty($result);
@@ -549,8 +548,8 @@ class ClientTest extends TestCase
             $this->assertEquals(75, $perm['permvalue']);
         }
 
-        $ts3_VirtualServer->channelGetById($createdCID)->clientPermAssign($clcbid, ['i_client_poke_power'], 40);
-        $result2 = $ts3_VirtualServer->channelGetById($createdCID)->clientPermList($clcbid, true);
+        $ts3_VirtualServer->channelGetById($createdCID)->clientPermAssign($cldbid, ['i_client_poke_power'], 40);
+        $result2 = $ts3_VirtualServer->channelGetById($createdCID)->clientPermList($cldbid, true);
 
         $this->assertIsArray($result2);
         $this->assertNotEmpty($result2);
@@ -561,8 +560,8 @@ class ClientTest extends TestCase
         }
 
         //remove permission
-        $ts3_VirtualServer->channelGetById($createdCID)->clientPermRemove($clcbid, ['i_client_poke_power']);
-        $result3 = $ts3_VirtualServer->channelGetById($createdCID)->clientPermList($clcbid,true);
+        $ts3_VirtualServer->channelGetById($createdCID)->clientPermRemove($cldbid, ['i_client_poke_power']);
+        $result3 = $ts3_VirtualServer->channelGetById($createdCID)->clientPermList($cldbid,true);
         $this->assertIsArray($result3);
         $this->assertEmpty($result3);
 

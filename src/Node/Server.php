@@ -750,8 +750,7 @@ class Server extends Node
      */
     public function clientListDb(int $offset = null, int $limit = null): array
     {
-        return $this->execute('clientdblist -count', ['start' => $offset, 'duration' => $limit])
-            ->toAssocArray('cldbid');
+        return $this->execute('clientdblist -count', ['start' => $offset, 'duration' => $limit])->toAssocArray('cldbid');
     }
 
     /**
