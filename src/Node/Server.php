@@ -1997,19 +1997,8 @@ class Server extends Node
             foreach ($result as $k => $v) {
                 $clientInfo = $this->clientInfoDb($v['cldbid']);
 
-                // Remove meta entry “clientdbinfo” + filter empty entries
-                $clientInfo = array_values(array_filter($clientInfo, static function ($row) {
-                    return isset($row['client_database_id']) || isset($row['client_unique_identifier']);
-                }));
-
-                // Flatten if clientInfoDb returns multiple rows
-                $flattened = [];
-                foreach ($clientInfo as $row) {
-                    $flattened = array_merge($flattened, $row);
-                }
-
                 // Now insert the client info block into the actual data record.
-                $result[$k] = array_merge($v, $flattened);
+                $result[$k] = array_merge($v, $clientInfo);
             }
         }
 
