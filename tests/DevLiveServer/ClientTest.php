@@ -277,6 +277,8 @@ class ClientTest extends TestCase
 
         $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
         $clientListDb = $ts3_VirtualServer->clientListDb();
+        $dbCount = $ts3_VirtualServer->clientCountDb();
+        $this->assertGreaterThanOrEqual(1, $dbCount);
 
         foreach ($clientListDb as $client) {
             if ($client['client_nickname'] == $this->ts3_unit_test_userName) {
