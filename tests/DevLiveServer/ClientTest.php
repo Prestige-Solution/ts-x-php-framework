@@ -280,7 +280,7 @@ class ClientTest extends TestCase
 
         foreach ($clientListDb as $client) {
             if ($client['client_nickname'] == $this->ts3_unit_test_userName) {
-                $clientInfoDB = $ts3_VirtualServer->clientInfoDb($client['cldbid']);
+                $clientInfoDB = $ts3_VirtualServer->clientGetByName($client['client_nickname'])->infoDb();
             }
         }
 
