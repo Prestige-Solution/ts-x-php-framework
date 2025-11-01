@@ -288,6 +288,14 @@ class ClientTest extends TestCase
 
         $this->assertIsArray($clientInfoDB);
 
+        $ts3_VirtualServer->clientGetByDbid($clientInfoDB['client_database_id'])->modifyDb(['client_description'=> 'unittest']);
+        $result = $ts3_VirtualServer->clientGetByDbid($clientInfoDB['client_database_id'])->infoDb();
+        $this->assertEquals('unittest', $result['client_description']);
+
+        $ts3_VirtualServer->clientGetByDbid($clientInfoDB['client_database_id'])->modifyDb(['client_description'=> '']);
+        $result2 = $ts3_VirtualServer->clientGetByDbid($clientInfoDB['client_database_id'])->infoDb();
+        $this->assertEquals('', $result2['client_description']);
+
         $this->asserttrue(true);
         $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
     }
