@@ -965,7 +965,7 @@ class Host extends Node
     protected function fetchPermissionCats(): void
     {
         $permcats = [];
-        $reflects = new ReflectionClass('TeamSpeak3');
+        $reflects = new ReflectionClass(TeamSpeak3::class);
 
         foreach ($reflects->getConstants() as $key => $val) {
             if (! StringHelper::factory($key)->startsWith('PERM_CAT') || $val == 0xFF) {
