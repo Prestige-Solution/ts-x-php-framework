@@ -243,34 +243,38 @@ class Host extends Node
     }
 
     /**
+     * Return server data as array
+     *
      * @param  string  $name
-     * @return Server
+     * @return array
      * @throws AdapterException
      * @throws ServerQueryException
      * @throws TransportException
      */
-    public function serverGetByName(string $name): Server
+    public function serverGetByName(string $name): array
     {
         foreach ($this->serverList() as $server) {
             if ($server['virtualserver_name'] === $name) {
-                return $server;
+                return $server[1];
             }
         }
         throw new ServerQueryException('invalid serverID', 0x400);
     }
 
     /**
+     *  Return server data as array
+     *
      * @param  string  $uid
-     * @return Server
+     * @return array
      * @throws AdapterException
      * @throws ServerQueryException
      * @throws TransportException
      */
-    public function serverGetByUid(string $uid): Server
+    public function serverGetByUid(string $uid): array
     {
         foreach ($this->serverList() as $server) {
             if ($server['virtualserver_unique_identifier'] === $uid) {
-                return $server;
+                return $server[1];
             }
         }
         throw new ServerQueryException('invalid serverID', 0x400);
