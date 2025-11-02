@@ -944,18 +944,36 @@ class Host extends Node
      */
     protected function fetchPermissionList(): void
     {
-        $reply = $this->request('permissionlist -new')->toArray();
+        $raw = $this->request('permissionlist -new')->toArray();
         $start = 1;
 
         $this->permissionEnds = [];
         $this->permissionList = [];
 
-        foreach ($reply as $line) {
+        foreach ($raw as $line) {
+            // Skip meta lines
+            if (isset($line['permissionlistpermissionlist']) || isset($line['-newpermissionlist']) || isset($line['-new'])) {
+                continue;
+            }
+
+            // If group_id_end exists → save separately
             if (array_key_exists('group_id_end', $line)) {
                 $this->permissionEnds[] = $line['group_id_end'];
-            } else {
-                $this->permissionList[$line['permname']->toString()] = array_merge(['permid' => $start++], $line);
+                continue;
             }
+
+            // If no permname → skip
+            if (!isset($line['permname'])) {
+                continue;
+            }
+
+            // StringHelper or Convert string securely
+            $permname = is_object($line['permname']) && method_exists($line['permname'], 'toString')
+                ? $line['permname']->toString()
+                : (string) $line['permname'];
+
+            // Save permission
+            $this->permissionList[$permname] = array_merge(['permid' => $start++], $line);
         }
     }
 
