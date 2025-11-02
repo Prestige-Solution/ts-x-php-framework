@@ -189,7 +189,7 @@ class Host extends Node
     {
         $sid = $this->execute('serveridgetbyport', ['virtualserver_port' => $port])->toList();
 
-        return $sid['server_id'];
+        return $sid[1]['server_id'];
     }
 
     /**
