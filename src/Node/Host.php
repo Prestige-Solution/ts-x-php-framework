@@ -944,7 +944,7 @@ class Host extends Node
      */
     protected function fetchPermissionList(): void
     {
-        $reply = $this->request('permissionlist -new')->toArray();
+        $reply = $this->request('permissionlist')->toArray();
         $start = 1;
 
         $this->permissionEnds = [];
