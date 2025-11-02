@@ -129,4 +129,88 @@ class ConnectionTest extends TestCase
         $this->assertEquals('UnitTestBot2', $whoami2['client_nickname']);
         $this->assertEquals('UnitTestBot3', $whoami3['client_nickname']);
     }
+
+    /**
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws AdapterException
+     * @throws HelperException
+     */
+    public function test_can_get_host_information()
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_host = TeamSpeak3::factory($this->ts3_server_uri);
+        $port = $ts3_host->getParent()->serverSelectedPort();
+        $this->assertEquals(9987, $port);
+
+        $version = $ts3_host->version();
+        $this->assertIsArray($version);
+        $this->assertArrayHasKey('version', $version);
+        $this->assertArrayHasKey('platform', $version);
+        $this->assertEquals('Linux', $version['platform']);
+        $this->assertArrayHasKey('build', $version);
+
+        $serverID = $ts3_host->serverIdGetByPort(9987);
+        $this->assertIsInt($serverID);
+        $this->assertEquals(1, $serverID);
+
+        $PortByID = $ts3_host->serverGetPortById($serverID);
+        $this->assertIsInt($PortByID);
+        $this->assertEquals(9987, $PortByID);
+
+        $server = $ts3_host->servergetByname('UnitTestServer');
+        $this->assertIsArray($server);
+        $this->assertArrayHasKey('virtualserver_name', $server);
+        $this->assertArrayHasKey('virtualserver_uptime', $server);
+
+        $serverByUID = $ts3_host->serverGetByUid($server['virtualserver_unique_identifier']);
+        $this->assertArrayHasKey('virtualserver_name', $serverByUID);
+        $this->assertArrayHasKey('virtualserver_uptime', $serverByUID);
+
+        $permList = $ts3_host->permissionList();
+        $this->assertIsArray($permList);
+        $this->assertArrayHasKey('b_serverinstance_help_view', $permList);
+        $this->assertArrayHasKey('permid', $permList['b_serverinstance_help_view']);
+        $this->assertArrayHasKey('permname', $permList['b_serverinstance_help_view']);
+        $this->assertArrayHasKey('permcatid', $permList['b_serverinstance_help_view']);
+
+        $permCats = $ts3_host->permissionCats();
+        $this->assertIsArray($permCats);
+        $this->assertArrayHasKey('PERM_CAT_GLOBAL', $permCats);
+        $this->assertArrayHasKey('PERM_CAT_GROUP_DELETE', $permCats);
+        $this->assertArrayHasKey('PERM_CAT_CLIENT_BASICS', $permCats);
+
+        $permTree = $ts3_host->permissionTree();
+        $this->assertIsArray($permTree);
+        $this->assertArrayHasKey('permcatid', $permTree[16]);
+        $this->assertArrayHasKey('permcatname', $permTree[16]);
+        $this->assertEquals('Global', $permTree[16]['permcatname']);
+
+        $permFind = $ts3_host->permissionFind(['b_virtualserver_info_view']);
+        $this->assertIsArray($permFind[0]);
+        $this->assertArrayHasKey('t', $permFind[0]);
+        $this->assertArrayHasKey('id1', $permFind[0]);
+        $this->assertArrayHasKey('id2', $permFind[0]);
+
+        $permFindMultiple = $ts3_host->permissionFind(['b_virtualserver_info_view', 'b_virtualserver_channel_list']);
+        $this->assertIsArray($permFindMultiple[0]);
+        $this->assertArrayHasKey('t', $permFindMultiple[0]);
+        $this->assertArrayHasKey('id1', $permFindMultiple[0]);
+        $this->assertArrayHasKey('id2', $permFindMultiple[0]);
+        $this->assertArrayHasKey('t', $permFindMultiple[1]);
+        $this->assertArrayHasKey('id1', $permFindMultiple[1]);
+        $this->assertArrayHasKey('id2', $permFindMultiple[1]);
+
+
+        try {
+            $ts3_host->permissionFind(['b_serverinstance_help_view']);
+        }catch (ServerQueryException $e) {
+            $this->assertEquals('invalid permission ID', $e->getMessage());
+        }
+
+        $ts3_host->getAdapter()->getTransport()->disconnect();
+    }
 }
