@@ -4,6 +4,7 @@ namespace PlanetTeamSpeak\TeamSpeak3Framework\Tests\DevLiveServer;
 
 use PHPUnit\Framework\TestCase;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\HelperException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\ServerQueryException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\TransportException;
 use PlanetTeamSpeak\TeamSpeak3Framework\TeamSpeak3;
@@ -204,10 +205,9 @@ class ConnectionTest extends TestCase
         $this->assertArrayHasKey('id1', $permFindMultiple[1]);
         $this->assertArrayHasKey('id2', $permFindMultiple[1]);
 
-
         try {
             $ts3_host->permissionFind(['b_serverinstance_help_view']);
-        }catch (ServerQueryException $e) {
+        } catch (ServerQueryException $e) {
             $this->assertEquals('invalid permission ID', $e->getMessage());
         }
 

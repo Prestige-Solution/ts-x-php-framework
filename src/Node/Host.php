@@ -524,13 +524,13 @@ class Host extends Node
 
         try {
             $result = $this->execute('permfind', [$permident => $permissionId])->toArray();
-        }catch (ServerQueryException $e) {
+        } catch (ServerQueryException $e) {
             throw new ServerQueryException('invalid permission ID');
         }
 
         // Remove meta-entries and keep only real data
         $filtered = array_filter($result, function ($item) {
-            return is_array($item) && !array_key_exists('permfind', $item) && !array_key_exists('permsid', $item);
+            return is_array($item) && ! array_key_exists('permfind', $item) && ! array_key_exists('permsid', $item);
         });
 
         // Return only the relevant data array (flatten)
@@ -975,7 +975,7 @@ class Host extends Node
             }
 
             // If no permname → skip
-            if (!isset($line['permname'])) {
+            if (! isset($line['permname'])) {
                 continue;
             }
 
