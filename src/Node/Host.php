@@ -489,7 +489,7 @@ class Host extends Node
             $permtree[$val] = [
                 'permcatid' => $val,
                 'permcathex' => '0x'.dechex($val),
-                'permcatname' => StringHelper::factory(Convert::permissionCategory($val)),
+                'permcatname' => StringHelper::factory(Convert::permissionCategory($val))->toString(),
                 'permcatparent' => 0,
                 'permcatchilren' => 0,
                 'permcatcount' => 0,
