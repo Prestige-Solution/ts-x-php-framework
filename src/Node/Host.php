@@ -71,13 +71,26 @@ class Host extends Node
      * @throws ServerQueryException
      * @throws TransportException
      */
-    public function version(string $ident = null): mixed
+    public function version(): array
     {
         if ($this->version === null) {
-            $this->version = $this->request('version')->toList();
+            $raw = $this->request('version')->toList();
+
+            // Find the first array that contains real data
+            foreach ($raw as $item) {
+                if (is_array($item) && isset($item['version'])) {
+                    $this->version = $item;
+                    break;
+                }
+            }
+
+            // If no matching array was found, empty array
+            if ($this->version === null) {
+                $this->version = [];
+            }
         }
 
-        return ($ident && isset($this->version[$ident])) ? $this->version[$ident] : $this->version;
+        return $this->version;
     }
 
     /**
