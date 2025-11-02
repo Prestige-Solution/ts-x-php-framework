@@ -522,7 +522,19 @@ class Host extends Node
             $permident = (is_numeric(current($permissionId))) ? 'permid' : 'permsid';
         }
 
-        return $this->execute('permfind', [$permident => $permissionId])->toArray();
+        try {
+            $result = $this->execute('permfind', [$permident => $permissionId])->toArray();
+        }catch (ServerQueryException $e) {
+            throw new ServerQueryException('invalid permission ID');
+        }
+
+        // Remove meta-entries and keep only real data
+        $filtered = array_filter($result, function ($item) {
+            return is_array($item) && !array_key_exists('permfind', $item) && !array_key_exists('permsid', $item);
+        });
+
+        // Return only the relevant data array (flatten)
+        return array_values($filtered);
     }
 
     /**
