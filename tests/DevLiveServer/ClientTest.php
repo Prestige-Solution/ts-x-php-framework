@@ -530,6 +530,13 @@ class ClientTest extends TestCase
         $this->assertIsArray($result3);
         $this->assertEmpty($result3);
 
+        $this->set_play_test_channel($ts3_VirtualServer);
+
+        $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->move($this->test_cid);
+        $permChannelOverView = $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->permOverview($this->test_cid);
+        $this->assertIsArray($permChannelOverView);
+
+        $this->unset_play_test_channel($ts3_VirtualServer);
         $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
         $this->assertFalse($ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
     }
