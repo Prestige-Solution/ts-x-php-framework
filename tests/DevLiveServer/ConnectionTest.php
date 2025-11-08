@@ -226,4 +226,53 @@ class ConnectionTest extends TestCase
 
         $ts3_host->getAdapter()->getTransport()->disconnect();
     }
+
+    /**
+     * @throws AdapterException
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws HelperException
+     */
+    public function test_can_handle_log()
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_host = TeamSpeak3::factory($this->ts3_server_uri);
+        $ts3_host->serverGetByPort(9987)->logAdd('UnitTest', TeamSpeak3::LOGLEVEL_DEBUG);
+        $log = $ts3_host->serverGetByPort(9987)->logView();
+        $this->assertIsArray($log);
+        $this->assertIsString($log[29]);
+        $this->assertStringContainsString('UnitTest', $log[29]);
+
+        $ts3_host->getAdapter()->getTransport()->disconnect();
+    }
+
+    /**
+     * @throws AdapterException
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws HelperException
+     */
+    public function test_can_handle_server_query()
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_host = TeamSpeak3::factory($this->ts3_server_uri);
+        $countQuery = $ts3_host->queryCountLogin();
+        $this->assertIsInt($countQuery);
+        $this->assertEquals(1, $countQuery);
+
+        $queryLoginlist = $ts3_host->queryListLogin();
+
+        foreach ($queryLoginlist as $queryLogin) {
+            $this->assertIsString($queryLogin['client_login_name']);
+            $this->assertEquals('ts3-bot-dev', $queryLogin['client_login_name']);
+        }
+
+        $ts3_host->getAdapter()->getTransport()->disconnect();
+    }
 }
