@@ -2803,11 +2803,11 @@ class Server extends Node
      */
     public function logView(int $lines = 30, int $begin_pos = null, bool $reverse = null, bool $instance = null): array
     {
-        $result = $this->execute('logview', ['lines' => $lines,'begin_pos' => $begin_pos,'instance' => $instance, 'reverse' => $reverse])->toArray();
+        $result = $this->execute('logview', ['lines' => $lines, 'begin_pos' => $begin_pos, 'instance' => $instance, 'reverse' => $reverse])->toArray();
 
         // Remove the first meta-entry
         $filtered = array_filter($result, function ($item) {
-            return is_array($item) && !array_key_exists('logview', $item) && !array_key_exists('lines', $item);
+            return is_array($item) && ! array_key_exists('logview', $item) && ! array_key_exists('lines', $item);
         });
 
         // Flatten → Only the log lines themselves

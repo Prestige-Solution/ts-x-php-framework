@@ -661,12 +661,11 @@ class Host extends Node
             $permident = (is_numeric(current($permid))) ? 'permid' : 'permsid';
         }
 
-
         $result = $this->execute('permget', [$permident => $permid])->toArray();
 
         // Remove meta entries
         $filtered = array_filter($result, function ($item) {
-            return is_array($item) && !array_key_exists('permget', $item) && !isset($item['permget']);
+            return is_array($item) && ! array_key_exists('permget', $item) && ! isset($item['permget']);
         });
 
         // If there are several, take the first real one.
@@ -814,14 +813,14 @@ class Host extends Node
 
         // Remove meta entry
         $filtered = array_filter($result, function ($item) {
-            return is_array($item) && !array_key_exists('queryloginlist', $item);
+            return is_array($item) && ! array_key_exists('queryloginlist', $item);
         });
 
         // Flat array
         $filtered = array_values($filtered);
 
         // Extract value from the first entry
-        if (!empty($filtered) && isset($filtered[0]['count'])) {
+        if (! empty($filtered) && isset($filtered[0]['count'])) {
             return (int) $filtered[0]['count'];
         }
 
