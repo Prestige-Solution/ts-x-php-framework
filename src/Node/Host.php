@@ -803,14 +803,30 @@ class Host extends Node
      * Returns the number of ServerQuery logins on the selected virtual server.
      *
      * @param  string|null  $pattern
-     * @return mixed
+     * @return int
      * @throws AdapterException
      * @throws ServerQueryException
      * @throws TransportException
      */
-    public function queryCountLogin(string $pattern = null): mixed
+    public function queryCountLogin(string $pattern = null): int
     {
-        return current($this->execute('queryloginlist -count', ['duration' => 1, 'pattern' => $pattern])->toList());
+        $result = $this->execute('queryloginlist -count', ['duration' => 1, 'pattern'  => $pattern])->toAssocArray('cldbid');
+
+        // Remove meta entry
+        $filtered = array_filter($result, function ($item) {
+            return is_array($item) && !array_key_exists('queryloginlist', $item);
+        });
+
+        // Flat array
+        $filtered = array_values($filtered);
+
+        // Extract value from the first entry
+        if (!empty($filtered) && isset($filtered[0]['count'])) {
+            return (int) $filtered[0]['count'];
+        }
+
+        // Fallback: no result
+        return 0;
     }
 
     /**
