@@ -709,41 +709,41 @@ class Host extends Node
         $this->execute('gm', ['msg' => $msg]);
     }
 
-    /**
-     * Displays a specified number of entries (1-100) from the server log.
-     *
-     * @param  int  $lines
-     * @param  int|null  $begin_pos
-     * @param  bool|null  $reverse
-     * @param  bool  $instance
-     * @return array
-     * @throws AdapterException
-     * @throws ServerQueryException
-     * @throws TransportException
-     */
-    public function logView(int $lines = 30, int $begin_pos = null, bool $reverse = null, bool $instance = true): array
-    {
-        return $this->execute('logview', ['lines' => $lines, 'begin_pos' => $begin_pos, 'instance' => $instance, 'reverse' => $reverse])->toArray();
-    }
+//    /**
+//     * Displays a specified number of entries (1-100) from the server log.
+//     *
+//     * @param  int  $lines
+//     * @param  int|null  $begin_pos
+//     * @param  bool|null  $reverse
+//     * @param  bool  $instance
+//     * @return array
+//     * @throws ServerQueryException
+//     */
+//    public function logView(int $lines = 30, int $begin_pos = null, bool $reverse = null, bool $instance = true): array
+//    {
+//        //TODO: $ts3_host->logView() defined in Server.php
+//        return $this->execute('logview', ['lines' => $lines, 'begin_pos' => $begin_pos, 'instance' => $instance, 'reverse' => $reverse])->toArray();
+//    }
 
-    /**
-     * Writes a custom entry into the server instance log.
-     *
-     * @param  string  $logmsg
-     * @param  int  $loglevel
-     * @return void
-     * @throws AdapterException
-     * @throws ServerQueryException
-     * @throws TransportException
-     */
-    public function logAdd(string $logmsg, int $loglevel = TeamSpeak3::LOGLEVEL_INFO): void
-    {
-        $sid = $this->serverSelectedId();
-
-        $this->serverDeselect();
-        $this->execute('logadd', ['logmsg' => $logmsg, 'loglevel' => $loglevel]);
-        $this->serverSelect($sid);
-    }
+//    /**
+//     * Writes a custom entry into the server instance log.
+//     *
+//     * @param  string  $logmsg
+//     * @param  int  $loglevel
+//     * @return void
+//     * @throws AdapterException
+//     * @throws ServerQueryException
+//     * @throws TransportException
+//     */
+//    public function logAdd(string $logmsg, int $loglevel = TeamSpeak3::LOGLEVEL_INFO): void
+//    {
+//        //TODO: $ts3_host->logView() defined in Server.php
+//        $sid = $this->serverSelectedId();
+//
+//        $this->serverDeselect();
+//        $this->execute('logadd', ['logmsg' => $logmsg, 'loglevel' => $loglevel]);
+//        $this->serverSelect($sid);
+//    }
 
     /**
      * @throws TransportException
