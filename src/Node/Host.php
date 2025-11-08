@@ -661,7 +661,23 @@ class Host extends Node
             $permident = (is_numeric(current($permid))) ? 'permid' : 'permsid';
         }
 
-        return $this->execute('permget', [$permident => $permid])->toAssocArray('permsid');
+
+        $result = $this->execute('permget', [$permident => $permid])->toArray();
+
+        // Remove meta entries
+        $filtered = array_filter($result, function ($item) {
+            return is_array($item) && !array_key_exists('permget', $item) && !isset($item['permget']);
+        });
+
+        // If there are several, take the first real one.
+        $flattened = reset($filtered);
+
+        // If available: index via permsid
+        if (isset($flattened['permsid'])) {
+            return $flattened;
+        }
+
+        return [];
     }
 
     /**
