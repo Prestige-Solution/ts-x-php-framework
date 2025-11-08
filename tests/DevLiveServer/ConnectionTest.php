@@ -211,6 +211,19 @@ class ConnectionTest extends TestCase
             $this->assertEquals('invalid permission ID', $e->getMessage());
         }
 
+        $permID = $ts3_host->permissionGetIdByName('b_virtualserver_info_view');
+        $this->assertIsInt($permID);
+
+        $permName = $ts3_host->permissionGetNameById($permID);
+        $this->assertEquals('b_virtualserver_info_view', $permName);
+
+        $selfPermCheck = $ts3_host->selfPermCheck(['b_virtualserver_info_view']);
+        $this->assertIsArray($selfPermCheck);
+        $this->assertArrayHasKey('permsid', $selfPermCheck);
+        $this->assertIsString($selfPermCheck['permsid']);
+        $this->assertEquals('b_virtualserver_info_view', $selfPermCheck['permsid']);
+        $this->assertEquals(1, $selfPermCheck['permvalue']);
+
         $ts3_host->getAdapter()->getTransport()->disconnect();
     }
 }
