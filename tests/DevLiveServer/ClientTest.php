@@ -90,6 +90,9 @@ class ClientTest extends TestCase
         $this->assertIsArray($userInfo);
         $this->assertEquals($this->ts3_unit_test_userName, $userInfo['client_nickname']);
 
+        $symbol = $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->getSymbol();
+        $this->assertEquals('@', $symbol);
+
         $this->unset_play_test_channel($ts3_VirtualServer);
         $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
     }
@@ -188,7 +191,7 @@ class ClientTest extends TestCase
         $this->assertIsInt($userID);
         $ts3_VirtualServer->clientGetById($userID)->message('Hello World');
 
-        if ($this->ts3_unit_test_userName2 !== '') {
+        if (! empty($this->ts3_unit_test_userName2)) {
             $this->dev_reset_channelgroup($ts3_VirtualServer);
             //send a message via a group
             $this->set_play_test_channelgroup($ts3_VirtualServer);
@@ -209,9 +212,6 @@ class ClientTest extends TestCase
             $this->unset_play_test_channelgroup($ts3_VirtualServer);
         }
 
-        $symbol = $ts3_VirtualServer->channelgroupGetById($this->cgid)->getSymbol();
-        $this->assertEquals('%', $symbol);
-        
         $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
     }
 
