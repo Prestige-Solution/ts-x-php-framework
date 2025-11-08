@@ -202,9 +202,16 @@ class ClientTest extends TestCase
 
             $ts3_VirtualServer->channelgroupGetById($this->cgid)->message('UnitTestToGroup');
 
+            $symbol = $ts3_VirtualServer->channelgroupGetById($this->cgid)->getSymbol();
+            $this->assertEquals('%', $symbol);
+
             $this->unset_play_test_channel($ts3_VirtualServer);
             $this->unset_play_test_channelgroup($ts3_VirtualServer);
         }
+
+        $symbol = $ts3_VirtualServer->channelgroupGetById($this->cgid)->getSymbol();
+        $this->assertEquals('%', $symbol);
+        
         $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
     }
 
