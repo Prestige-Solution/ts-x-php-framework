@@ -834,4 +834,22 @@ class StringTest extends TestCase
             $this->assertEquals(1, $str->key());
         }
     }
+
+    public function testOffsetExistsWithinBounds()
+    {
+        $str = new StringHelper('abc');
+
+        // Index 0, 1, 2 exist (since strlen = 3)
+        $this->assertTrue($str->offsetExists(0));
+        $this->assertTrue($str->offsetExists(2));
+    }
+
+    public function testOffsetExistsOutOfBounds()
+    {
+        $str = new StringHelper('abc');
+
+        // Index 3 ist außerhalb des zulässigen Bereichs (0–2 gültig)
+        $this->assertFalse($str->offsetExists(3));
+        $this->assertFalse($str->offsetExists(99));
+    }
 }
