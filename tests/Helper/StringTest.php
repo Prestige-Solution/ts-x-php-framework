@@ -852,4 +852,21 @@ class StringTest extends TestCase
         $this->assertFalse($str->offsetExists(3));
         $this->assertFalse($str->offsetExists(99));
     }
+
+    public function testOffsetGetReturnsCharWhenOffsetExists()
+    {
+        $str = new StringHelper('abc');
+        $char = $str->offsetGet(1); // 'b'
+
+        $this->assertInstanceOf(Char::class, $char);
+        $this->assertEquals('b', (string)$char);
+    }
+
+    public function testOffsetGetReturnsNullWhenOffsetDoesNotExist()
+    {
+        $str = new StringHelper('abc');
+        $result = $str->offsetGet(10); // outside the length
+
+        $this->assertNull($result);
+    }
 }
