@@ -710,4 +710,45 @@ class StringTest extends TestCase
 
         $this->assertEquals('', (string)$result);
     }
+
+    public function testUriSafeBasicConversion()
+    {
+        $str = new StringHelper('Hello World!');
+        $result = $str->uriSafe();
+        
+        $this->assertEquals('hello-world', (string)$result);
+    }
+
+    public function testUriSafeWithCustomSpacer()
+    {
+        $str = new StringHelper('Hello World!');
+        $result = $str->uriSafe('_');
+
+        $this->assertEquals('hello_world', (string)$result);
+    }
+
+    public function testUriSafeTrimsExtraSpacers()
+    {
+        $str = new StringHelper('hello---world');
+        $result = $str->uriSafe();
+
+        $this->assertEquals('hello-world', (string)$result);
+    }
+
+    public function testUriSafeWithOnlySpecialCharacters()
+    {
+        $str = new StringHelper('@@@');
+        $result = $str->uriSafe();
+
+        $this->assertEquals('', (string)$result);
+    }
+
+    public function testUriSafeReturnsNewInstance()
+    {
+        $str = new StringHelper('Test');
+        $result = $str->uriSafe();
+
+        // Should NOT be the same object (since ‘new self’)
+        $this->assertNotSame($str, $result);
+    }
 }
