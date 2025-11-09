@@ -628,4 +628,28 @@ class StringTest extends TestCase
             json_encode(['a' => 'Hello world!'])
         );
     }
+
+    public function testResizeTruncatesWhenTooLong()
+    {
+        $str = new StringHelper('abcdef');
+        $resized = $str->resize(3);
+
+        $this->assertEquals('abc', (string)$resized);
+    }
+
+    public function testResizePadsWhenTooShort()
+    {
+        $str = new StringHelper('abc');
+        $resized = $str->resize(5, '_');
+
+        $this->assertEquals('abc__', (string)$resized);
+    }
+
+    public function testResizeUnchangedWhenSameSize()
+    {
+        $str = new StringHelper('abcd');
+        $resized = $str->resize(4, 'x');
+
+        $this->assertEquals('abcd', (string)$resized);
+    }
 }
