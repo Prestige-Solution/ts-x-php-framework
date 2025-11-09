@@ -652,4 +652,29 @@ class StringTest extends TestCase
 
         $this->assertEquals('abcd', (string)$resized);
     }
+
+    public function testFilterAlnumRemovesNonAlnumCharacters()
+    {
+        $str = new StringHelper('abc-123!@#xyz');
+        $result = $str->filterAlnum();
+
+        // Removes all special characters, leaving only a–z, A–Z, 0–9
+        $this->assertEquals('abc123xyz', (string)$result);
+    }
+
+    public function testFilterAlnumKeepsAlnumOnly()
+    {
+        $str = new StringHelper('A1b2C3');
+        $result = $str->filterAlnum();
+
+        $this->assertEquals('A1b2C3', (string)$result);
+    }
+
+    public function testFilterAlnumOnEmptyString()
+    {
+        $str = new StringHelper('');
+        $result = $str->filterAlnum();
+
+        $this->assertEquals('', (string)$result);
+    }
 }
