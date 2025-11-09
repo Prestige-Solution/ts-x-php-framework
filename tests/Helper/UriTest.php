@@ -7,6 +7,7 @@ use PHPUnit\Framework\TestCase;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\HelperException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Helper\StringHelper;
 use PlanetTeamSpeak\TeamSpeak3Framework\Helper\Uri;
+use ReflectionMethod;
 
 class UriTest extends TestCase
 {
