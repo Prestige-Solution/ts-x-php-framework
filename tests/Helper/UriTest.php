@@ -521,4 +521,26 @@ class UriTest extends TestCase
         // Damit testen wir den catch-Block
         $this->assertFalse(Uri::check($uri));
     }
+
+    public function testGetFQDNPartsReturnsEmptyArrayForInvalidHostname()
+    {
+        // Contains invalid characters (e.g., spaces or special characters)
+        $result = Uri::getFQDNParts('invalid host name');
+        $this->assertSame([], $result);
+    }
+
+    public function testGetFQDNPartsReturnsPartsForValidHostname()
+    {
+        $result = Uri::getFQDNParts('sub.example.com');
+
+        // Check that the array contains the expected keys
+        $this->assertArrayHasKey('tld', $result);
+        $this->assertArrayHasKey('2nd', $result);
+        $this->assertArrayHasKey('3rd', $result);
+
+        // Example values (depending on regex matching)
+        $this->assertEquals('com', $result['tld']);
+        $this->assertEquals('example.', $result['2nd']); // Note: Regex contains a period!
+        $this->assertEquals('sub.', $result['3rd']);
+    }
 }
