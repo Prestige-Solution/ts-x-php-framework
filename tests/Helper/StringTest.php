@@ -958,4 +958,29 @@ class StringTest extends TestCase
 
         $this->assertEquals('', (string)$result);
     }
+
+    public function testUnescapeRevertsEscapedCharacters()
+    {
+        // Example: TS3 escaped “ ” → “\s”, “|” → “\p”
+        $str = new StringHelper('Hello\sWorld\pServer');
+        $result = $str->unescape();
+
+        $this->assertEquals('Hello World|Server', (string)$result);
+    }
+
+    public function testUnescapeWithNoEscapes()
+    {
+        $str = new StringHelper('NoEscapesHere');
+        $result = $str->unescape();
+
+        $this->assertEquals('NoEscapesHere', (string)$result);
+    }
+
+    public function testUnescapeReturnsSelf()
+    {
+        $str = new StringHelper('Foo\sBar');
+        $result = $str->unescape();
+
+        $this->assertSame($result, $result);
+    }
 }
