@@ -198,11 +198,18 @@ class Char
      */
     public static function fromHex(string $hex): self
     {
-        if (strlen($hex) != 2) {
+        // Check: only even numbers of hex characters allowed, all must be valid
+        if (strlen($hex) % 2 !== 0 || !ctype_xdigit($hex)) {
             throw new HelperException("given parameter '".$hex."' is not a valid hexadecimal number");
         }
 
-        return new self(chr(hexdec($hex)));
+        // Hex → Binary string (UTF-8 compatible)
+        $bytes = hex2bin($hex);
+        if ($bytes === false) {
+            throw new HelperException("given parameter '".$hex."' could not be converted to binary data");
+        }
+
+        return new self($bytes);
     }
 
     /**
