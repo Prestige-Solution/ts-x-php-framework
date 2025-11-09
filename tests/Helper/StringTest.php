@@ -677,4 +677,37 @@ class StringTest extends TestCase
 
         $this->assertEquals('', (string)$result);
     }
+
+    public function testFilterAlphaRemovesNonLetters()
+    {
+        $str = new StringHelper('abc123!@#XYZ');
+        $result = $str->filterAlpha();
+
+        // Nur Buchstaben bleiben
+        $this->assertEquals('abcXYZ', (string)$result);
+    }
+
+    public function testFilterAlphaKeepsLettersOnly()
+    {
+        $str = new StringHelper('AbCdEf');
+        $result = $str->filterAlpha();
+
+        $this->assertEquals('AbCdEf', (string)$result);
+    }
+
+    public function testFilterAlphaRemovesAllIfNoLetters()
+    {
+        $str = new StringHelper('12345_?!-');
+        $result = $str->filterAlpha();
+
+        $this->assertEquals('', (string)$result);
+    }
+
+    public function testFilterAlphaEmptyString()
+    {
+        $str = new StringHelper('');
+        $result = $str->filterAlpha();
+
+        $this->assertEquals('', (string)$result);
+    }
 }
