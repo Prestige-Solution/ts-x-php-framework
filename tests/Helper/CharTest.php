@@ -256,6 +256,78 @@ class CharTest extends TestCase
             static::calculateUTF8Ordinal("\x7F"),
             Char::fromHex('7F')->toUnicode()
         );
+
+        //
+        // 1-BYTE UTF-8 (U+0000 – U+007F)
+        //
+        $this->assertEquals(
+            static::calculateUTF8Ordinal("\x00"),
+            Char::fromHex('00')->toUnicode()
+        );
+        $this->assertEquals(
+            static::calculateUTF8Ordinal("\x7F"),
+            Char::fromHex('7F')->toUnicode()
+        );
+
+        //
+        // INVALID LEADING BYTE (< 0xC2)
+        // e.g. 0x80 – 0xC1 should return false
+        //
+        $this->assertEquals(-1, Char::fromHex('80')->toUnicode());
+        $this->assertEquals(-1, Char::fromHex('C1')->toUnicode());
+
+        //
+        // 2-BYTE UTF-8 (U+0080 – U+07FF)
+        // Example: '¢' (U+00A2) → C2 A2
+        //
+        $this->assertEquals(
+            static::calculateUTF8Ordinal("\xC2\xA2"),
+            Char::fromHex('C2A2')->toUnicode()
+        );
+
+        // Upper end of 2-byte range: '߿' (U+07FF) → DF BF
+        $this->assertEquals(
+            static::calculateUTF8Ordinal("\xDF\xBF"),
+            Char::fromHex('DFBF')->toUnicode()
+        );
+
+        //
+        // 3-BYTE UTF-8 (U+0800 – U+FFFF)
+        // Example: '€' (U+20AC) → E2 82 AC
+        //
+        $this->assertEquals(
+            static::calculateUTF8Ordinal("\xE2\x82\xAC"),
+            Char::fromHex('E282AC')->toUnicode()
+        );
+
+        // Upper end of 3-byte range: '￿' (U+FFFF) → EF BF BF
+        $this->assertEquals(
+            static::calculateUTF8Ordinal("\xEF\xBF\xBF"),
+            Char::fromHex('EFBFBF')->toUnicode()
+        );
+
+        //
+        // 4-BYTE UTF-8 (U+10000 – U+10FFFF)
+        // Example: '😀' (U+1F600) → F0 9F 98 80
+        //
+        $this->assertEquals(
+            static::calculateUTF8Ordinal("\xF0\x9F\x98\x80"),
+            Char::fromHex('F09F9880')->toUnicode()
+        );
+
+        // Upper end: U+10FFFF → F4 8F BF BF
+        $this->assertEquals(
+            static::calculateUTF8Ordinal("\xF4\x8F\xBF\xBF"),
+            Char::fromHex('F48FBFBF')->toUnicode()
+        );
+
+        //
+        // INVALID TOO-HIGH LEAD BYTE (> 0xF4)
+        //
+        $this->assertEquals(
+            -1,
+            Char::fromHex('F5')->toUnicode()
+        );
     }
 
     /**
