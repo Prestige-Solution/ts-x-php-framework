@@ -5,6 +5,7 @@ namespace PlanetTeamSpeak\TeamSpeak3Framework\Tests\Helper;
 use Exception;
 use PHPUnit\Framework\TestCase;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\HelperException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Helper\Char;
 use PlanetTeamSpeak\TeamSpeak3Framework\Helper\StringHelper;
 use PlanetTeamSpeak\TeamSpeak3Framework\TeamSpeak3;
 
