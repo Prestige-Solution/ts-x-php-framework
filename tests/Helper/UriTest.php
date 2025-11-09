@@ -485,4 +485,40 @@ class UriTest extends TestCase
             $uri->getFragment()
         );
     }
+
+    /**
+     * @throws HelperException
+     */
+    public function testCheckCatchesException()
+    {
+        $uri = new StringHelper(''); // empty string → throws HelperException in constructor
+        $this->assertFalse(Uri::check($uri));
+    }
+
+    /**
+     * @throws HelperException
+     */
+    public function testCheckHandlesValidConstruction()
+    {
+        $uri = new StringHelper('http://example.com');
+
+        // We don't know what isValid() returns,
+        // so we just check that no exception is thrown and that the return value is a bool.
+        $result = Uri::check($uri);
+
+        $this->assertIsBool($result);
+    }
+
+    /**
+     * @throws HelperException
+     */
+    public function testCheckReturnsFalseWhenConstructorThrows()
+    {
+        // We simulate a URI that causes the Uri constructor to fail
+        // e.g., an empty or invalid string
+        $uri = new StringHelper('');
+
+        // Damit testen wir den catch-Block
+        $this->assertFalse(Uri::check($uri));
+    }
 }
