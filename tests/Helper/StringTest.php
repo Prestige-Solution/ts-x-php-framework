@@ -751,4 +751,71 @@ class StringTest extends TestCase
         // Should NOT be the same object (since ‘new self’)
         $this->assertNotSame($str, $result);
     }
+
+    /**
+     * Test StringHelper "magic" __call TODO we should change this in the future
+     * @return void
+     */
+    public function testCallThrowsOnUndefinedFunction()
+    {
+        $str = new StringHelper('test');
+
+        $this->expectException(HelperException::class);
+        $this->expectExceptionMessage("cannot call undefined function 'nope'");
+
+        $str->nope();
+    }
+
+    /**
+     * Test StringHelper "magic" __call TODO we should change this in the future
+     * @return void
+     */
+    public function testCallWithArgsAndSelfReplacement()
+    {
+        $str = new StringHelper('hello world');
+        $result = $str->str_replace('world', 'there', $str);
+
+        $this->assertInstanceOf(StringHelper::class, $result);
+        $this->assertEquals('hello there', (string)$result);
+    }
+
+    /**
+     * Test StringHelper "magic" __call TODO we should change this in the future
+     * @return void
+     */
+    public function testCallThrowsWhenMissingObjectParameter()
+    {
+        $str = new StringHelper('abc');
+
+        $this->expectException(HelperException::class);
+        $this->expectExceptionMessageMatches('/without the .* object parameter/');
+
+        // Keine Referenz auf $this in Argumenten → Exception
+        $str->str_replace('a', 'b');
+    }
+
+    /**
+     * Test StringHelper "magic" __call TODO we should change this in the future
+     * @return void
+     */
+    public function testCallWithoutArgsReturnsModifiedString()
+    {
+        $str = new StringHelper('hello');
+        $result = $str->strtoupper();
+
+        $this->assertEquals('HELLO', (string)$result);
+    }
+
+    /**
+     * Test StringHelper "magic" __call TODO we should change this in the future
+     * @return void
+     */
+    public function testCallReturnsNonStringValue()
+    {
+        $str = new StringHelper('abcdef');
+        $len = $str->strlen();
+
+        $this->assertIsInt($len);
+        $this->assertEquals(6, $len);
+    }
 }
