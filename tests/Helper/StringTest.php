@@ -818,4 +818,20 @@ class StringTest extends TestCase
         $this->assertIsInt($len);
         $this->assertEquals(6, $len);
     }
+
+    public function testKeyReturnsCurrentPosition()
+    {
+        $str = new StringHelper('abc');
+
+        // If the class implements Iterator, position could initially be 0.
+        $this->assertEquals(0, $str->key());
+        $this->assertIsInt($str->key());
+
+        // Optional: if there is a method such as next() or rewind(),
+        // you can check that the position has changed.
+        if (method_exists($str, 'next')) {
+            $str->next();
+            $this->assertEquals(1, $str->key());
+        }
+    }
 }
