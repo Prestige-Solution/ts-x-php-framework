@@ -439,5 +439,10 @@ class ConvertTest extends TestCase
                 base64_decode('R0lGODdhAQABAIAAAPxqbAAAACwAAAAAAQABAAACAkQBADs=')
             )
         );
+
+        //fake binary
+        $fakeBinary = "NOT_AN_IMAGE";
+        $result = Convert::imageMimeType($fakeBinary);
+        $this->assertEquals('image/svg+xml', $result);
     }
 }
