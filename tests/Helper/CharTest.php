@@ -354,6 +354,22 @@ class CharTest extends TestCase
         );
     }
 
+    public function testUnicodeFailed()
+    {
+        $this->expectException(HelperException::class);
+        $this->expectExceptionMessage('char parameter may not contain more or less than one UTF-8 character');
+
+        new Char('');
+
+        $this->expectException(HelperException::class);
+        $this->expectExceptionMessage('char parameter may not contain more or less than one UTF-8 character');
+
+        new Char('ab'); // 2 chars
+
+        $this->expectException(HelperException::class);
+        new Char('😀😀'); // 2 UTF-8 Codepoints
+    }
+
     /**
      * Return integer value of a string, specifically for UTF8 strings.
      *
