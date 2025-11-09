@@ -869,4 +869,20 @@ class StringTest extends TestCase
 
         $this->assertNull($result);
     }
+
+    public function testOffsetSetReplacesCharacterWhenOffsetExists()
+    {
+        $str = new StringHelper('abc');
+        $str->offsetSet(1, 'Z'); // replaces ‘b’ with 'Z'
+
+        $this->assertEquals('aZc', (string)$str);
+    }
+
+    public function testOffsetSetDoesNothingWhenOffsetDoesNotExist()
+    {
+        $str = new StringHelper('abc');
+        $str->offsetSet(10, 'Z'); // invalid index, no change
+
+        $this->assertEquals('abc', (string)$str);
+    }
 }
