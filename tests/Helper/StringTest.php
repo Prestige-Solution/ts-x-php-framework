@@ -902,4 +902,28 @@ class StringTest extends TestCase
 
         $this->assertEquals('abcd', (string)$str);
     }
+
+    public function testToIntReturnsMinusOneForPowerOf63()
+    {
+        $str = new StringHelper((string)pow(2, 63));
+        $this->assertEquals(-1, $str->toInt());
+    }
+
+    public function testToIntReturnsMinusOneForPowerOf64()
+    {
+        $str = new StringHelper((string)pow(2, 64));
+        $this->assertEquals(-1, $str->toInt());
+    }
+
+    public function testToIntReturnsMinusOneForValueGreaterThan2Power31()
+    {
+        $str = new StringHelper((string)(pow(2, 31) + 10));
+        $this->assertEquals(-1, $str->toInt());
+    }
+
+    public function testToIntReturnsNormalIntegerWhenWithinRange()
+    {
+        $str = new StringHelper('12345');
+        $this->assertEquals(12345, $str->toInt());
+    }
 }
