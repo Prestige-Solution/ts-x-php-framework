@@ -295,7 +295,7 @@ class CharTest extends TestCase
 
         //
         // INVALID LEADING BYTE (< 0xC2)
-        // e.g. 0x80 – 0xC1 should return false
+        // e.g., 0x80 – 0xC1 should return false
         //
         $this->assertEquals(-1, Char::fromHex('80')->toUnicode());
         $this->assertEquals(-1, Char::fromHex('C1')->toUnicode());
@@ -371,7 +371,7 @@ class CharTest extends TestCase
     }
 
     /**
-     * Return integer value of a string, specifically for UTF8 strings.
+     * Return an integer value of a string, specifically for UTF8 strings.
      *
      * @param string $char
      *
