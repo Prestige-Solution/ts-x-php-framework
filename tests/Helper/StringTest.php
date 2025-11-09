@@ -926,4 +926,36 @@ class StringTest extends TestCase
         $str = new StringHelper('12345');
         $this->assertEquals(12345, $str->toInt());
     }
+
+    public function testFilterDigitsRemovesNonDigits()
+    {
+        $str = new StringHelper('abc123xyz');
+        $result = $str->filterDigits();
+
+        $this->assertEquals('123', (string)$result);
+    }
+
+    public function testFilterDigitsKeepsOnlyDigits()
+    {
+        $str = new StringHelper('987654');
+        $result = $str->filterDigits();
+
+        $this->assertEquals('987654', (string)$result);
+    }
+
+    public function testFilterDigitsRemovesAllWhenNoDigits()
+    {
+        $str = new StringHelper('no digits!');
+        $result = $str->filterDigits();
+
+        $this->assertEquals('', (string)$result);
+    }
+
+    public function testFilterDigitsOnEmptyString()
+    {
+        $str = new StringHelper('');
+        $result = $str->filterDigits();
+
+        $this->assertEquals('', (string)$result);
+    }
 }
