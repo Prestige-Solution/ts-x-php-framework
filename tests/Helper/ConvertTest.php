@@ -4,6 +4,8 @@ namespace PlanetTeamSpeak\TeamSpeak3Framework\Tests\Helper;
 
 use PHPUnit\Framework\TestCase;
 use PlanetTeamSpeak\TeamSpeak3Framework\Helper\Convert;
+use PlanetTeamSpeak\TeamSpeak3Framework\Helper\StringHelper;
+use PlanetTeamSpeak\TeamSpeak3Framework\TeamSpeak3;
 
 class ConvertTest extends TestCase
 {
@@ -444,5 +446,29 @@ class ConvertTest extends TestCase
         $fakeBinary = "NOT_AN_IMAGE";
         $result = Convert::imageMimeType($fakeBinary);
         $this->assertEquals('image/svg+xml', $result);
+    }
+
+    public function testIconIdUnsignedBelowThreshold()
+    {
+        // Sample value below the 0x80000000 bit (small ID)
+        $value = 123456789;
+        $result = Convert::iconId($value);
+
+        $this->assertEquals($value, $result);
+    }
+
+    public function testIconIdUnsignedWithHighBitSet()
+    {
+        // Set the 0x80000000 bit → should be interpreted as negative
+        $value = 0x80000001; // 2147483649
+        $result = Convert::iconId($value);
+
+        if (PHP_INT_SIZE > 4) {
+            // 2147483649 - 0x100000000 = -2147483647
+            $this->assertEquals(-2147483647, $result);
+        } else {
+            // No overflow handling on 32-bit systems
+            $this->assertEquals($value, $result);
+        }
     }
 }
