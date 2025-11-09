@@ -543,4 +543,49 @@ class UriTest extends TestCase
         $this->assertEquals('example.', $result['2nd']); // Note: Regex contains a period!
         $this->assertEquals('sub.', $result['3rd']);
     }
+
+    /**
+     *
+     * @throws \ReflectionException
+     */
+    protected function callProtectedStatic(string $method, array $args = [])
+    {
+        $ref = new ReflectionMethod(Uri::class, $method);
+        /** @noinspection PhpExpressionResultUnusedInspection */
+        $ref->setAccessible(true);
+        return $ref->invokeArgs(null, $args);
+    }
+
+    /**
+     * @throws \ReflectionException
+     */
+    public function testStripslashesRecursiveRemovesSlashesFromString()
+    {
+        $result = $this->callProtectedStatic('stripslashesRecursive', ['A\\B']);
+        $this->assertEquals('AB', $result);
+    }
+
+    /**
+     * @throws \ReflectionException
+     */
+    public function testStripslashesRecursiveHandlesFlatArray()
+    {
+        $input = ['x\\y', 'a\\b'];
+        $expected = ['xy', 'ab'];
+
+        $result = $this->callProtectedStatic('stripslashesRecursive', [$input]);
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * @throws \ReflectionException
+     */
+    public function testStripslashesRecursiveHandlesNestedArrays()
+    {
+        $input = ['outer' => ['inner' => 'x\\y\\z']];
+        $expected = ['outer' => ['inner' => 'xyz']];
+
+        $result = $this->callProtectedStatic('stripslashesRecursive', [$input]);
+        $this->assertEquals($expected, $result);
+    }
 }
