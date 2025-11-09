@@ -141,7 +141,6 @@ class CharTest extends TestCase
         Char::fromHex('F');
         //!!!Attention!!!
         //Throw at // Hex → Binary string (UTF-8 compatible) is not reachable. The first if block caught the issue
-
     }
 
     /**

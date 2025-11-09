@@ -199,7 +199,7 @@ class Char
     public static function fromHex(string $hex): self
     {
         // Check: only even numbers of hex characters allowed, all must be valid
-        if (strlen($hex) % 2 !== 0 || !ctype_xdigit($hex)) {
+        if (strlen($hex) % 2 !== 0 || ! ctype_xdigit($hex)) {
             throw new HelperException("given parameter '".$hex."' is not a valid hexadecimal number");
         }
 

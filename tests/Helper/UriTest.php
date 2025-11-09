@@ -546,7 +546,6 @@ class UriTest extends TestCase
     }
 
     /**
-     *
      * @throws \ReflectionException
      */
     protected function callProtectedStatic(string $method, array $args = [])
@@ -554,6 +553,7 @@ class UriTest extends TestCase
         $ref = new ReflectionMethod(Uri::class, $method);
         /** @noinspection PhpExpressionResultUnusedInspection */
         $ref->setAccessible(true);
+
         return $ref->invokeArgs(null, $args);
     }
 

@@ -382,7 +382,7 @@ class ConvertTest extends TestCase
             );
         }
 
-        $entry = "2024-01-01 12:00:00|ERROR MESSAGE";
+        $entry = '2024-01-01 12:00:00|ERROR MESSAGE';
 
         $result = Convert::logEntry($entry);
 
@@ -395,17 +395,16 @@ class ConvertTest extends TestCase
 
         // msg is a StringHelper object
         $this->assertInstanceOf(StringHelper::class, $result['msg']);
-        $this->assertStringContainsString('convert error', (string)$result['msg']);
+        $this->assertStringContainsString('convert error', (string) $result['msg']);
 
-        $entry = "2024-01-01 12:00:00|INFO|system|1|All good";
+        $entry = '2024-01-01 12:00:00|INFO|system|1|All good';
         $result = Convert::logEntry($entry);
 
         $this->assertFalse($result['malformed']);
         $this->assertIsInt($result['timestamp']);
         $this->assertEquals('system', $result['channel']);
         $this->assertEquals('1', $result['server_id']);
-        $this->assertEquals('All good', (string)$result['msg']);
-
+        $this->assertEquals('All good', (string) $result['msg']);
     }
 
     public function testConvertToPassword()
@@ -443,7 +442,7 @@ class ConvertTest extends TestCase
         );
 
         //fake binary
-        $fakeBinary = "NOT_AN_IMAGE";
+        $fakeBinary = 'NOT_AN_IMAGE';
         $result = Convert::imageMimeType($fakeBinary);
         $this->assertEquals('image/svg+xml', $result);
     }

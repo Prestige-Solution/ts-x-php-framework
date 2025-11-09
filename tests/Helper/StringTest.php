@@ -635,7 +635,7 @@ class StringTest extends TestCase
         $str = new StringHelper('abcdef');
         $resized = $str->resize(3);
 
-        $this->assertEquals('abc', (string)$resized);
+        $this->assertEquals('abc', (string) $resized);
     }
 
     public function testResizePadsWhenTooShort()
@@ -643,7 +643,7 @@ class StringTest extends TestCase
         $str = new StringHelper('abc');
         $resized = $str->resize(5, '_');
 
-        $this->assertEquals('abc__', (string)$resized);
+        $this->assertEquals('abc__', (string) $resized);
     }
 
     public function testResizeUnchangedWhenSameSize()
@@ -651,7 +651,7 @@ class StringTest extends TestCase
         $str = new StringHelper('abcd');
         $resized = $str->resize(4, 'x');
 
-        $this->assertEquals('abcd', (string)$resized);
+        $this->assertEquals('abcd', (string) $resized);
     }
 
     public function testFilterAlnumRemovesNonAlnumCharacters()
@@ -660,7 +660,7 @@ class StringTest extends TestCase
         $result = $str->filterAlnum();
 
         // Removes all special characters, leaving only a–z, A–Z, 0–9
-        $this->assertEquals('abc123xyz', (string)$result);
+        $this->assertEquals('abc123xyz', (string) $result);
     }
 
     public function testFilterAlnumKeepsAlnumOnly()
@@ -668,7 +668,7 @@ class StringTest extends TestCase
         $str = new StringHelper('A1b2C3');
         $result = $str->filterAlnum();
 
-        $this->assertEquals('A1b2C3', (string)$result);
+        $this->assertEquals('A1b2C3', (string) $result);
     }
 
     public function testFilterAlnumOnEmptyString()
@@ -676,7 +676,7 @@ class StringTest extends TestCase
         $str = new StringHelper('');
         $result = $str->filterAlnum();
 
-        $this->assertEquals('', (string)$result);
+        $this->assertEquals('', (string) $result);
     }
 
     public function testFilterAlphaRemovesNonLetters()
@@ -685,7 +685,7 @@ class StringTest extends TestCase
         $result = $str->filterAlpha();
 
         // Nur Buchstaben bleiben
-        $this->assertEquals('abcXYZ', (string)$result);
+        $this->assertEquals('abcXYZ', (string) $result);
     }
 
     public function testFilterAlphaKeepsLettersOnly()
@@ -693,7 +693,7 @@ class StringTest extends TestCase
         $str = new StringHelper('AbCdEf');
         $result = $str->filterAlpha();
 
-        $this->assertEquals('AbCdEf', (string)$result);
+        $this->assertEquals('AbCdEf', (string) $result);
     }
 
     public function testFilterAlphaRemovesAllIfNoLetters()
@@ -701,7 +701,7 @@ class StringTest extends TestCase
         $str = new StringHelper('12345_?!-');
         $result = $str->filterAlpha();
 
-        $this->assertEquals('', (string)$result);
+        $this->assertEquals('', (string) $result);
     }
 
     public function testFilterAlphaEmptyString()
@@ -709,15 +709,15 @@ class StringTest extends TestCase
         $str = new StringHelper('');
         $result = $str->filterAlpha();
 
-        $this->assertEquals('', (string)$result);
+        $this->assertEquals('', (string) $result);
     }
 
     public function testUriSafeBasicConversion()
     {
         $str = new StringHelper('Hello World!');
         $result = $str->uriSafe();
-        
-        $this->assertEquals('hello-world', (string)$result);
+
+        $this->assertEquals('hello-world', (string) $result);
     }
 
     public function testUriSafeWithCustomSpacer()
@@ -725,7 +725,7 @@ class StringTest extends TestCase
         $str = new StringHelper('Hello World!');
         $result = $str->uriSafe('_');
 
-        $this->assertEquals('hello_world', (string)$result);
+        $this->assertEquals('hello_world', (string) $result);
     }
 
     public function testUriSafeTrimsExtraSpacers()
@@ -733,7 +733,7 @@ class StringTest extends TestCase
         $str = new StringHelper('hello---world');
         $result = $str->uriSafe();
 
-        $this->assertEquals('hello-world', (string)$result);
+        $this->assertEquals('hello-world', (string) $result);
     }
 
     public function testUriSafeWithOnlySpecialCharacters()
@@ -741,7 +741,7 @@ class StringTest extends TestCase
         $str = new StringHelper('@@@');
         $result = $str->uriSafe();
 
-        $this->assertEquals('', (string)$result);
+        $this->assertEquals('', (string) $result);
     }
 
     public function testUriSafeReturnsNewInstance()
@@ -777,7 +777,7 @@ class StringTest extends TestCase
         $result = $str->str_replace('world', 'there', $str);
 
         $this->assertInstanceOf(StringHelper::class, $result);
-        $this->assertEquals('hello there', (string)$result);
+        $this->assertEquals('hello there', (string) $result);
     }
 
     /**
@@ -804,7 +804,7 @@ class StringTest extends TestCase
         $str = new StringHelper('hello');
         $result = $str->strtoupper();
 
-        $this->assertEquals('HELLO', (string)$result);
+        $this->assertEquals('HELLO', (string) $result);
     }
 
     /**
@@ -860,7 +860,7 @@ class StringTest extends TestCase
         $char = $str->offsetGet(1); // 'b'
 
         $this->assertInstanceOf(Char::class, $char);
-        $this->assertEquals('b', (string)$char);
+        $this->assertEquals('b', (string) $char);
     }
 
     public function testOffsetGetReturnsNullWhenOffsetDoesNotExist()
@@ -876,7 +876,7 @@ class StringTest extends TestCase
         $str = new StringHelper('abc');
         $str->offsetSet(1, 'Z'); // replaces ‘b’ with 'Z'
 
-        $this->assertEquals('aZc', (string)$str);
+        $this->assertEquals('aZc', (string) $str);
     }
 
     public function testOffsetSetDoesNothingWhenOffsetDoesNotExist()
@@ -884,7 +884,7 @@ class StringTest extends TestCase
         $str = new StringHelper('abc');
         $str->offsetSet(10, 'Z'); // invalid index, no change
 
-        $this->assertEquals('abc', (string)$str);
+        $this->assertEquals('abc', (string) $str);
     }
 
     public function testOffsetUnsetRemovesCharacterWhenOffsetExists()
@@ -892,7 +892,7 @@ class StringTest extends TestCase
         $str = new StringHelper('abcd');
         $str->offsetUnset(1); // removes 'b'
 
-        $this->assertEquals('acd', (string)$str);
+        $this->assertEquals('acd', (string) $str);
     }
 
     public function testOffsetUnsetDoesNothingWhenOffsetDoesNotExist()
@@ -900,24 +900,24 @@ class StringTest extends TestCase
         $str = new StringHelper('abcd');
         $str->offsetUnset(10); // invalid index, no change
 
-        $this->assertEquals('abcd', (string)$str);
+        $this->assertEquals('abcd', (string) $str);
     }
 
     public function testToIntReturnsMinusOneForPowerOf63()
     {
-        $str = new StringHelper((string)pow(2, 63));
+        $str = new StringHelper((string) pow(2, 63));
         $this->assertEquals(-1, $str->toInt());
     }
 
     public function testToIntReturnsMinusOneForPowerOf64()
     {
-        $str = new StringHelper((string)pow(2, 64));
+        $str = new StringHelper((string) pow(2, 64));
         $this->assertEquals(-1, $str->toInt());
     }
 
     public function testToIntReturnsMinusOneForValueGreaterThan2Power31()
     {
-        $str = new StringHelper((string)(pow(2, 31) + 10));
+        $str = new StringHelper((string) (pow(2, 31) + 10));
         $this->assertEquals(-1, $str->toInt());
     }
 
@@ -932,7 +932,7 @@ class StringTest extends TestCase
         $str = new StringHelper('abc123xyz');
         $result = $str->filterDigits();
 
-        $this->assertEquals('123', (string)$result);
+        $this->assertEquals('123', (string) $result);
     }
 
     public function testFilterDigitsKeepsOnlyDigits()
@@ -940,7 +940,7 @@ class StringTest extends TestCase
         $str = new StringHelper('987654');
         $result = $str->filterDigits();
 
-        $this->assertEquals('987654', (string)$result);
+        $this->assertEquals('987654', (string) $result);
     }
 
     public function testFilterDigitsRemovesAllWhenNoDigits()
@@ -948,7 +948,7 @@ class StringTest extends TestCase
         $str = new StringHelper('no digits!');
         $result = $str->filterDigits();
 
-        $this->assertEquals('', (string)$result);
+        $this->assertEquals('', (string) $result);
     }
 
     public function testFilterDigitsOnEmptyString()
@@ -956,7 +956,7 @@ class StringTest extends TestCase
         $str = new StringHelper('');
         $result = $str->filterDigits();
 
-        $this->assertEquals('', (string)$result);
+        $this->assertEquals('', (string) $result);
     }
 
     public function testUnescapeRevertsEscapedCharacters()
@@ -965,7 +965,7 @@ class StringTest extends TestCase
         $str = new StringHelper('Hello\sWorld\pServer');
         $result = $str->unescape();
 
-        $this->assertEquals('Hello World|Server', (string)$result);
+        $this->assertEquals('Hello World|Server', (string) $result);
     }
 
     public function testUnescapeWithNoEscapes()
@@ -973,7 +973,7 @@ class StringTest extends TestCase
         $str = new StringHelper('NoEscapesHere');
         $result = $str->unescape();
 
-        $this->assertEquals('NoEscapesHere', (string)$result);
+        $this->assertEquals('NoEscapesHere', (string) $result);
     }
 
     public function testUnescapeReturnsSelf()
