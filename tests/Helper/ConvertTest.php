@@ -368,7 +368,6 @@ class ConvertTest extends TestCase
 
     public function testConvertLogEntryToArray()
     {
-        // @todo: Implement matching integration test for testing real log entries
         $mock_data = [
             '2017-06-26 21:55:30.307009|INFO    |Query         |   |query from 47 [::1]:62592 issued: login with account "serveradmin"(serveradmin)',
         ];
@@ -380,6 +379,31 @@ class ConvertTest extends TestCase
                 'Log entry appears malformed, dumping: '.print_r($entryParsed, true)
             );
         }
+
+        $entry = "2024-01-01 12:00:00|ERROR MESSAGE";
+
+        $result = Convert::logEntry($entry);
+
+        $this->assertEquals(0, $result['timestamp']);
+        $this->assertEquals(TeamSpeak3::LOGLEVEL_ERROR, $result['level']);
+        $this->assertEquals('ParamParser', $result['channel']);
+        $this->assertEquals('', $result['server_id']);
+        $this->assertTrue($result['malformed']);
+        $this->assertEquals($entry, $result['msg_plain']);
+
+        // msg is a StringHelper object
+        $this->assertInstanceOf(StringHelper::class, $result['msg']);
+        $this->assertStringContainsString('convert error', (string)$result['msg']);
+
+        $entry = "2024-01-01 12:00:00|INFO|system|1|All good";
+        $result = Convert::logEntry($entry);
+
+        $this->assertFalse($result['malformed']);
+        $this->assertIsInt($result['timestamp']);
+        $this->assertEquals('system', $result['channel']);
+        $this->assertEquals('1', $result['server_id']);
+        $this->assertEquals('All good', (string)$result['msg']);
+
     }
 
     public function testConvertToPassword()
