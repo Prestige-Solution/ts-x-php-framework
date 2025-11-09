@@ -213,6 +213,9 @@ class ConvertTest extends TestCase
         $output = Convert::seconds(-90.083);
         $this->assertEquals('-0D 00:01:30', $output);
         $this->assertIsString($output);
+
+        $result = Convert::seconds(5000, true);
+        $this->assertEquals('0D 00:00:05', $result);
     }
 
     public function testConvertCodecIDToHumanReadable()
