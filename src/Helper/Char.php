@@ -26,8 +26,8 @@ class Char
      */
     public function __construct(string $char)
     {
-        if (strlen($char) != 1) {
-            throw new HelperException('char parameter may not contain more or less than one character');
+        if (mb_strlen($char, 'UTF-8') !== 1) {
+            throw new HelperException('char parameter may not contain more or less than one UTF-8 character');
         }
 
         $this->char = $char;
