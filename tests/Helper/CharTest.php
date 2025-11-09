@@ -120,6 +120,30 @@ class CharTest extends TestCase
         $this->assertIsInt($char->toInt());
     }
 
+    public function testFromHexFailed()
+    {
+        $this->expectException(HelperException::class);
+        $this->expectExceptionMessage("given parameter 'A' is not a valid hexadecimal number");
+
+        Char::fromHex('A'); // odd length
+
+        $this->expectException(HelperException::class);
+        $this->expectExceptionMessage("given parameter 'GG' is not a valid hexadecimal number");
+
+        Char::fromHex('GG'); // no valid hex characters
+
+        // hex2bin() returns false if the number of characters is odd.
+        // This allows us to trigger the second throw path specifically.
+        $this->expectException(HelperException::class);
+        $this->expectExceptionMessage("given parameter 'F' could not be converted to binary data");
+
+        // // To bypass the first if block and let hex2bin() fail itself,
+        Char::fromHex('F');
+        //!!!Attention!!!
+        //Throw at // Hex → Binary string (UTF-8 compatible) is not reachable. The first if block caught the issue
+
+    }
+
     /**
      * @throws HelperException
      */
