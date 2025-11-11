@@ -71,13 +71,26 @@ class Host extends Node
      * @throws ServerQueryException
      * @throws TransportException
      */
-    public function version(string $ident = null): mixed
+    public function version(): array
     {
         if ($this->version === null) {
-            $this->version = $this->request('version')->toList();
+            $raw = $this->request('version')->toList();
+
+            // Find the first array that contains real data
+            foreach ($raw as $item) {
+                if (is_array($item) && isset($item['version'])) {
+                    $this->version = $item;
+                    break;
+                }
+            }
+
+            // If no matching array was found, empty array
+            if ($this->version === null) {
+                $this->version = [];
+            }
         }
 
-        return ($ident && isset($this->version[$ident])) ? $this->version[$ident] : $this->version;
+        return $this->version;
     }
 
     /**
@@ -176,7 +189,7 @@ class Host extends Node
     {
         $sid = $this->execute('serveridgetbyport', ['virtualserver_port' => $port])->toList();
 
-        return $sid['server_id'];
+        return $sid[1]['server_id'];
     }
 
     /**
@@ -230,34 +243,38 @@ class Host extends Node
     }
 
     /**
+     * Return server data as array
+     *
      * @param  string  $name
-     * @return Server
+     * @return array
      * @throws AdapterException
      * @throws ServerQueryException
      * @throws TransportException
      */
-    public function serverGetByName(string $name): Server
+    public function serverGetByName(string $name): array
     {
         foreach ($this->serverList() as $server) {
             if ($server['virtualserver_name'] === $name) {
-                return $server;
+                return $server[1];
             }
         }
         throw new ServerQueryException('invalid serverID', 0x400);
     }
 
     /**
+     *  Return server data as array
+     *
      * @param  string  $uid
-     * @return Server
+     * @return array
      * @throws AdapterException
      * @throws ServerQueryException
      * @throws TransportException
      */
-    public function serverGetByUid(string $uid): Server
+    public function serverGetByUid(string $uid): array
     {
         foreach ($this->serverList() as $server) {
             if ($server['virtualserver_unique_identifier'] === $uid) {
-                return $server;
+                return $server[1];
             }
         }
         throw new ServerQueryException('invalid serverID', 0x400);
@@ -472,7 +489,7 @@ class Host extends Node
             $permtree[$val] = [
                 'permcatid' => $val,
                 'permcathex' => '0x'.dechex($val),
-                'permcatname' => StringHelper::factory(Convert::permissionCategory($val)),
+                'permcatname' => StringHelper::factory(Convert::permissionCategory($val))->toString(),
                 'permcatparent' => 0,
                 'permcatchilren' => 0,
                 'permcatcount' => 0,
@@ -505,7 +522,19 @@ class Host extends Node
             $permident = (is_numeric(current($permissionId))) ? 'permid' : 'permsid';
         }
 
-        return $this->execute('permfind', [$permident => $permissionId])->toArray();
+        try {
+            $result = $this->execute('permfind', [$permident => $permissionId])->toArray();
+        } catch (ServerQueryException $e) {
+            throw new ServerQueryException('invalid permission ID');
+        }
+
+        // Remove meta-entries and keep only real data
+        $filtered = array_filter($result, function ($item) {
+            return is_array($item) && ! array_key_exists('permfind', $item) && ! array_key_exists('permsid', $item);
+        });
+
+        // Return only the relevant data array (flatten)
+        return array_values($filtered);
     }
 
     /**
@@ -632,7 +661,22 @@ class Host extends Node
             $permident = (is_numeric(current($permid))) ? 'permid' : 'permsid';
         }
 
-        return $this->execute('permget', [$permident => $permid])->toAssocArray('permsid');
+        $result = $this->execute('permget', [$permident => $permid])->toArray();
+
+        // Remove meta entries
+        $filtered = array_filter($result, function ($item) {
+            return is_array($item) && ! array_key_exists('permget', $item) && ! isset($item['permget']);
+        });
+
+        // If there are several, take the first real one.
+        $flattened = reset($filtered);
+
+        // If available: index via permsid
+        if (isset($flattened['permsid'])) {
+            return $flattened;
+        }
+
+        return [];
     }
 
     /**
@@ -664,41 +708,41 @@ class Host extends Node
         $this->execute('gm', ['msg' => $msg]);
     }
 
-    /**
-     * Displays a specified number of entries (1-100) from the server log.
-     *
-     * @param  int  $lines
-     * @param  int|null  $begin_pos
-     * @param  bool|null  $reverse
-     * @param  bool  $instance
-     * @return array
-     * @throws AdapterException
-     * @throws ServerQueryException
-     * @throws TransportException
-     */
-    public function logView(int $lines = 30, int $begin_pos = null, bool $reverse = null, bool $instance = true): array
-    {
-        return $this->execute('logview', ['lines' => $lines, 'begin_pos' => $begin_pos, 'instance' => $instance, 'reverse' => $reverse])->toArray();
-    }
+//    /**
+//     * Displays a specified number of entries (1-100) from the server log.
+//     *
+//     * @param  int  $lines
+//     * @param  int|null  $begin_pos
+//     * @param  bool|null  $reverse
+//     * @param  bool  $instance
+//     * @return array
+//     * @throws ServerQueryException
+//     */
+//    public function logView(int $lines = 30, int $begin_pos = null, bool $reverse = null, bool $instance = true): array
+//    {
+//        //TODO: $ts3_host->logView() defined in Server.php
+//        return $this->execute('logview', ['lines' => $lines, 'begin_pos' => $begin_pos, 'instance' => $instance, 'reverse' => $reverse])->toArray();
+//    }
 
-    /**
-     * Writes a custom entry into the server instance log.
-     *
-     * @param  string  $logmsg
-     * @param  int  $loglevel
-     * @return void
-     * @throws AdapterException
-     * @throws ServerQueryException
-     * @throws TransportException
-     */
-    public function logAdd(string $logmsg, int $loglevel = TeamSpeak3::LOGLEVEL_INFO): void
-    {
-        $sid = $this->serverSelectedId();
-
-        $this->serverDeselect();
-        $this->execute('logadd', ['logmsg' => $logmsg, 'loglevel' => $loglevel]);
-        $this->serverSelect($sid);
-    }
+//    /**
+//     * Writes a custom entry into the server instance log.
+//     *
+//     * @param  string  $logmsg
+//     * @param  int  $loglevel
+//     * @return void
+//     * @throws AdapterException
+//     * @throws ServerQueryException
+//     * @throws TransportException
+//     */
+//    public function logAdd(string $logmsg, int $loglevel = TeamSpeak3::LOGLEVEL_INFO): void
+//    {
+//        //TODO: $ts3_host->logView() defined in Server.php
+//        $sid = $this->serverSelectedId();
+//
+//        $this->serverDeselect();
+//        $this->execute('logadd', ['logmsg' => $logmsg, 'loglevel' => $loglevel]);
+//        $this->serverSelect($sid);
+//    }
 
     /**
      * @throws TransportException
@@ -758,14 +802,30 @@ class Host extends Node
      * Returns the number of ServerQuery logins on the selected virtual server.
      *
      * @param  string|null  $pattern
-     * @return mixed
+     * @return int
      * @throws AdapterException
      * @throws ServerQueryException
      * @throws TransportException
      */
-    public function queryCountLogin(string $pattern = null): mixed
+    public function queryCountLogin(string $pattern = null): int
     {
-        return current($this->execute('queryloginlist -count', ['duration' => 1, 'pattern' => $pattern])->toList());
+        $result = $this->execute('queryloginlist -count', ['duration' => 1, 'pattern'  => $pattern])->toAssocArray('cldbid');
+
+        // Remove meta entry
+        $filtered = array_filter($result, function ($item) {
+            return is_array($item) && ! array_key_exists('queryloginlist', $item);
+        });
+
+        // Flat array
+        $filtered = array_values($filtered);
+
+        // Extract value from the first entry
+        if (! empty($filtered) && isset($filtered[0]['count'])) {
+            return (int) $filtered[0]['count'];
+        }
+
+        // Fallback: no result
+        return 0;
     }
 
     /**
@@ -927,18 +987,36 @@ class Host extends Node
      */
     protected function fetchPermissionList(): void
     {
-        $reply = $this->request('permissionlist -new')->toArray();
+        $raw = $this->request('permissionlist -new')->toArray();
         $start = 1;
 
         $this->permissionEnds = [];
         $this->permissionList = [];
 
-        foreach ($reply as $line) {
+        foreach ($raw as $line) {
+            // Skip meta lines
+            if (isset($line['permissionlistpermissionlist']) || isset($line['-newpermissionlist']) || isset($line['-new'])) {
+                continue;
+            }
+
+            // If group_id_end exists → save separately
             if (array_key_exists('group_id_end', $line)) {
                 $this->permissionEnds[] = $line['group_id_end'];
-            } else {
-                $this->permissionList[$line['permname']->toString()] = array_merge(['permid' => $start++], $line);
+                continue;
             }
+
+            // If no permname → skip
+            if (! isset($line['permname'])) {
+                continue;
+            }
+
+            // StringHelper or Convert string securely
+            $permname = is_object($line['permname']) && method_exists($line['permname'], 'toString')
+                ? $line['permname']->toString()
+                : (string) $line['permname'];
+
+            // Save permission
+            $this->permissionList[$permname] = array_merge(['permid' => $start++], $line);
         }
     }
 
@@ -948,7 +1026,7 @@ class Host extends Node
     protected function fetchPermissionCats(): void
     {
         $permcats = [];
-        $reflects = new ReflectionClass('TeamSpeak3');
+        $reflects = new ReflectionClass(TeamSpeak3::class);
 
         foreach ($reflects->getConstants() as $key => $val) {
             if (! StringHelper::factory($key)->startsWith('PERM_CAT') || $val == 0xFF) {
@@ -1008,16 +1086,6 @@ class Host extends Node
     public function getAdapter(): ServerQuery
     {
         return $this->getParent();
-    }
-
-    /**
-     * Returns a unique identifier for the node which can be used as an HTML property.
-     *
-     * @return string
-     */
-    public function getUniqueId(): string
-    {
-        return 'ts3_h';
     }
 
     /**

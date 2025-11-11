@@ -412,8 +412,16 @@ class Server extends Node
      */
     public function channelClientPermList(int $cid, int $cldbid, bool $permsid = false): array
     {
-        return $this->execute('channelclientpermlist', ['cid' => $cid, 'cldbid' => $cldbid, $permsid ? '-permsid' : null])
-            ->toAssocArray($permsid ? 'permsid' : 'permid');
+        try {
+            $result = $this->execute('channelclientpermlist', ['cid' => $cid, 'cldbid' => $cldbid, $permsid ? '-permsid' : null])->toAssocArray($permsid ? 'permsid' : 'permid');
+        } catch (ServerQueryException $e) {
+            if (str_contains($e->getMessage(), 'database empty result set')) {
+                return [];
+            }
+            throw $e;
+        }
+
+        return $result;
     }
 
     /**
@@ -742,8 +750,7 @@ class Server extends Node
      */
     public function clientListDb(int $offset = null, int $limit = null): array
     {
-        return $this->execute('clientdblist -count', ['start' => $offset, 'duration' => $limit])
-            ->toAssocArray('cldbid');
+        return $this->execute('clientdblist -count', ['start' => $offset, 'duration' => $limit])->toAssocArray('cldbid');
     }
 
     /**
@@ -756,7 +763,21 @@ class Server extends Node
      */
     public function clientCountDb(): int
     {
-        return current($this->execute('clientdblist -count', ['duration' => 1])->toList());
+        $result = $this->execute('clientdblist -count', ['duration' => 1])->toList();
+
+        if (isset($result[1]['count'])) {
+            return (int) $result[1]['count'];
+        }
+
+        // If the framework returns something different (e.g., flat)
+        if (isset($result['count'])) {
+            return (int) $result['count'];
+        }
+
+        // Fallback – if the result contains only one number
+        $value = current($result);
+
+        return is_numeric($value) ? (int) $value : 0;
     }
 
     /**
@@ -770,7 +791,29 @@ class Server extends Node
      */
     public function clientInfoDb(int $cldbid): array
     {
-        return $this->execute('clientdbinfo', ['cldbid' => $cldbid])->toList();
+        $result = $this->execute('clientdbinfo', ['cldbid' => $cldbid])->toList();
+
+        $metaCldbid = null;
+        if (isset($result[0]['cldbid'])) {
+            $metaCldbid = (int) $result[0]['cldbid'];
+        }
+
+        $filtered = array_values(array_filter($result, static function ($row) {
+            return isset($row['client_database_id']) || isset($row['client_unique_identifier']);
+        }));
+
+        $flat = [];
+        foreach ($filtered as $row) {
+            $flat = array_merge($flat, $row);
+        }
+
+        if (! isset($flat['cldbid']) && $metaCldbid !== null) {
+            $flat['cldbid'] = $metaCldbid;
+        } elseif (! isset($flat['cldbid'])) {
+            $flat['cldbid'] = $cldbid;
+        }
+
+        return $flat;
     }
 
     /**
@@ -927,17 +970,26 @@ class Server extends Node
 
     /**
      * Returns an array containing the last known nickname and the database ID of the client matching
-     * the unique identifier specified with $cluid.
+     * the unique identifier specified with $uid.
      *
-     * @param  string  $cluid
+     * @param  string  $uid
      * @return array
      * @throws AdapterException
      * @throws ServerQueryException
      * @throws TransportException
      */
-    public function clientGetNameByUid(string $cluid): array
+    public function clientGetNameByUid(string $uid): array
     {
-        return $this->execute('clientgetnamefromuid', ['cluid' => $cluid])->toList();
+        $result = [];
+
+        foreach ($this->clientList() as $client) {
+            if ($client['client_unique_identifier'] == $uid) {
+                $result['client_nickname'] = $client['client_nickname'];
+                $result['client_database_id'] = $client['client_database_id'];
+            }
+        }
+
+        return $result;
     }
 
     /**
@@ -967,7 +1019,16 @@ class Server extends Node
      */
     public function clientGetNameByDbid(string $cldbid): array
     {
-        return $this->execute('clientgetnamefromdbid', ['cldbid' => $cldbid])->toList();
+        $result = [];
+
+        foreach ($this->clientList() as $client) {
+            if ($client['client_database_id'] == $cldbid) {
+                $result['client_nickname'] = $client['client_nickname'];
+                $result['client_unique_identifier'] = $client['client_unique_identifier'];
+            }
+        }
+
+        return $result;
     }
 
     /**
@@ -1129,10 +1190,16 @@ class Server extends Node
      */
     public function clientPermList(int $cldbid, bool $permsid = false): array
     {
-        $this->clientListReset();
+        try {
+            $result = $this->execute('clientpermlist', ['cldbid' => $cldbid, $permsid ? '-permsid' : null])->toAssocArray($permsid ? 'permsid' : 'permid');
+        } catch (ServerQueryException $e) {
+            if (str_contains($e->getMessage(), 'database empty result set')) {
+                return [];
+            }
+            throw $e;
+        }
 
-        return $this->execute('clientpermlist', ['cldbid' => $cldbid, $permsid ? '-permsid' : null])
-            ->toAssocArray($permsid ? 'permsid' : 'permid');
+        return $result;
     }
 
     /**
@@ -1143,20 +1210,27 @@ class Server extends Node
      * @param  int|int[]  $permid
      * @param  int|int[]  $permvalue
      * @param  bool|bool[]  $permskip
+     * @param  bool  $continueonerror
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
      * @throws TransportException
      */
-    public function clientPermAssign(int $cldbid, int|array $permid, int|array $permvalue, bool|array $permskip = false): void
+    public function clientPermAssign(int $cldbid, int|array $permid, int|array $permvalue, bool|array $permskip = false, bool $continueonerror = false): void
     {
+        if ($continueonerror) {
+            $continueError = '-continueonerror';
+        } else {
+            $continueError = null;
+        }
+
         if (! is_array($permid)) {
             $permident = (is_numeric($permid)) ? 'permid' : 'permsid';
         } else {
             $permident = (is_numeric(current($permid))) ? 'permid' : 'permsid';
         }
 
-        $this->execute('clientaddperm -continueonerror', ['cldbid' => $cldbid, $permident => $permid, 'permvalue' => $permvalue, 'permskip' => $permskip]);
+        $this->execute('clientaddperm', [$continueError, 'cldbid' => $cldbid, $permident => $permid, 'permvalue' => $permvalue, 'permskip' => $permskip]);
     }
 
     /**
@@ -1281,7 +1355,7 @@ class Server extends Node
         for ($i = count($result) - 1; $i >= 0; $i--) {
             foreach ($result[$i] as $key => $value) {
                 if (stripos($key, 'sgid') !== false) {
-                    // Extrahiere nur die führenden Ziffern
+                    // Extract only the leading digits
                     if (preg_match('/\d+/', $value, $matches)) {
                         $sgid = (int) $matches[0];
                         break 2;
@@ -1610,13 +1684,18 @@ class Server extends Node
     public function channelGroupList(array $filter = []): array
     {
         if ($this->cgroupList === null) {
-            $reply = $this->request('channelgrouplist');
-            $raw = $reply->toString(); // StringHelper → String
-            $raw = preg_replace('/^.*channelgrouplist/', '', $raw); // Remove prompt & echo
-            $raw = trim($raw, "| \n\r\t"); // Remove unnecessary pipes at
-            $cgroups = explode('|', $raw);
+            $reply = $this->execute('channelgrouplist');
+            $raw = $reply->toString();
+
+            if (str_contains($raw, 'error id=')) {
+                $raw = substr($raw, 0, strpos($raw, 'error id='));
+            }
+
+            $raw = trim($raw, "| \n\r\t");
+            $cgroups = array_filter(explode('|', $raw));
 
             $this->cgroupList = [];
+
             foreach ($cgroups as $line) {
                 $group = [];
                 $pairs = explode(' ', $line);
@@ -1624,15 +1703,23 @@ class Server extends Node
                     if (! str_contains($pair, '=')) {
                         continue;
                     }
+
                     [$key, $value] = explode('=', $pair, 2);
-                    $group[$key] = str_replace('\s', ' ', $value); // Replace escapes
+                    $value = str_replace('\s', ' ', $value);
+
+                    // Automatic typing
+                    if (is_numeric($value)) {
+                        $value = (int) $value;
+                    }
+
+                    $group[$key] = $value;
                 }
 
                 if (! isset($group['cgid'])) {
                     continue;
                 }
 
-                $cgid = (int) $group['cgid'];
+                $cgid = $group['cgid'];
                 $this->cgroupList[$cgid] = new ChannelGroup($this, $group);
             }
 
@@ -1706,14 +1793,32 @@ class Server extends Node
     {
         $this->channelGroupListReset();
 
-        $cgid = $this->execute('channelgroupcopy', ['scgid' => $scgid, 'tcgid' => $tcgid, 'name' => $name, 'type' => $type])
-            ->toList();
+        $result = $this->execute('channelgroupcopy', ['scgid' => $scgid, 'tcgid' => $tcgid, 'name' => $name, 'type' => $type])->toList();
 
         if ($tcgid && $name) {
             $this->channelGroupRename($tcgid, $name);
         }
 
-        return count($cgid) ? $cgid['cgid'] : $tcgid;
+        // Search for the new scgid in all elements of the result array
+        $cgid = null;
+
+        for ($i = count($result) - 1; $i >= 0; $i--) {
+            foreach ($result[$i] as $key => $value) {
+                if (stripos($key, 'scgid') !== false) {
+                    // Extract only the leading digits
+                    if (preg_match('/\d+/', $value, $matches)) {
+                        $cgid = (int) $matches[0];
+                        break 2;
+                    }
+                }
+            }
+        }
+
+        if ($cgid === null) {
+            throw new \RuntimeException('channelGroupCopy: Could not determine a valid server group ID.');
+        }
+
+        return $cgid;
     }
 
     /**
@@ -1892,9 +1997,18 @@ class Server extends Node
             throw $e;
         }
 
+        // Remove the meta-entry "channelgroupclientlist"
+        $result = array_values(array_filter($result, static function ($row) {
+            // Only keep if these keys exist → real data record
+            return isset($row['cid'], $row['cldbid'], $row['cgid']);
+        }));
+
         if ($resolve) {
             foreach ($result as $k => $v) {
-                $result[$k] = array_merge($v, $this->clientInfoDb($v['cldbid']));
+                $clientInfo = $this->clientInfoDb($v['cldbid']);
+
+                // Now insert the client info block into the actual data record.
+                $result[$k] = array_merge($v, $clientInfo);
             }
         }
 
@@ -2689,8 +2803,22 @@ class Server extends Node
      */
     public function logView(int $lines = 30, int $begin_pos = null, bool $reverse = null, bool $instance = null): array
     {
-        return $this->execute('logview', ['lines' => $lines, 'begin_pos' => $begin_pos, 'instance' => $instance, 'reverse' => $reverse])
-            ->toArray();
+        $result = $this->execute('logview', ['lines' => $lines, 'begin_pos' => $begin_pos, 'instance' => $instance, 'reverse' => $reverse])->toArray();
+
+        // Remove the first meta-entry
+        $filtered = array_filter($result, function ($item) {
+            return is_array($item) && ! array_key_exists('logview', $item) && ! array_key_exists('lines', $item);
+        });
+
+        // Flatten → Only the log lines themselves
+        $flattened = [];
+        foreach ($filtered as $entry) {
+            if (isset($entry['l'])) {
+                $flattened[] = $entry['l'];
+            }
+        }
+
+        return $flattened;
     }
 
     /**
@@ -2985,16 +3113,6 @@ class Server extends Node
         }
 
         return $status === 'offline';
-    }
-
-    /**
-     * Returns a unique identifier for the node which can be used as an HTML property.
-     *
-     * @return string
-     */
-    public function getUniqueId(): string
-    {
-        return $this->getParent()->getUniqueId().'_s'.$this->getId();
     }
 
     /**

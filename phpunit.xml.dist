@@ -27,6 +27,14 @@
       <directory>./tests</directory>
       <directory>./build</directory>
       <directory>./vendor</directory>
+      <file>./src/Exception/AdapterException.php</file>
+      <file>./src/Exception/FileTransferException.php</file>
+      <file>./src/Exception/HelperException.php</file>
+      <file>./src/Exception/NodeException.php</file>
+      <file>./src/Exception/ProfilerException.php</file>
+      <file>./src/Exception/SignalException.php</file>
+      <file>./src/Exception/TransportException.php</file>
+      <file>./src/Helper/Signal/SignalInterface.php</file>
     </exclude>
   </source>
   <coverage ignoreDeprecatedCodeUnits="true"

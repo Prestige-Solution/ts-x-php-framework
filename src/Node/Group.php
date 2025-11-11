@@ -23,9 +23,14 @@ abstract class Group extends Node
      */
     public function message(string $msg): void
     {
-        foreach ($this as $client) {
+        // get all clients in this group
+        $clients = $this->getParent()->channelGroupClientList($this->getId());
+
+        // get client id from dbid and send a textmessage
+        foreach ($clients as $client) {
             try {
-                $this->execute('sendtextmessage', ['msg' => $msg, 'target' => $client, 'targetmode' => TeamSpeak3::TEXTMSG_CLIENT]);
+                $targetClientID = $this->getParent()->clientgetbydbid($client['cldbid'])->getId();
+                $this->execute('sendtextmessage', ['msg' => $msg, 'target' => $targetClientID, 'targetmode' => TeamSpeak3::TEXTMSG_CLIENT]);
             } catch (ServerQueryException $e) {
                 /* ERROR_client_invalid_id */
                 if ($e->getCode() != 0x0200) {

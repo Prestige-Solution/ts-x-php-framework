@@ -4,6 +4,8 @@ namespace PlanetTeamSpeak\TeamSpeak3Framework\Tests\Helper;
 
 use PHPUnit\Framework\TestCase;
 use PlanetTeamSpeak\TeamSpeak3Framework\Helper\Convert;
+use PlanetTeamSpeak\TeamSpeak3Framework\Helper\StringHelper;
+use PlanetTeamSpeak\TeamSpeak3Framework\TeamSpeak3;
 
 class ConvertTest extends TestCase
 {
@@ -213,6 +215,9 @@ class ConvertTest extends TestCase
         $output = Convert::seconds(-90.083);
         $this->assertEquals('-0D 00:01:30', $output);
         $this->assertIsString($output);
+
+        $result = Convert::seconds(5000, true);
+        $this->assertEquals('0D 00:00:05', $result);
     }
 
     public function testConvertCodecIDToHumanReadable()
@@ -365,7 +370,6 @@ class ConvertTest extends TestCase
 
     public function testConvertLogEntryToArray()
     {
-        // @todo: Implement matching integration test for testing real log entries
         $mock_data = [
             '2017-06-26 21:55:30.307009|INFO    |Query         |   |query from 47 [::1]:62592 issued: login with account "serveradmin"(serveradmin)',
         ];
@@ -377,6 +381,30 @@ class ConvertTest extends TestCase
                 'Log entry appears malformed, dumping: '.print_r($entryParsed, true)
             );
         }
+
+        $entry = '2024-01-01 12:00:00|ERROR MESSAGE';
+
+        $result = Convert::logEntry($entry);
+
+        $this->assertEquals(0, $result['timestamp']);
+        $this->assertEquals(TeamSpeak3::LOGLEVEL_ERROR, $result['level']);
+        $this->assertEquals('ParamParser', $result['channel']);
+        $this->assertEquals('', $result['server_id']);
+        $this->assertTrue($result['malformed']);
+        $this->assertEquals($entry, $result['msg_plain']);
+
+        // msg is a StringHelper object
+        $this->assertInstanceOf(StringHelper::class, $result['msg']);
+        $this->assertStringContainsString('convert error', (string) $result['msg']);
+
+        $entry = '2024-01-01 12:00:00|INFO|system|1|All good';
+        $result = Convert::logEntry($entry);
+
+        $this->assertFalse($result['malformed']);
+        $this->assertIsInt($result['timestamp']);
+        $this->assertEquals('system', $result['channel']);
+        $this->assertEquals('1', $result['server_id']);
+        $this->assertEquals('All good', (string) $result['msg']);
     }
 
     public function testConvertToPassword()
@@ -412,5 +440,34 @@ class ConvertTest extends TestCase
                 base64_decode('R0lGODdhAQABAIAAAPxqbAAAACwAAAAAAQABAAACAkQBADs=')
             )
         );
+
+        //fake binary
+        $fakeBinary = 'NOT_AN_IMAGE';
+        $result = Convert::imageMimeType($fakeBinary);
+        $this->assertEquals('image/svg+xml', $result);
+    }
+
+    public function testIconIdUnsignedBelowThreshold()
+    {
+        // Sample value below the 0x80000000 bit (small ID)
+        $value = 123456789;
+        $result = Convert::iconId($value);
+
+        $this->assertEquals($value, $result);
+    }
+
+    public function testIconIdUnsignedWithHighBitSet()
+    {
+        // Set the 0x80000000 bit → should be interpreted as negative
+        $value = 0x80000001; // 2147483649
+        $result = Convert::iconId($value);
+
+        if (PHP_INT_SIZE > 4) {
+            // 2147483649 - 0x100000000 = -2147483647
+            $this->assertEquals(-2147483647, $result);
+        } else {
+            // No overflow handling on 32-bit systems
+            $this->assertEquals($value, $result);
+        }
     }
 }

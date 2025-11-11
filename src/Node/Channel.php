@@ -17,10 +17,6 @@ use PlanetTeamSpeak\TeamSpeak3Framework\TeamSpeak3;
  */
 class Channel extends Node
 {
-    private array|null $clientList = null;
-
-    private array $channelList = [];
-
     /**
      * Channel constructor.
      *
@@ -556,16 +552,6 @@ class Channel extends Node
     protected function fetchNodeInfo(): void
     {
         $this->nodeInfo = array_merge($this->nodeInfo, $this->execute('channelinfo', ['cid' => $this->getId()])->toList());
-    }
-
-    /**
-     * Returns a unique identifier for the node which can be used as an HTML property.
-     *
-     * @return string
-     */
-    public function getUniqueId(): string
-    {
-        return $this->getParent()->getUniqueId().'_ch'.$this->getId();
     }
 
     /**

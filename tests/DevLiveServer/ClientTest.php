@@ -37,7 +37,11 @@ class ClientTest extends TestCase
 
     private string $ts3_unit_test_userName;
 
+    private string $ts3_unit_test_userName2 = '';
+
     private int $test_cid;
+
+    private int $cgid;
 
     public function setUp(): void
     {
@@ -53,6 +57,7 @@ class ClientTest extends TestCase
             $this->ts3_unit_test_channel_name = str_replace('DEV_LIVE_SERVER_UNIT_TEST_CHANNEL=', '', preg_replace('#\n(?!\n)#', '', $env[7]));
             $this->user_test_active = str_replace('DEV_LIVE_SERVER_UNIT_TEST_USER_ACTIVE=', '', preg_replace('#\n(?!\n)#', '', $env[8]));
             $this->ts3_unit_test_userName = str_replace('DEV_LIVE_SERVER_UNIT_TEST_USER=', '', preg_replace('#\n(?!\n)#', '', $env[9]));
+            $this->ts3_unit_test_userName2 = str_replace('DEV_LIVE_SERVER_UNIT_TEST_USER_EXTEND=', '', preg_replace('#\n(?!\n)#', '', $env[11]));
         } else {
             $this->active = 'false';
         }
@@ -84,6 +89,9 @@ class ClientTest extends TestCase
 
         $this->assertIsArray($userInfo);
         $this->assertEquals($this->ts3_unit_test_userName, $userInfo['client_nickname']);
+
+        $symbol = $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->getSymbol();
+        $this->assertEquals('@', $symbol);
 
         $this->unset_play_test_channel($ts3_VirtualServer);
         $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
@@ -142,7 +150,7 @@ class ClientTest extends TestCase
 
         $testCid = $ts3_VirtualServer->channelCreate(['channel_name' => 'Standard Channel', 'channel_flag_permanent' => 1, 'cpid' => $this->test_cid]);
         $userID = $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->getId();
-        $ts3_VirtualServer->clientMove($userID, $testCid);
+        $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->move($testCid);
 
         $userMoved = $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->getInfo();
         $this->assertEquals($userMoved['cid'], $testCid);
@@ -171,7 +179,7 @@ class ClientTest extends TestCase
      * @throws AdapterException
      * @throws HelperException
      */
-    public function test_can_send_client_text_message()
+    public function test_can_send_client_group_text_message()
     {
         if ($this->user_test_active == 'false' || $this->active == 'false') {
             $this->markTestSkipped('DevLiveServer ist not active');
@@ -181,11 +189,29 @@ class ClientTest extends TestCase
 
         $userID = $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->getId();
         $this->assertIsInt($userID);
-        $userID = $ts3_VirtualServer->clientGetById($userID);
-        $this->assertIsObject($userID);
-        $userID->message('Hello World');
+        $ts3_VirtualServer->clientGetById($userID)->message('Hello World');
 
-        $this->asserttrue(true);
+        if (! empty($this->ts3_unit_test_userName2)) {
+            $this->dev_reset_channelgroup($ts3_VirtualServer);
+            //send a message via a group
+            $this->set_play_test_channelgroup($ts3_VirtualServer);
+            $this->set_play_test_channel($ts3_VirtualServer);
+
+            $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->move($this->test_cid);
+            $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName2)->move($this->test_cid);
+
+            $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->setChannelGroup($this->test_cid, $this->cgid);
+            $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName2)->setChannelGroup($this->test_cid, $this->cgid);
+
+            $ts3_VirtualServer->channelgroupGetById($this->cgid)->message('UnitTestToGroup');
+
+            $symbol = $ts3_VirtualServer->channelgroupGetById($this->cgid)->getSymbol();
+            $this->assertEquals('%', $symbol);
+
+            $this->unset_play_test_channel($ts3_VirtualServer);
+            $this->unset_play_test_channelgroup($ts3_VirtualServer);
+        }
+
         $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
     }
 
@@ -228,7 +254,9 @@ class ClientTest extends TestCase
         $userFindings = $ts3_VirtualServer->clientFind('UnitT');
 
         foreach ($userFindings as $user) {
-            $this->assertEquals($this->ts3_unit_test_userName, $user['client_nickname']);
+            if ($user['client_nickname'] == 'UnitTestUser') {
+                $this->assertEquals($this->ts3_unit_test_userName, $user['client_nickname']);
+            }
         }
 
         $this->asserttrue(true);
@@ -272,14 +300,24 @@ class ClientTest extends TestCase
 
         $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
         $clientListDb = $ts3_VirtualServer->clientListDb();
+        $dbCount = $ts3_VirtualServer->clientCountDb();
+        $this->assertGreaterThanOrEqual(1, $dbCount);
 
         foreach ($clientListDb as $client) {
             if ($client['client_nickname'] == $this->ts3_unit_test_userName) {
-                $clientInfoDB = $ts3_VirtualServer->clientInfoDb($client['cldbid']);
+                $clientInfoDB = $ts3_VirtualServer->clientGetByName($client['client_nickname'])->infoDb();
             }
         }
 
         $this->assertIsArray($clientInfoDB);
+
+        $ts3_VirtualServer->clientGetByDbid($clientInfoDB['client_database_id'])->modifyDb(['client_description'=> 'unittest']);
+        $result = $ts3_VirtualServer->clientGetByDbid($clientInfoDB['client_database_id'])->infoDb();
+        $this->assertEquals('unittest', $result['client_description']);
+
+        $ts3_VirtualServer->clientGetByDbid($clientInfoDB['client_database_id'])->modifyDb(['client_description'=> '']);
+        $result2 = $ts3_VirtualServer->clientGetByDbid($clientInfoDB['client_database_id'])->infoDb();
+        $this->assertEquals('', $result2['client_description']);
 
         $this->asserttrue(true);
         $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
@@ -359,9 +397,270 @@ class ClientTest extends TestCase
 
         $ts3_VirtualServer->serverGroupGetById($sgid)->clientDel($clidDB['client_database_id']);
 
+        //test over Client.php
+        $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->addServerGroup($sgid);
+        $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->remServerGroup($sgid);
+
         //remember at this point the test will fail if the user is still in the servergroup
         // unset will not force delete the user from the servergroup
         $ts3_VirtualServer->serverGroupDelete($sgid);
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $this->assertFalse($ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
+    }
+
+    /**
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws AdapterException
+     * @throws HelperException
+     */
+    public function test_can_get_by_clientGetByDbid()
+    {
+        if ($this->active == 'false' || $this->user_test_active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+
+        $user = $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName);
+
+        $cliByDBid = $ts3_VirtualServer->clientGetByDbid($user['client_database_id']);
+        $this->assertIsString($cliByDBid['client_nickname']);
+        $this->assertEquals($this->ts3_unit_test_userName, $cliByDBid['client_nickname']);
+
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $this->assertFalse($ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
+    }
+
+    /**
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws AdapterException
+     * @throws HelperException
+     */
+    public function test_can_clientGetNameByUid()
+    {
+        if ($this->active == 'false' || $this->user_test_active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+
+        $user = $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName);
+        $result = $ts3_VirtualServer->clientGetNameByUid($user['client_unique_identifier']);
+
+        $this->assertIsArray($result);
+        $this->assertEquals($this->ts3_unit_test_userName, $result['client_nickname']);
+        $this->assertEquals($user['client_database_id'], $result['client_database_id']);
+
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $this->assertFalse($ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
+    }
+
+    /**
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws AdapterException
+     * @throws HelperException
+     */
+    public function test_can_clientGetNameByDbid()
+    {
+        if ($this->active == 'false' || $this->user_test_active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+
+        $user = $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName);
+        $result = $ts3_VirtualServer->clientGetNameByDbid($user['client_database_id']);
+
+        $this->assertIsArray($result);
+        $this->assertEquals($this->ts3_unit_test_userName, $result['client_nickname']);
+        $this->assertEquals($user['client_unique_identifier'], $result['client_unique_identifier']);
+
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $this->assertFalse($ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
+    }
+
+    /**
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws AdapterException
+     * @throws HelperException
+     */
+    public function test_can_handle_permission()
+    {
+        if ($this->active == 'false' || $this->user_test_active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        $permList = $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->permList(true);
+
+        //expect the client itself has no permissions
+        $this->assertIsArray($permList);
+        $this->assertEmpty($permList);
+
+        //now add permission at the client level
+        $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->permAssign(['i_client_poke_power'], 75);
+        $result = $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->permList(true);
+
+        $this->assertIsArray($result);
+        $this->assertNotEmpty($result);
+
+        foreach ($result as $perm) {
+            $this->assertEquals('i_client_poke_power', $perm['permsid']);
+            $this->assertEquals(75, $perm['permvalue']);
+        }
+
+        $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->permAssign(['i_client_poke_power'], 40);
+        $result2 = $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->permList(true);
+
+        $this->assertIsArray($result2);
+        $this->assertNotEmpty($result2);
+
+        foreach ($result2 as $perm) {
+            $this->assertEquals('i_client_poke_power', $perm['permsid']);
+            $this->assertEquals(40, $perm['permvalue']);
+        }
+
+        //remove permission
+        $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->permRemove(['i_client_poke_power']);
+        $result3 = $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->permList(true);
+        $this->assertIsArray($result3);
+        $this->assertEmpty($result3);
+
+        $this->set_play_test_channel($ts3_VirtualServer);
+
+        $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->move($this->test_cid);
+        $permChannelOverView = $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->permOverview($this->test_cid);
+        $this->assertIsArray($permChannelOverView);
+
+        $this->unset_play_test_channel($ts3_VirtualServer);
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $this->assertFalse($ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
+    }
+
+    /**
+     * @throws TransportException
+     * @throws HelperException
+     * @throws ServerQueryException
+     * @throws AdapterException
+     */
+    public function test_can_handle_permission_chain_channel()
+    {
+        if ($this->active == 'false' || $this->user_test_active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+
+        //prepare
+        $cid = $ts3_VirtualServer->channelGetByName($this->ts3_unit_test_channel_name)->getId();
+        $createdCID = $ts3_VirtualServer->channelCreate(['channel_name' => 'Play-Test', 'channel_flag_permanent' => 1, 'cpid' => $cid]);
+        $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->move($createdCID);
+
+        $clientList = $ts3_VirtualServer->channelGetById($createdCID)->clientList();
+
+        foreach ($clientList as $client) {
+            if ($client['client_nickname'] == $this->ts3_unit_test_userName) {
+                $cldbid = $client['client_database_id'];
+                $channelPermList = $ts3_VirtualServer->channelGetById($createdCID)->clientPermList($client['client_database_id'], true);
+            }
+        }
+
+        //expect the client itself has no permissions
+        $this->assertIsArray($channelPermList);
+        $this->assertEmpty($channelPermList);
+
+        //now add permission at the client-channel level
+        $ts3_VirtualServer->channelGetById($createdCID)->clientPermAssign($cldbid, ['i_client_poke_power'], 75);
+        $result = $ts3_VirtualServer->channelGetById($createdCID)->clientPermList($cldbid, true);
+
+        $this->assertIsArray($result);
+        $this->assertNotEmpty($result);
+
+        foreach ($result as $perm) {
+            $this->assertEquals('i_client_poke_power', $perm['permsid']);
+            $this->assertEquals(75, $perm['permvalue']);
+        }
+
+        $ts3_VirtualServer->channelGetById($createdCID)->clientPermAssign($cldbid, ['i_client_poke_power'], 40);
+        $result2 = $ts3_VirtualServer->channelGetById($createdCID)->clientPermList($cldbid, true);
+
+        $this->assertIsArray($result2);
+        $this->assertNotEmpty($result2);
+
+        foreach ($result2 as $perm) {
+            $this->assertEquals('i_client_poke_power', $perm['permsid']);
+            $this->assertEquals(40, $perm['permvalue']);
+        }
+
+        //remove permission
+        $ts3_VirtualServer->channelGetById($createdCID)->clientPermRemove($cldbid, ['i_client_poke_power']);
+        $result3 = $ts3_VirtualServer->channelGetById($createdCID)->clientPermList($cldbid, true);
+        $this->assertIsArray($result3);
+        $this->assertEmpty($result3);
+
+        $ts3_VirtualServer->channelGetById($createdCID)->delete(true);
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $this->assertFalse($ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
+    }
+
+    /**
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws AdapterException
+     * @throws \Exception
+     */
+    public function test_channelGroupClientList()
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        $this->set_play_test_channel($ts3_VirtualServer);
+
+        // Resetting lists
+        $ts3_VirtualServer->clientListReset();
+        $ts3_VirtualServer->channelGroupListReset();
+
+        // Get servergroup client info
+        $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->move($this->test_cid);
+        $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->setChannelGroup($this->test_cid, 6);
+        $channelGroupList = $ts3_VirtualServer->channelGroupClientList(null, null, null, true);
+
+        $channelgroup_clientlist = [];
+        foreach ($channelGroupList as $channelgroup) {
+            $channelgroup_clientlist[$channelgroup['cgid']] = count($ts3_VirtualServer->channelGroupClientList($channelgroup['cgid']));
+        }
+
+        $this->assertIsArray($channelgroup_clientlist);
+        $this->assertGreaterThan(0, $channelgroup_clientlist[6]);
+
+        $this->unset_play_test_channel($ts3_VirtualServer);
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $this->assertFalse($ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
+    }
+
+    /**
+     * @throws AdapterException
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws HelperException
+     */
+    public function test_has_overwolf()
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+
+        $result = $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->hasOverwolf();
+        $this->assertFalse($result);
+
         $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
         $this->assertFalse($ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
     }
@@ -388,7 +687,11 @@ class ClientTest extends TestCase
         }
 
         if (isset($userID)) {
-            $ts3_VirtualServer->clientBan($userID, 600, 'Unittest');
+            $ts3_VirtualServer->clientGetById($userID)->ban(600, 'Unittest');
+        }
+
+        if ($this->ts3_unit_test_userName2 !== '') {
+            $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName2)->kick(TeamSpeak3::KICK_SERVER, 'Unittest');
         }
 
         $banlist = $ts3_VirtualServer->banList();
@@ -427,5 +730,40 @@ class ClientTest extends TestCase
     public function unset_play_test_channel($ts3_VirtualServer): void
     {
         $ts3_VirtualServer->channelDelete($this->test_cid, true);
+    }
+
+    /**
+     * @throws AdapterException
+     * @throws ServerQueryException
+     * @throws TransportException
+     */
+    private function set_play_test_channelgroup(Server $ts3VirtualServer): void
+    {
+        $this->cgid = $ts3VirtualServer->channelGroupCreate('UnitTest', 1);
+    }
+
+    /**
+     * @throws AdapterException
+     * @throws ServerQueryException
+     * @throws TransportException
+     */
+    public function unset_play_test_channelgroup(Server $ts3_VirtualServer): void
+    {
+        $ts3_VirtualServer->channelGroupDelete($this->cgid, true);
+    }
+
+    /**
+     * @throws AdapterException
+     * @throws TransportException
+     * @throws ServerQueryException
+     */
+    public function dev_reset_channelgroup(Server $ts3_VirtualServer): void
+    {
+        $channelgrouplist = $ts3_VirtualServer->channelGroupList(['type' => 1]);
+        foreach ($channelgrouplist as $channelgroup) {
+            if ($channelgroup['name'] != 'Channel Admin' && $channelgroup['name'] != 'Guest' && $channelgroup['name'] != 'Operator') {
+                $ts3_VirtualServer->channelGroupDelete($channelgroup['cgid'], true);
+            }
+        }
     }
 }
