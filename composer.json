@@ -1,7 +1,7 @@
 {
   "name": "prestige-solution/ts-x-php-framework",
   "type": "library",
-  "description": "Modern use-at-will framework that provides individual components to manage Teamspeak Server Instances",
+  "description": "A modern, refactored PHP framework for Teamspeak 3 and Teamspeak 6 servers, offering full SSH support and extensive unit tests.",
   "keywords": ["ts", "teamspeak","server","query","filetransfer","management","interface","api"],
   "license": "GPL-3.0",
   "authors": [

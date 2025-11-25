@@ -761,7 +761,7 @@ class ClientTest extends TestCase
     {
         $channelgrouplist = $ts3_VirtualServer->channelGroupList(['type' => 1]);
         foreach ($channelgrouplist as $channelgroup) {
-            if ($channelgroup['name'] != 'Channel Admin' && $channelgroup['name'] != 'Guest' && $channelgroup['name'] != 'Operator') {
+            if ($channelgroup['name'] != 'Channel Admin' && $channelgroup['name'] != 'Guest' && $channelgroup['name'] != 'Operator' && $channelgroup['name'] != 'Voice') {
                 $ts3_VirtualServer->channelGroupDelete($channelgroup['cgid'], true);
             }
         }
