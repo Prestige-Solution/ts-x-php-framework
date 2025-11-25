@@ -201,7 +201,7 @@ class ChannelGroupTest extends TestCase
         $channelgrouplist = $this->ts3_VirtualServer->channelGroupList(['type' => 1]);
 
         foreach ($channelgrouplist as $channelgroup) {
-            $this->assertContains($channelgroup['name'], ['Channel Admin', 'Guest', 'Operator']);
+            $this->assertContains($channelgroup['name'], ['Channel Admin', 'Guest', 'Operator', 'Voice']);
             $this->assertIsInt($channelgroup['cgid']);
         }
 
@@ -272,7 +272,7 @@ class ChannelGroupTest extends TestCase
     {
         $channelgrouplist = $this->ts3_VirtualServer->channelGroupList(['type' => 1]);
         foreach ($channelgrouplist as $channelgroup) {
-            if ($channelgroup['name'] != 'Channel Admin' && $channelgroup['name'] != 'Guest' && $channelgroup['name'] != 'Operator') {
+            if ($channelgroup['name'] != 'Channel Admin' && $channelgroup['name'] != 'Guest' && $channelgroup['name'] != 'Operator' && $channelgroup['name'] != 'Voice') {
                 $this->ts3_VirtualServer->channelGroupDelete($channelgroup['cgid'], true);
             }
         }
