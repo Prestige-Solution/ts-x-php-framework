@@ -4,6 +4,8 @@ namespace PlanetTeamSpeak\TeamSpeak3Framework\Tests\Helper;
 
 use PHPUnit\Framework\TestCase;
 use PlanetTeamSpeak\TeamSpeak3Framework\Helper\Convert;
+use PlanetTeamSpeak\TeamSpeak3Framework\Helper\StringHelper;
+use PlanetTeamSpeak\TeamSpeak3Framework\TeamSpeak3;
 
 class ConvertTest extends TestCase
 {
@@ -19,23 +21,23 @@ class ConvertTest extends TestCase
         $this->assertIsString($output);
 
         $output = Convert::bytes(1000);
-        $this->assertEquals('1000 B', $output);
+        $this->assertEquals('1000.00 B', $output);
         $this->assertIsString($output);
 
         $output = Convert::bytes(1000 * 1000);
-        $this->assertEquals('976.5625 KiB', $output);
+        $this->assertEquals('976.56 KiB', $output);
         $this->assertIsString($output);
 
         $output = Convert::bytes(1000 * 1000 * 1000);
-        $this->assertEquals('953.6743164063 MiB', $output);
+        $this->assertEquals('953.67 MiB', $output);
         $this->assertIsString($output);
 
         $output = Convert::bytes(1000 * 1000 * 1000 * 1000);
-        $this->assertEquals('931.3225746155 GiB', $output);
+        $this->assertEquals('931.32 GiB', $output);
         $this->assertIsString($output);
 
         $output = Convert::bytes(1000 * 1000 * 1000 * 1000 * 1000);
-        $this->assertEquals('909.4947017729 TiB', $output);
+        $this->assertEquals('909.49 TiB', $output);
         $this->assertIsString($output);
     }
 
@@ -46,30 +48,30 @@ class ConvertTest extends TestCase
         $this->assertIsString($output);
 
         $output = Convert::bytes(1024);
-        $this->assertEquals('1 KiB', $output);
+        $this->assertEquals('1.00 KiB', $output);
         $this->assertIsString($output);
 
         $output = Convert::bytes(1024 * 1024);
-        $this->assertEquals('1 MiB', $output);
+        $this->assertEquals('1.00 MiB', $output);
         $this->assertIsString($output);
 
         $output = Convert::bytes(1024 * 1024 * 1024);
-        $this->assertEquals('1 GiB', $output);
+        $this->assertEquals('1.00 GiB', $output);
         $this->assertIsString($output);
 
         $output = Convert::bytes(1024 * 1024 * 1024 * 1024);
-        $this->assertEquals('1 TiB', $output);
+        $this->assertEquals('1.00 TiB', $output);
         $this->assertIsString($output);
 
         $output = Convert::bytes(1024 * 1024 * 1024 * 1024 * 1024);
-        $this->assertEquals('1 PiB', $output);
+        $this->assertEquals('1.00 PiB', $output);
         $this->assertIsString($output);
     }
 
     public function testConvertBytesToHumanReadableWithOddNumbers()
     {
         $output = Convert::bytes(1);
-        $this->assertEquals('1 B', $output);
+        $this->assertEquals('1.00 B', $output);
         $this->assertIsString($output);
 
         $output = Convert::bytes(1024 + 256);
@@ -77,19 +79,19 @@ class ConvertTest extends TestCase
         $this->assertIsString($output);
 
         $output = Convert::bytes(1024 * 1024 + 256);
-        $this->assertEquals('1.0002441406 MiB', $output);
+        $this->assertEquals('1.00 MiB', $output);
         $this->assertIsString($output);
 
         $output = Convert::bytes(1024 * 1024 * 1024 + 256);
-        $this->assertEquals('1.0000002384 GiB', $output);
+        $this->assertEquals('1.00 GiB', $output);
         $this->assertIsString($output);
 
         $output = Convert::bytes(1024 * 1024 * 1024 * 1024 + 256);
-        $this->assertEquals('1.0000000002 TiB', $output);
+        $this->assertEquals('1.00 TiB', $output);
         $this->assertIsString($output);
 
         $output = Convert::bytes(1024 * 1024 * 1024 * 1024 * 1024 + (256 * 1024 * 1024 * 1024));
-        $this->assertEquals('1.0002441406 PiB', $output);
+        $this->assertEquals('1.00 PiB', $output);
         $this->assertIsString($output);
     }
 
@@ -100,35 +102,35 @@ class ConvertTest extends TestCase
         $this->assertIsString($output);
 
         $output = Convert::bytes(-1000);
-        $this->assertEquals('-1000 B', $output);
+        $this->assertEquals('-1000.00 B', $output);
         $this->assertIsString($output);
 
         $output = Convert::bytes(-1024);
-        $this->assertEquals('-1 KiB', $output);
+        $this->assertEquals('-1.00 KiB', $output);
         $this->assertIsString($output);
 
         $output = Convert::bytes(-1000 * 1000);
-        $this->assertEquals('-976.5625 KiB', $output);
+        $this->assertEquals('-976.56 KiB', $output);
         $this->assertIsString($output);
 
         $output = Convert::bytes(-1000 * 1000 * 1000);
-        $this->assertEquals('-953.6743164063 MiB', $output);
+        $this->assertEquals('-953.67 MiB', $output);
         $this->assertIsString($output);
 
         $output = Convert::bytes(-1024 * 1024);
-        $this->assertEquals('-1 MiB', $output);
+        $this->assertEquals('-1.00 MiB', $output);
         $this->assertIsString($output);
 
         $output = Convert::bytes(-1024 * 1024 * 1024);
-        $this->assertEquals('-1 GiB', $output);
+        $this->assertEquals('-1.00 GiB', $output);
         $this->assertIsString($output);
 
         $output = Convert::bytes(-1024 * 1024 * 1024 * 1024);
-        $this->assertEquals('-1 TiB', $output);
+        $this->assertEquals('-1.00 TiB', $output);
         $this->assertIsString($output);
 
         $output = Convert::bytes(-1024 * 1024 * 1024 * 1024 - 256);
-        $this->assertEquals('-1.0000000002 TiB', $output);
+        $this->assertEquals('-1.00 TiB', $output);
         $this->assertIsString($output);
     }
 
@@ -213,6 +215,9 @@ class ConvertTest extends TestCase
         $output = Convert::seconds(-90.083);
         $this->assertEquals('-0D 00:01:30', $output);
         $this->assertIsString($output);
+
+        $result = Convert::seconds(5000, true);
+        $this->assertEquals('0D 00:00:05', $result);
     }
 
     public function testConvertCodecIDToHumanReadable()
@@ -365,7 +370,6 @@ class ConvertTest extends TestCase
 
     public function testConvertLogEntryToArray()
     {
-        // @todo: Implement matching integration test for testing real log entries
         $mock_data = [
             '2017-06-26 21:55:30.307009|INFO    |Query         |   |query from 47 [::1]:62592 issued: login with account "serveradmin"(serveradmin)',
         ];
@@ -377,6 +381,30 @@ class ConvertTest extends TestCase
                 'Log entry appears malformed, dumping: '.print_r($entryParsed, true)
             );
         }
+
+        $entry = '2024-01-01 12:00:00|ERROR MESSAGE';
+
+        $result = Convert::logEntry($entry);
+
+        $this->assertEquals(0, $result['timestamp']);
+        $this->assertEquals(TeamSpeak3::LOGLEVEL_ERROR, $result['level']);
+        $this->assertEquals('ParamParser', $result['channel']);
+        $this->assertEquals('', $result['server_id']);
+        $this->assertTrue($result['malformed']);
+        $this->assertEquals($entry, $result['msg_plain']);
+
+        // msg is a StringHelper object
+        $this->assertInstanceOf(StringHelper::class, $result['msg']);
+        $this->assertStringContainsString('convert error', (string) $result['msg']);
+
+        $entry = '2024-01-01 12:00:00|INFO|system|1|All good';
+        $result = Convert::logEntry($entry);
+
+        $this->assertFalse($result['malformed']);
+        $this->assertIsInt($result['timestamp']);
+        $this->assertEquals('system', $result['channel']);
+        $this->assertEquals('1', $result['server_id']);
+        $this->assertEquals('All good', (string) $result['msg']);
     }
 
     public function testConvertToPassword()
@@ -405,12 +433,41 @@ class ConvertTest extends TestCase
 
     public function testDetectImageMimeType()
     {
-        // Test image binary base64 encoded is 1px by 1px GIF
+        // Test image binary base64 encoded is 1 px by 1 px GIF
         $this->assertEquals(
             'image/gif',
             Convert::imageMimeType(
                 base64_decode('R0lGODdhAQABAIAAAPxqbAAAACwAAAAAAQABAAACAkQBADs=')
             )
         );
+
+        //fake binary
+        $fakeBinary = 'NOT_AN_IMAGE';
+        $result = Convert::imageMimeType($fakeBinary);
+        $this->assertEquals('image/svg+xml', $result);
+    }
+
+    public function testIconIdUnsignedBelowThreshold()
+    {
+        // Sample value below the 0x80000000 bit (small ID)
+        $value = 123456789;
+        $result = Convert::iconId($value);
+
+        $this->assertEquals($value, $result);
+    }
+
+    public function testIconIdUnsignedWithHighBitSet()
+    {
+        // Set the 0x80000000 bit → should be interpreted as negative
+        $value = 0x80000001; // 2147483649
+        $result = Convert::iconId($value);
+
+        if (PHP_INT_SIZE > 4) {
+            // 2147483649 - 0x100000000 = -2147483647
+            $this->assertEquals(-2147483647, $result);
+        } else {
+            // No overflow handling on 32-bit systems
+            $this->assertEquals($value, $result);
+        }
     }
 }

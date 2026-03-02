@@ -1,26 +1,5 @@
 <?php
 
-/**
- * @file
- * TeamSpeak 3 PHP Framework
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- * @author    Sven 'ScP' Paulsen
- * @copyright Copyright (c) Planet TeamSpeak. All rights reserved.
- */
-
 namespace PlanetTeamSpeak\TeamSpeak3Framework\Node;
 
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
@@ -32,7 +11,7 @@ use PlanetTeamSpeak\TeamSpeak3Framework\TeamSpeak3;
 /**
  * Class ChannelGroup
  * @class ChannelGroup
- * @brief Class describing a TeamSpeak 3 channel group and all it's parameters.
+ * @brief Class describing a TeamSpeak 3-channel group and all it's parameters.
  */
 class ChannelGroup extends Group
 {
@@ -119,53 +98,31 @@ class ChannelGroup extends Group
      * Adds a set of specified permissions to the channel group. Multiple permissions
      * can be added by providing the two parameters of each permission in separate arrays.
      *
-     * @param  int  $permid
-     * @param  int  $permvalue
+     * @param  int|array  $permid
+     * @param  int|array  $permvalue
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
      * @throws TransportException
      */
-    public function permAssign(int $permid, int $permvalue): void
+    public function permAssign(int|array $permid, int|array $permvalue): void
     {
         $this->getParent()->channelGroupPermAssign($this->getId(), $permid, $permvalue);
-    }
-
-    /**
-     * Alias for permAssign().
-     *
-     * @deprecated
-     * @throws
-     */
-    public function permAssignByName($permname, $permvalue): void
-    {
-        $this->permAssign($permname, $permvalue);
     }
 
     /**
      * Removes a set of specified permissions from the channel group. Multiple
      * permissions can be removed at once.
      *
-     * @param  int  $permid
+     * @param  int|array  $permid
      * @return void
      * @throws AdapterException
      * @throws ServerQueryException
      * @throws TransportException
      */
-    public function permRemove(int $permid): void
+    public function permRemove(int|array $permid): void
     {
         $this->getParent()->channelGroupPermRemove($this->getId(), $permid);
-    }
-
-    /**
-     * Alias for permAssign().
-     *
-     * @deprecated
-     * @throws
-     */
-    public function permRemoveByName($permname): void
-    {
-        $this->permRemove($permname);
     }
 
     /**
@@ -182,17 +139,6 @@ class ChannelGroup extends Group
     public function clientList(int $cid = null, int $cldbid = null, bool $resolve = false): array
     {
         return $this->getParent()->channelGroupClientList($this->getId(), $cid, $cldbid, $resolve);
-    }
-
-    /**
-     * Alias for privilegeKeyCreate().
-     *
-     * @deprecated
-     * @throws
-     */
-    public function tokenCreate($cid, $description = null, $customset = null): StringHelper
-    {
-        return $this->privilegeKeyCreate($cid, $description, $customset);
     }
 
     /**
@@ -224,16 +170,6 @@ class ChannelGroup extends Group
                 $this->nodeList[] = $client;
             }
         }
-    }
-
-    /**
-     * Returns a unique identifier for the node which can be used as an HTML property.
-     *
-     * @return string
-     */
-    public function getUniqueId(): string
-    {
-        return $this->getParent()->getUniqueId().'_cg'.$this->getId();
     }
 
     /**

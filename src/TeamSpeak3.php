@@ -1,26 +1,5 @@
 <?php
 
-/**
- * @file
- * TeamSpeak 3 PHP Framework
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- * @author    Sven 'ScP' Paulsen
- * @copyright Copyright (c) Planet TeamSpeak. All rights reserved.
- */
-
 namespace PlanetTeamSpeak\TeamSpeak3Framework;
 
 use Exception;
@@ -374,7 +353,6 @@ class TeamSpeak3
      */
     protected static array $escape_patterns = [
         '\\' => '\\\\', // backslash
-        '/' => '\\/',  // slash
         ' ' => '\\s',  // whitespace
         '|' => '\\p',  // pipe
         ';' => '\\;',  // semicolon
@@ -388,36 +366,6 @@ class TeamSpeak3
     ];
 
     /**
-     * Factory for PlanetTeamSpeak\TeamSpeak3Framework\Node\Server classes. $uri must be formatted as
-     * "<adapter>://<user>:<pass>@<host>:<port>/<options>#<flags>". All parameters
-     * except adapter, host and port are optional.
-     *
-     * === Supported Options ===
-     *   - timeout
-     *   - blocking
-     *   - ssh (TeamSpeak only)
-     *   - nickname
-     *   - no_query_clients
-     *   - use_offline_as_virtual
-     *   - clients_before_channels
-     *   - server_id|server_uid|server_port|server_name
-     *   - channel_id|channel_name
-     *   - client_id|client_uid|client_name
-     *
-     * === Supported Flags (only one per $uri) ===
-     *   - no_query_clients
-     *   - use_offline_as_virtual
-     *   - clients_before_channels
-     *
-     * === URI Examples ===
-     *   - serverquery://127.0.0.1:10011/
-     *   - serverquery://127.0.0.1:10022/?ssh=1 (TeamSpeak ONLY)
-     *   - serverquery://127.0.0.1:10022/?ssh=1&server_port=9987
-     *   - serverquery://127.0.0.1:10011/?server_port=9987&channel_id=1
-     *   - serverquery://127.0.0.1:10011/?server_port=9987&channel_id=1#no_query_clients
-     *   - serverquery://127.0.0.1:10011/?server_port=9987&client_name=ScP
-     *   - filetransfer://127.0.0.1:30011/
-     *
      * @param string $uri
      * @return Host|Server|ServerQuery|MockServerQuery|FileTransfer
      * @throws AdapterException
@@ -432,22 +380,27 @@ class TeamSpeak3
         $uri = new Uri($uri);
 
         $adapter = self::getAdapterName($uri->getScheme());
-        $options = ['host' => $uri->getHost(), 'port' => $uri->getPort(), 'timeout' => (int) $uri->getQueryVar('timeout', 10), 'blocking' => (int) $uri->getQueryVar('blocking', 0), 'tls' => (int) $uri->getQueryVar('tls', 0), 'ssh' => (int) $uri->getQueryVar('ssh', 0)];
+        $options = [
+            'host' => $uri->getHost(),
+            'port' => $uri->getPort(),
+            'timeout' => (int) $uri->getQueryVar('timeout', 10),
+            'blocking' => 0,
+            'tls' => 0, // TODO maybe unnecessary?
+            'ssh' => 1,
+        ];
 
         self::loadClass($adapter);
 
-        if ($options['ssh']) {
-            $options['username'] = $uri->getUser();
-            $options['password'] = $uri->getPass();
-        }
+        $options['username'] = $uri->getUser();
+        $options['password'] = $uri->getPass();
 
         $adapterClass = 'PlanetTeamSpeak\\TeamSpeak3Framework\\'.str_replace(DIRECTORY_SEPARATOR, '\\', $adapter);
-
         $object = new $adapterClass($options);
 
         try {
             if ($object instanceof ServerQuery) {
-                $node = $object->getHost();
+                // Create a host object
+                $node = new Host($object);
 
                 if ($uri->hasUser() && $uri->hasPass()) {
                     $node->login($uri->getUser(), $uri->getPass());
@@ -475,6 +428,7 @@ class TeamSpeak3
                     $node->setExcludeQueryClients((bool) $uri->getQueryVar('no_query_clients'));
                 }
 
+                // Select server
                 if ($uri->hasQueryVar('server_id')) {
                     $node = $node->serverGetById($uri->getQueryVar('server_id'));
                 } elseif ($uri->hasQueryVar('server_uid')) {
@@ -485,6 +439,7 @@ class TeamSpeak3
                     $node = $node->serverGetByName($uri->getQueryVar('server_name'));
                 }
 
+                // Select a channel or client
                 if ($node instanceof Server) {
                     if ($uri->hasQueryVar('channel_id')) {
                         $node = $node->channelGetById($uri->getQueryVar('channel_id'));
@@ -583,7 +538,7 @@ class TeamSpeak3
     }
 
     /**
-     * Checks for required PHP features, enables autoloading and starts a default profiler.
+     * Checks for required PHP features, enables autoloading, and starts a default profiler.
      *
      * @return void
      * @throws Exception

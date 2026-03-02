@@ -7,10 +7,19 @@
          displayDetailsOnTestsThatTriggerWarnings="true"
          displayDetailsOnPhpunitDeprecations="true"
          xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         processIsolation="false"
+         stopOnFailure="false"
+         executionOrder="default"
+         failOnWarning="true"
+         failOnRisky="true"
+         failOnEmptyTestSuite="true"
+         beStrictAboutOutputDuringTests="true"
+         cacheDirectory=".phpunit.cache"
 >
   <source>
     <include>
-      <directory>./</directory>
+      <directory>./src</directory>
     </include>
     <exclude>
       <directory>./images</directory>
@@ -18,11 +27,20 @@
       <directory>./tests</directory>
       <directory>./build</directory>
       <directory>./vendor</directory>
+      <file>./src/Exception/AdapterException.php</file>
+      <file>./src/Exception/FileTransferException.php</file>
+      <file>./src/Exception/HelperException.php</file>
+      <file>./src/Exception/NodeException.php</file>
+      <file>./src/Exception/ProfilerException.php</file>
+      <file>./src/Exception/SignalException.php</file>
+      <file>./src/Exception/TransportException.php</file>
+      <file>./src/Helper/Signal/SignalInterface.php</file>
     </exclude>
   </source>
-  <coverage>
+  <coverage ignoreDeprecatedCodeUnits="true"
+            disableCodeCoverageIgnore="true">
     <report>
-      <clover outputFile="build/logs/clover.xml"/>
+      <clover outputFile=".phpunit.cache/clover.xml"/>
     </report>
   </coverage>
   <php>
@@ -35,6 +53,6 @@
     </testsuite>
   </testsuites>
   <logging>
-    <junit outputFile="build/logs/junit.xml"/>
+    <junit outputFile=".phpunit.cache/junit.xml"/>
   </logging>
 </phpunit>

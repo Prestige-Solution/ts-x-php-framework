@@ -1,26 +1,5 @@
 <?php
 
-/**
- * @file
- * TeamSpeak 3 PHP Framework
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- * @author    Sven 'ScP' Paulsen
- * @copyright Copyright (c) Planet TeamSpeak. All rights reserved.
- */
-
 namespace PlanetTeamSpeak\TeamSpeak3Framework\Node;
 
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
@@ -38,10 +17,6 @@ use PlanetTeamSpeak\TeamSpeak3Framework\TeamSpeak3;
  */
 class Channel extends Node
 {
-    private array|null $clientList = null;
-
-    private array $channelList = [];
-
     /**
      * Channel constructor.
      *
@@ -95,23 +70,25 @@ class Channel extends Node
      */
     public function subChannelGetById(int $cid): self
     {
-        if (! array_key_exists($cid, $this->subChannelList())) {
+        $subChannels = $this->subChannelList();
+
+        if (! array_key_exists($cid, $subChannels)) {
             throw new ServerQueryException('invalid channelID', 0x300);
         }
 
-        return $this->channelList[$cid];
+        return $subChannels[$cid];
     }
 
     /**
      * Returns the PlanetTeamSpeak\TeamSpeak3Framework\Node\Channel object matching the given name.
      *
-     * @param  int  $name
+     * @param  string  $name
      * @return Channel
      * @throws AdapterException
      * @throws ServerQueryException
      * @throws TransportException
      */
-    public function subChannelGetByName(int $name): self
+    public function subChannelGetByName(string $name): self
     {
         foreach ($this->subChannelList() as $channel) {
             if ($channel['channel_name'] == $name) {
@@ -155,23 +132,25 @@ class Channel extends Node
      */
     public function clientGetById(int $clid): Client
     {
-        if (! array_key_exists($clid, $this->clientList())) {
+        $clientList = $this->clientList();
+
+        if (! array_key_exists($clid, $clientList)) {
             throw new ServerQueryException('invalid clientID', 0x200);
         }
 
-        return $this->clientList[$clid];
+        return $clientList[$clid];
     }
 
     /**
      * Returns the PlanetTeamSpeak\TeamSpeak3Framework\Node\Client object matching the given name.
      *
-     * @param  int  $name
+     * @param  string  $name
      * @return Client
      * @throws AdapterException
      * @throws ServerQueryException
      * @throws TransportException
      */
-    public function clientGetByName(int $name): Client
+    public function clientGetByName(string $name): Client
     {
         foreach ($this->clientList() as $client) {
             if ($client['client_nickname'] == $name) {
@@ -215,17 +194,6 @@ class Channel extends Node
     }
 
     /**
-     * Alias for clientPermAssign().
-     *
-     * @deprecated
-     * @throws
-     */
-    public function clientPermAssignByName($cldbid, $permname, $permvalue): void
-    {
-        $this->clientPermAssign($cldbid, $permname, $permvalue);
-    }
-
-    /**
      * Removes a set of specified permissions from a client in the channel. Multiple permissions can be removed at once.
      *
      * @param  int  $cldbid
@@ -238,17 +206,6 @@ class Channel extends Node
     public function clientPermRemove(int $cldbid, int|array $permid): void
     {
         $this->getParent()->channelClientPermRemove($this->getId(), $cldbid, $permid);
-    }
-
-    /**
-     * Alias for clientPermRemove().
-     *
-     * @deprecated
-     * @throws
-     */
-    public function clientPermRemoveByName($cldbid, $permname): void
-    {
-        $this->clientPermRemove($cldbid, $permname);
     }
 
     /**
@@ -282,17 +239,6 @@ class Channel extends Node
     }
 
     /**
-     * Alias for permAssign().
-     *
-     * @deprecated
-     * @throws
-     */
-    public function permAssignByName($permname, $permvalue): void
-    {
-        $this->permAssign($permname, $permvalue);
-    }
-
-    /**
      * Removes a set of specified permissions from the channel. Multiple permissions can be removed at once.
      *
      * @param  int|int[]  $permid
@@ -307,18 +253,7 @@ class Channel extends Node
     }
 
     /**
-     * Alias for permRemove().
-     *
-     * @deprecated
-     * @throws
-     */
-    public function permRemoveByName($permname): void
-    {
-        $this->permRemove($permname);
-    }
-
-    /**
-     * Returns a list of files and directories stored in the channels file repository.
+     * Returns a list of files and directories stored in the channel file repository.
      *
      * @param  string  $cpw
      * @param  string  $path
@@ -334,7 +269,7 @@ class Channel extends Node
     }
 
     /**
-     * Returns detailed information about the specified file stored in the channels file repository.
+     * Returns detailed information about the specified file stored in the channel file repository.
      *
      * @param  string  $cpw
      * @param  string  $name
@@ -349,8 +284,8 @@ class Channel extends Node
     }
 
     /**
-     * Renames a file in the channels file repository. If the two parameters $tcid and $tcpw are specified, the file
-     * will be moved into another channels file repository.
+     * Renames a file in the channel file repository. If the two parameters $tcid and $tcpw are specified, the file
+     * will be moved into another channel file repository.
      *
      * @param  string  $cpw
      * @param  string  $oldname
@@ -368,7 +303,7 @@ class Channel extends Node
     }
 
     /**
-     * Deletes one or more files stored in the channels file repository.
+     * Deletes one or more files stored in the channel file repository.
      *
      * @param  string  $cpw
      * @param  string  $name
@@ -383,7 +318,7 @@ class Channel extends Node
     }
 
     /**
-     * Creates new directory in a channels file repository.
+     * Creates a new directory in a channel file repository.
      *
      * @param  string  $cpw
      * @param  string  $dirname
@@ -411,7 +346,7 @@ class Channel extends Node
     }
 
     /**
-     * Returns the pathway of the channel which can be used as a clients default channel.
+     * Returns the pathway of the channel which can be used as a client's default channel.
      *
      * @return string
      * @throws AdapterException
@@ -460,7 +395,7 @@ class Channel extends Node
     }
 
     /**
-     * Downloads and returns the channels icon file content.
+     * Downloads and returns the channel icon file content.
      *
      * @return StringHelper|void
      * @throws AdapterException
@@ -468,6 +403,7 @@ class Channel extends Node
      * @throws ServerQueryException
      * @throws FileTransferException
      * @throws TransportException
+     * @throws \Exception
      */
     public function iconDownload()
     {
@@ -616,16 +552,6 @@ class Channel extends Node
     protected function fetchNodeInfo(): void
     {
         $this->nodeInfo = array_merge($this->nodeInfo, $this->execute('channelinfo', ['cid' => $this->getId()])->toList());
-    }
-
-    /**
-     * Returns a unique identifier for the node which can be used as an HTML property.
-     *
-     * @return string
-     */
-    public function getUniqueId(): string
-    {
-        return $this->getParent()->getUniqueId().'_ch'.$this->getId();
     }
 
     /**

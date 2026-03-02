@@ -1,26 +1,5 @@
 <?php
 
-/**
- * @file
- * TeamSpeak 3 PHP Framework
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- * @author    Sven 'ScP' Paulsen
- * @copyright Copyright (c) Planet TeamSpeak. All rights reserved.
- */
-
 namespace PlanetTeamSpeak\TeamSpeak3Framework\Adapter\ServerQuery;
 
 use ArrayAccess;
@@ -64,13 +43,12 @@ class Event implements ArrayAccess
     /**
      * Creates a new PlanetTeamSpeak\TeamSpeak3Framework\Adapter\ServerQuery\Event object.
      *
-     * @param  StringHelper  $evt
      * @param  Host|null  $con
      * @throws AdapterException
      * @throws ServerQueryException
      * @throws TransportException
      */
-    public function __construct(StringHelper $evt, Host $con = null)
+    public function __construct(StringHelper|null $evt, Host $con = null)
     {
         if (! $evt->startsWith(TeamSpeak3::EVENT)) {
             throw new AdapterException('invalid notification event format');

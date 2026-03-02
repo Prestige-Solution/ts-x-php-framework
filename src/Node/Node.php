@@ -1,26 +1,5 @@
 <?php
 
-/**
- * @file
- * TeamSpeak 3 PHP Framework
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- * @author    Sven 'ScP' Paulsen
- * @copyright Copyright (c) Planet TeamSpeak. All rights reserved.
- */
-
 namespace PlanetTeamSpeak\TeamSpeak3Framework\Node;
 
 use ArrayAccess;
@@ -33,9 +12,7 @@ use PlanetTeamSpeak\TeamSpeak3Framework\Exception\ServerQueryException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\TransportException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Helper\Convert;
 use PlanetTeamSpeak\TeamSpeak3Framework\Helper\StringHelper;
-use PlanetTeamSpeak\TeamSpeak3Framework\Viewer\ViewerInterface;
 use RecursiveIterator;
-use RecursiveIteratorIterator;
 
 /**
  * Class Node
@@ -118,8 +95,6 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
 
     /**
      * Returns the parent object of the current node.
-     *
-     * @return ServerQuery|Server|Host|Node|Client|null
      */
     public function getParent(): ServerQuery|Server|Host|self|null|Client
     {
@@ -128,8 +103,6 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
 
     /**
      * Returns the primary ID of the current node.
-     *
-     * @return int
      */
     public function getId(): int
     {
@@ -161,38 +134,60 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
     public function iconGetName(string $key): StringHelper
     {
         $iconid = $this[$key];
-        if (! is_int($iconid)) {
+
+        if ($iconid instanceof StringHelper) {
             $iconid = $iconid->toInt();
+        } elseif (! is_int($iconid)) {
+            $iconid = (int) $iconid;
         }
 
-        $iconid = ($iconid < 0) ? (pow(2, 32)) - ($iconid * -1) : $iconid;
+        $iconid = $iconid < 0 ? pow(2, 32) - abs($iconid) : $iconid;
 
         return new StringHelper('/icon_'.$iconid);
     }
 
-    /**
-     * Returns a possible classname for the node which can be used as an HTML property.
-     *
-     * @param string $prefix
-     * @return string
-     */
-    public function getClass(string $prefix = 'ts3_'): string
+    public function iconList(): array
     {
-        if ($this instanceof Channel && $this->isSpacer()) {
-            return $prefix.'spacer';
-        } elseif ($this instanceof Client && $this['client_type']) {
-            return $prefix.'query';
+        $iconBasePath = '/icons';
+
+        try {
+            $files = $this->execute('ftgetfilelist', [
+                'cid' => 0,
+                'cpw' => '',
+                'path' => $iconBasePath,
+            ])->toArray();
+        } catch (\Exception $e) {
+            return [];
         }
 
-        return $prefix.StringHelper::factory(get_class($this))->section('_', 2)->toLower();
-    }
+        $result = [];
 
-    /**
-     * Returns a unique identifier for the node which can be used as an HTML property.
-     *
-     * @return string
-     */
-    abstract public function getUniqueId(): string;
+        foreach ($files as $file) {
+            // Skip meta entry (“ftgetfilelist” exists)
+            if (isset($file['ftgetfilelist']) || ! isset($file['name'])) {
+                continue;
+            }
+
+            // Set a fallback path
+            $file['path'] = $file['path'] ?? $iconBasePath;
+            $file['cid'] = 0;
+            $file['sid'] = $this->getId();
+
+            // Create StringHelper
+            $src = new StringHelper('/'.ltrim($file['path'], '/'));
+            if (! $src->endsWith('/')) {
+                $src->append('/');
+            }
+            if (! empty($file['name'])) {
+                $src->append($file['name']);
+            }
+            $file['src'] = $src;
+
+            $result[] = $file;
+        }
+
+        return $result;
+    }
 
     /**
      * Returns the name of a possible icon to display the node object.
@@ -209,38 +204,7 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
     abstract public function getSymbol(): string;
 
     /**
-     * Returns the HTML code to display a TeamSpeak 3 viewer.
-     *
-     * @param ViewerInterface $viewer
-     * @return string
-     */
-    public function getViewer(ViewerInterface $viewer): string
-    {
-        $html = $viewer->fetchObject($this);
-
-        $iterator = new RecursiveIteratorIterator($this, RecursiveIteratorIterator::SELF_FIRST);
-
-        foreach ($iterator as $node) {
-            $siblings = [];
-
-            for ($level = 0; $level < $iterator->getDepth(); $level++) {
-                $siblings[] = ($iterator->getSubIterator($level)->hasNext()) ? 1 : 0;
-            }
-
-            $siblings[] = (! $iterator->getSubIterator($level)->hasNext()) ? 1 : 0;
-
-            $html .= $viewer->fetchObject($node, $siblings);
-        }
-
-        if (empty($html) && method_exists($viewer, 'toString')) {
-            return $viewer->toString();
-        }
-
-        return $html;
-    }
-
-    /**
-     * Filters given node list array using specified filter rules.
+     * Filters given a node list array using specified filter rules.
      *
      * @param array $nodes
      * @param array $rules
@@ -275,8 +239,8 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
     }
 
     /**
-     * Returns all information available on this node. If $convert is enabled, some property
-     * values will be converted to human-readable values.
+     * Returns all information available on this node and its commands.
+     * Flattens arrays, converts StringHelper to strings, and optionally makes values human-readable.
      *
      * @param bool $extend
      * @param bool $convert
@@ -288,33 +252,82 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
             $this->fetchNodeInfo();
         }
 
-        if ($convert) {
-            $info = $this->nodeInfo;
+        $info = $this->nodeInfo;
 
-            foreach ($info as $key => $val) {
-                $key = StringHelper::factory($key);
-
-                if ($key->contains('_bytes_')) {
-                    $info[$key->toString()] = Convert::bytes($val);
-                } elseif ($key->contains('_bandwidth_')) {
-                    $info[$key->toString()] = Convert::bytes($val).'/s';
-                } elseif ($key->contains('_packets_')) {
-                    $info[$key->toString()] = number_format($val, 0, null, '.');
-                } elseif ($key->contains('_packetloss_')) {
-                    $info[$key->toString()] = sprintf('%01.2f', floatval($val instanceof StringHelper ? $val->toString() : strval($val)) * 100).'%';
-                } elseif ($key->endsWith('_uptime')) {
-                    $info[$key->toString()] = Convert::seconds($val);
-                } elseif ($key->endsWith('_version')) {
-                    $info[$key->toString()] = Convert::version($val);
-                } elseif ($key->endsWith('_icon_id')) {
-                    $info[$key->toString()] = $this->iconGetName($key)->filterDigits();
+        // Flat merge: top keys and numeric subarrays
+        $flatInfo = $info;
+        foreach ($info as $k => $v) {
+            if (is_array($v)) {
+                foreach ($v as $subKey => $subVal) {
+                    $flatInfo[$subKey] = $subVal;
                 }
+                unset($flatInfo[$k]);
+            }
+        }
+        $info = $flatInfo;
+
+        // StringHelper → String
+        foreach ($info as $k => $v) {
+            if ($v instanceof StringHelper) {
+                $v = $v->toString();
             }
 
-            return $info;
+            // Remove ANSI escape sequences (like \e[47G, \x1B[31m, etc.)
+            if (is_string($v)) {
+                $v = preg_replace('/\x1B\[[0-?]*[ -\/]*[@-~]/', '', $v);
+                $v = trim($v);
+            }
+
+            // Convert numeric strings to int
+            if (is_numeric($v)) {
+                $v = (int) $v;
+            }
+
+            $info[$k] = $v;
         }
 
-        return $this->nodeInfo;
+        // Optional: human-readable conversions
+        if ($convert) {
+            foreach ($info as $key => $val) {
+                if (str_contains($key, '_bytes_')) {
+                    $info[$key] = Convert::bytes($val);
+                } elseif (str_contains($key, '_bandwidth_')) {
+                    $info[$key] = Convert::bytes($val).'/s';
+                } elseif (str_contains($key, '_packets_')) {
+                    $info[$key] = number_format($val, 0, null, '.');
+                } elseif (str_contains($key, '_packetloss_')) {
+                    $info[$key] = sprintf('%01.2f', floatval($val) * 100).'%';
+                } elseif (str_ends_with($key, '_uptime')) {
+                    $info[$key] = Convert::seconds($val);
+                } elseif (str_ends_with($key, '_version')) {
+                    $info[$key] = Convert::version($val);
+                } elseif (str_ends_with($key, '_icon_id')) {
+                    $info[$key] = $this->iconGetName($val)->filterDigits()->toInt();
+                }
+            }
+        }
+
+        // Now include all standard commands
+        if ($this instanceof Server) {
+            $standardCommands = ['whoami', 'serverinfo', 'serverinfoserver info'];
+            foreach ($standardCommands as $cmd) {
+                try {
+                    $result = $this->{$cmd}(); // Calls the respective function
+                    if (is_array($result)) {
+                        foreach ($result as $k => $v) {
+                            if ($v instanceof StringHelper) {
+                                $v = $v->toString();
+                            }
+                            $info[$k] = $v;
+                        }
+                    }
+                } catch (\Exception) {
+                    continue;
+                }
+            }
+        }
+
+        return $info;
     }
 
     /**
@@ -405,7 +418,7 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
      */
     protected function getStorage(string $key, mixed $default = null): mixed
     {
-        return ! empty($this->storage[$key]) ? $this->storage[$key] : $default;
+        return array_key_exists($key, $this->storage) ? $this->storage[$key] : $default;
     }
 
     /**
@@ -507,7 +520,9 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
     {
         $this->verifyNodeList();
 
-        return $this->current()->count() > 0;
+        $current = $this->current();
+
+        return $current !== null && $current->count() > 0;
     }
 
     /**

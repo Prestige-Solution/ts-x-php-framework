@@ -1,26 +1,5 @@
 <?php
 
-/**
- * @file
- * TeamSpeak 3 PHP Framework
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- * @author    Sven 'ScP' Paulsen
- * @copyright Copyright (c) Planet TeamSpeak. All rights reserved.
- */
-
 namespace PlanetTeamSpeak\TeamSpeak3Framework\Helper;
 
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\HelperException;
@@ -47,8 +26,8 @@ class Char
      */
     public function __construct(string $char)
     {
-        if (strlen($char) != 1) {
-            throw new HelperException('char parameter may not contain more or less than one character');
+        if (mb_strlen($char, 'UTF-8') !== 1) {
+            throw new HelperException('char parameter may not contain more or less than one UTF-8 character');
         }
 
         $this->char = $char;
@@ -188,7 +167,7 @@ class Char
         if ($h <= 0x7F) {
             return $h;
         } elseif ($h < 0xC2) {
-            return false;
+            return -1;
         } elseif ($h <= 0xDF) {
             return ($h & 0x1F) << 6 | (ord($this->char[1]) & 0x3F);
         } elseif ($h <= 0xEF) {
@@ -219,11 +198,18 @@ class Char
      */
     public static function fromHex(string $hex): self
     {
-        if (strlen($hex) != 2) {
+        // Check: only even numbers of hex characters allowed, all must be valid
+        if (strlen($hex) % 2 !== 0 || ! ctype_xdigit($hex)) {
             throw new HelperException("given parameter '".$hex."' is not a valid hexadecimal number");
         }
 
-        return new self(chr(hexdec($hex)));
+        // Hex → Binary string (UTF-8 compatible)
+        $bytes = hex2bin($hex);
+        if ($bytes === false) {
+            throw new HelperException("given parameter '".$hex."' could not be converted to binary data");
+        }
+
+        return new self($bytes);
     }
 
     /**

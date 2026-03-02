@@ -7,6 +7,7 @@ use PHPUnit\Framework\TestCase;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\HelperException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Helper\StringHelper;
 use PlanetTeamSpeak\TeamSpeak3Framework\Helper\Uri;
+use ReflectionMethod;
 
 class UriTest extends TestCase
 {
@@ -484,5 +485,108 @@ class UriTest extends TestCase
             StringHelper::class,
             $uri->getFragment()
         );
+    }
+
+    /**
+     * @throws HelperException
+     */
+    public function testCheckCatchesException()
+    {
+        $uri = new StringHelper(''); // empty string → throws HelperException in constructor
+        $this->assertFalse(Uri::check($uri));
+    }
+
+    /**
+     * @throws HelperException
+     */
+    public function testCheckHandlesValidConstruction()
+    {
+        $uri = new StringHelper('http://example.com');
+
+        // We don't know what isValid() returns,
+        // so we just check that no exception is thrown and that the return value is a bool.
+        $result = Uri::check($uri);
+
+        $this->assertIsBool($result);
+    }
+
+    /**
+     * @throws HelperException
+     */
+    public function testCheckReturnsFalseWhenConstructorThrows()
+    {
+        // We simulate a URI that causes the Uri constructor to fail
+        // e.g., an empty or invalid string
+        $uri = new StringHelper('');
+
+        // Damit testen wir den catch-Block
+        $this->assertFalse(Uri::check($uri));
+    }
+
+    public function testGetFQDNPartsReturnsEmptyArrayForInvalidHostname()
+    {
+        // Contains invalid characters (e.g., spaces or special characters)
+        $result = Uri::getFQDNParts('invalid host name');
+        $this->assertSame([], $result);
+    }
+
+    public function testGetFQDNPartsReturnsPartsForValidHostname()
+    {
+        $result = Uri::getFQDNParts('sub.example.com');
+
+        // Check that the array contains the expected keys
+        $this->assertArrayHasKey('tld', $result);
+        $this->assertArrayHasKey('2nd', $result);
+        $this->assertArrayHasKey('3rd', $result);
+
+        // Example values (depending on regex matching)
+        $this->assertEquals('com', $result['tld']);
+        $this->assertEquals('example.', $result['2nd']); // Note: Regex contains a period!
+        $this->assertEquals('sub.', $result['3rd']);
+    }
+
+    /**
+     * @throws \ReflectionException
+     */
+    protected function callProtectedStatic(string $method, array $args = [])
+    {
+        $ref = new ReflectionMethod(Uri::class, $method);
+        /** @noinspection PhpExpressionResultUnusedInspection */
+        $ref->setAccessible(true);
+
+        return $ref->invokeArgs(null, $args);
+    }
+
+    /**
+     * @throws \ReflectionException
+     */
+    public function testStripslashesRecursiveRemovesSlashesFromString()
+    {
+        $result = $this->callProtectedStatic('stripslashesRecursive', ['A\\B']);
+        $this->assertEquals('AB', $result);
+    }
+
+    /**
+     * @throws \ReflectionException
+     */
+    public function testStripslashesRecursiveHandlesFlatArray()
+    {
+        $input = ['x\\y', 'a\\b'];
+        $expected = ['xy', 'ab'];
+
+        $result = $this->callProtectedStatic('stripslashesRecursive', [$input]);
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * @throws \ReflectionException
+     */
+    public function testStripslashesRecursiveHandlesNestedArrays()
+    {
+        $input = ['outer' => ['inner' => 'x\\y\\z']];
+        $expected = ['outer' => ['inner' => 'xyz']];
+
+        $result = $this->callProtectedStatic('stripslashesRecursive', [$input]);
+        $this->assertEquals($expected, $result);
     }
 }

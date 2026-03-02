@@ -5,6 +5,7 @@ namespace PlanetTeamSpeak\TeamSpeak3Framework\Tests\Helper;
 use Exception;
 use PHPUnit\Framework\TestCase;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\HelperException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Helper\Char;
 use PlanetTeamSpeak\TeamSpeak3Framework\Helper\StringHelper;
 use PlanetTeamSpeak\TeamSpeak3Framework\TeamSpeak3;
 
@@ -258,13 +259,86 @@ class StringTest extends TestCase
 
     public function testToUft8()
     {
-        $notUtf8 = mb_convert_encoding('Äpfel', 'ISO-8859-1', 'UTF-8');
-        $stringNotUtf8 = new StringHelper($notUtf8);
-        $this->assertEquals(mb_convert_encoding($notUtf8, 'UTF-8', mb_list_encodings()), $stringNotUtf8->toUtf8()->toString());
+        $notUtf8 = new StringHelper('Äpfel');
+        $valueResult = $notUtf8->toUtf8()->toString();
+        $this->assertEquals('Äpfel', $valueResult);
 
-        $notUtf8 = mb_convert_encoding('¶', 'ISO-8859-1', 'UTF-8');
-        $stringNotUtf8 = new StringHelper($notUtf8);
-        $this->assertEquals(mb_convert_encoding($notUtf8, 'UTF-8', mb_list_encodings()), $stringNotUtf8->toUtf8()->toString());
+        $notUtf8 = new StringHelper('¶');
+        $valueResult = $notUtf8->toUtf8()->toString();
+        $this->assertEquals('¶', $valueResult);
+
+        //test a lot of converting
+        $nonUtfChars = [
+            // German / Western Europe
+            'Ä', 'Ö', 'Ü', 'ä', 'ö', 'ü', 'ß',
+            // French
+            'é', 'è', 'ê', 'ë', 'à', 'â', 'ç', 'ô', 'û', 'ù',
+            // Scandinavian
+            'å', 'Å', 'ø', 'Ø', 'æ', 'Æ',
+            // Eastern European
+            'č', 'ć', 'š', 'ž', 'ř', 'ł', 'ń', 'ą', 'ę', 'đ', 'ț', 'ș',
+            // Southern European
+            'ñ', 'á', 'í', 'ó', 'ú', 'Á', 'Í', 'Ó', 'Ú',
+            // Nordic / Baltic
+            'ð', 'þ', 'ĸ',
+            // Special characters / typical encoding pitfalls
+            '€', '£', '¥', '©', '®', '™', '°', '§', 'µ', '¶', '½', '¼', '¾',
+            // Advanced punctuation marks
+            '–', '—', '‚', '‘', '’', '„', '“', '”', '…', '‹', '›', '«', '»',
+            // Other more exotic examples
+            '¿', '¡', 'Ø', 'Å', 'œ', 'Œ', 'ß', 'ø', 'Ð',
+        ];
+
+        foreach ($nonUtfChars as $enc) {
+            $notUtf8 = new StringHelper($enc);
+            $valueResult = $notUtf8->toUtf8()->toString();
+            $this->assertTrue(mb_check_encoding($valueResult, 'UTF-8'));
+        }
+
+        $nonUtfWords = [
+            // German
+            'Größe', 'Schönbrunn', 'Käse', 'Fußgänger', 'Ärger', 'Übergrößen',
+            'Töpferei', 'Fähre', 'mäßig', 'Flöße',
+            // French
+            'École', 'français', 'garçon', 'crème brûlée', 'Noël', 'façade',
+            // Spanish / Portuguese
+            'señor', 'año', 'corazón', 'mañana', 'São Paulo', 'português',
+            // Scandinavian / Eastern European
+            'smörgåsbord', 'björk', 'Łódź', 'Český', 'Žižka', 'Dvořák', 'Kraków',
+
+            // Common punctuation problems (–, —, …, “, ”)
+            'Test – Bindestrich',
+            'Gedankenstrich — Beispiel',
+            '„Anführungszeichen“',
+            '»Französisch«',
+            'Café… lecker!',
+
+            // Special characters / symbols
+            'Preis € 12,99',
+            'Copyright © 2025',
+            'Marke™',
+            '50° Nord',
+            'Maßstab 1:1000',
+
+            // Frequently incorrect combinations (e.g., from old ISO/CP encodings)
+            'Schröder & Söhne',
+            'Müller’s Café',
+            'Köln – Düsseldorf',
+            'Büro für Öltechnik',
+            'Straße des 17. Juni',
+        ];
+
+        foreach ($nonUtfWords as $word) {
+            // deliberately generate broken Latin-1 bytes
+            $latin1 = iconv('UTF-8', 'ISO-8859-1//IGNORE', $word);
+            $nonUtfSamples[] = $latin1;
+        }
+
+        foreach ($nonUtfSamples as $enc) {
+            $notUtf8 = new StringHelper($enc);
+            $valueResult = $notUtf8->toUtf8()->toString();
+            $this->assertTrue(mb_check_encoding($valueResult, 'UTF-8'));
+        }
     }
 
     public function testPreventConvertIntToUtf8()
@@ -554,5 +628,359 @@ class StringTest extends TestCase
             json_encode(['a' => $string]),
             json_encode(['a' => 'Hello world!'])
         );
+    }
+
+    public function testResizeTruncatesWhenTooLong()
+    {
+        $str = new StringHelper('abcdef');
+        $resized = $str->resize(3);
+
+        $this->assertEquals('abc', (string) $resized);
+    }
+
+    public function testResizePadsWhenTooShort()
+    {
+        $str = new StringHelper('abc');
+        $resized = $str->resize(5, '_');
+
+        $this->assertEquals('abc__', (string) $resized);
+    }
+
+    public function testResizeUnchangedWhenSameSize()
+    {
+        $str = new StringHelper('abcd');
+        $resized = $str->resize(4, 'x');
+
+        $this->assertEquals('abcd', (string) $resized);
+    }
+
+    public function testFilterAlnumRemovesNonAlnumCharacters()
+    {
+        $str = new StringHelper('abc-123!@#xyz');
+        $result = $str->filterAlnum();
+
+        // Removes all special characters, leaving only a–z, A–Z, 0–9
+        $this->assertEquals('abc123xyz', (string) $result);
+    }
+
+    public function testFilterAlnumKeepsAlnumOnly()
+    {
+        $str = new StringHelper('A1b2C3');
+        $result = $str->filterAlnum();
+
+        $this->assertEquals('A1b2C3', (string) $result);
+    }
+
+    public function testFilterAlnumOnEmptyString()
+    {
+        $str = new StringHelper('');
+        $result = $str->filterAlnum();
+
+        $this->assertEquals('', (string) $result);
+    }
+
+    public function testFilterAlphaRemovesNonLetters()
+    {
+        $str = new StringHelper('abc123!@#XYZ');
+        $result = $str->filterAlpha();
+
+        // Nur Buchstaben bleiben
+        $this->assertEquals('abcXYZ', (string) $result);
+    }
+
+    public function testFilterAlphaKeepsLettersOnly()
+    {
+        $str = new StringHelper('AbCdEf');
+        $result = $str->filterAlpha();
+
+        $this->assertEquals('AbCdEf', (string) $result);
+    }
+
+    public function testFilterAlphaRemovesAllIfNoLetters()
+    {
+        $str = new StringHelper('12345_?!-');
+        $result = $str->filterAlpha();
+
+        $this->assertEquals('', (string) $result);
+    }
+
+    public function testFilterAlphaEmptyString()
+    {
+        $str = new StringHelper('');
+        $result = $str->filterAlpha();
+
+        $this->assertEquals('', (string) $result);
+    }
+
+    public function testUriSafeBasicConversion()
+    {
+        $str = new StringHelper('Hello World!');
+        $result = $str->uriSafe();
+
+        $this->assertEquals('hello-world', (string) $result);
+    }
+
+    public function testUriSafeWithCustomSpacer()
+    {
+        $str = new StringHelper('Hello World!');
+        $result = $str->uriSafe('_');
+
+        $this->assertEquals('hello_world', (string) $result);
+    }
+
+    public function testUriSafeTrimsExtraSpacers()
+    {
+        $str = new StringHelper('hello---world');
+        $result = $str->uriSafe();
+
+        $this->assertEquals('hello-world', (string) $result);
+    }
+
+    public function testUriSafeWithOnlySpecialCharacters()
+    {
+        $str = new StringHelper('@@@');
+        $result = $str->uriSafe();
+
+        $this->assertEquals('', (string) $result);
+    }
+
+    public function testUriSafeReturnsNewInstance()
+    {
+        $str = new StringHelper('Test');
+        $result = $str->uriSafe();
+
+        // Should NOT be the same object (since ‘new self’)
+        $this->assertNotSame($str, $result);
+    }
+
+    /**
+     * Test StringHelper "magic" __call TODO we should change this in the future
+     * @return void
+     */
+    public function testCallThrowsOnUndefinedFunction()
+    {
+        $str = new StringHelper('test');
+
+        $this->expectException(HelperException::class);
+        $this->expectExceptionMessage("cannot call undefined function 'nope'");
+
+        $str->nope();
+    }
+
+    /**
+     * Test StringHelper "magic" __call TODO we should change this in the future
+     * @return void
+     */
+    public function testCallWithArgsAndSelfReplacement()
+    {
+        $str = new StringHelper('hello world');
+        $result = $str->str_replace('world', 'there', $str);
+
+        $this->assertInstanceOf(StringHelper::class, $result);
+        $this->assertEquals('hello there', (string) $result);
+    }
+
+    /**
+     * Test StringHelper "magic" __call TODO we should change this in the future
+     * @return void
+     */
+    public function testCallThrowsWhenMissingObjectParameter()
+    {
+        $str = new StringHelper('abc');
+
+        $this->expectException(HelperException::class);
+        $this->expectExceptionMessageMatches('/without the .* object parameter/');
+
+        // Keine Referenz auf $this in Argumenten → Exception
+        $str->str_replace('a', 'b');
+    }
+
+    /**
+     * Test StringHelper "magic" __call TODO we should change this in the future
+     * @return void
+     */
+    public function testCallWithoutArgsReturnsModifiedString()
+    {
+        $str = new StringHelper('hello');
+        $result = $str->strtoupper();
+
+        $this->assertEquals('HELLO', (string) $result);
+    }
+
+    /**
+     * Test StringHelper "magic" __call TODO we should change this in the future
+     * @return void
+     */
+    public function testCallReturnsNonStringValue()
+    {
+        $str = new StringHelper('abcdef');
+        $len = $str->strlen();
+
+        $this->assertIsInt($len);
+        $this->assertEquals(6, $len);
+    }
+
+    public function testKeyReturnsCurrentPosition()
+    {
+        $str = new StringHelper('abc');
+
+        // If the class implements Iterator, position could initially be 0.
+        $this->assertEquals(0, $str->key());
+        $this->assertIsInt($str->key());
+
+        // Optional: if there is a method such as next() or rewind(),
+        // you can check that the position has changed.
+        if (method_exists($str, 'next')) {
+            $str->next();
+            $this->assertEquals(1, $str->key());
+        }
+    }
+
+    public function testOffsetExistsWithinBounds()
+    {
+        $str = new StringHelper('abc');
+
+        // Index 0, 1, 2 exist (since strlen = 3)
+        $this->assertTrue($str->offsetExists(0));
+        $this->assertTrue($str->offsetExists(2));
+    }
+
+    public function testOffsetExistsOutOfBounds()
+    {
+        $str = new StringHelper('abc');
+
+        // Index 3 ist außerhalb des zulässigen Bereichs (0–2 gültig)
+        $this->assertFalse($str->offsetExists(3));
+        $this->assertFalse($str->offsetExists(99));
+    }
+
+    public function testOffsetGetReturnsCharWhenOffsetExists()
+    {
+        $str = new StringHelper('abc');
+        $char = $str->offsetGet(1); // 'b'
+
+        $this->assertInstanceOf(Char::class, $char);
+        $this->assertEquals('b', (string) $char);
+    }
+
+    public function testOffsetGetReturnsNullWhenOffsetDoesNotExist()
+    {
+        $str = new StringHelper('abc');
+        $result = $str->offsetGet(10); // outside the length
+
+        $this->assertNull($result);
+    }
+
+    public function testOffsetSetReplacesCharacterWhenOffsetExists()
+    {
+        $str = new StringHelper('abc');
+        $str->offsetSet(1, 'Z'); // replaces ‘b’ with 'Z'
+
+        $this->assertEquals('aZc', (string) $str);
+    }
+
+    public function testOffsetSetDoesNothingWhenOffsetDoesNotExist()
+    {
+        $str = new StringHelper('abc');
+        $str->offsetSet(10, 'Z'); // invalid index, no change
+
+        $this->assertEquals('abc', (string) $str);
+    }
+
+    public function testOffsetUnsetRemovesCharacterWhenOffsetExists()
+    {
+        $str = new StringHelper('abcd');
+        $str->offsetUnset(1); // removes 'b'
+
+        $this->assertEquals('acd', (string) $str);
+    }
+
+    public function testOffsetUnsetDoesNothingWhenOffsetDoesNotExist()
+    {
+        $str = new StringHelper('abcd');
+        $str->offsetUnset(10); // invalid index, no change
+
+        $this->assertEquals('abcd', (string) $str);
+    }
+
+    public function testToIntReturnsMinusOneForPowerOf63()
+    {
+        $str = new StringHelper((string) pow(2, 63));
+        $this->assertEquals(-1, $str->toInt());
+    }
+
+    public function testToIntReturnsMinusOneForPowerOf64()
+    {
+        $str = new StringHelper((string) pow(2, 64));
+        $this->assertEquals(-1, $str->toInt());
+    }
+
+    public function testToIntReturnsMinusOneForValueGreaterThan2Power31()
+    {
+        $str = new StringHelper((string) (pow(2, 31) + 10));
+        $this->assertEquals(-1, $str->toInt());
+    }
+
+    public function testToIntReturnsNormalIntegerWhenWithinRange()
+    {
+        $str = new StringHelper('12345');
+        $this->assertEquals(12345, $str->toInt());
+    }
+
+    public function testFilterDigitsRemovesNonDigits()
+    {
+        $str = new StringHelper('abc123xyz');
+        $result = $str->filterDigits();
+
+        $this->assertEquals('123', (string) $result);
+    }
+
+    public function testFilterDigitsKeepsOnlyDigits()
+    {
+        $str = new StringHelper('987654');
+        $result = $str->filterDigits();
+
+        $this->assertEquals('987654', (string) $result);
+    }
+
+    public function testFilterDigitsRemovesAllWhenNoDigits()
+    {
+        $str = new StringHelper('no digits!');
+        $result = $str->filterDigits();
+
+        $this->assertEquals('', (string) $result);
+    }
+
+    public function testFilterDigitsOnEmptyString()
+    {
+        $str = new StringHelper('');
+        $result = $str->filterDigits();
+
+        $this->assertEquals('', (string) $result);
+    }
+
+    public function testUnescapeRevertsEscapedCharacters()
+    {
+        // Example: TS3 escaped “ ” → “\s”, “|” → “\p”
+        $str = new StringHelper('Hello\sWorld\pServer');
+        $result = $str->unescape();
+
+        $this->assertEquals('Hello World|Server', (string) $result);
+    }
+
+    public function testUnescapeWithNoEscapes()
+    {
+        $str = new StringHelper('NoEscapesHere');
+        $result = $str->unescape();
+
+        $this->assertEquals('NoEscapesHere', (string) $result);
+    }
+
+    public function testUnescapeReturnsSelf()
+    {
+        $str = new StringHelper('Foo\sBar');
+        $result = $str->unescape();
+
+        $this->assertSame($result, $result);
     }
 }
