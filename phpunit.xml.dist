@@ -10,6 +10,7 @@
          bootstrap="vendor/autoload.php"
          processIsolation="false"
          stopOnFailure="false"
+         stopOnError="false"
          executionOrder="default"
          failOnWarning="true"
          failOnRisky="true"

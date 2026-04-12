@@ -615,7 +615,7 @@ class ClientTest extends TestCase
      */
     public function test_channelGroupClientList()
     {
-        if ($this->active == 'false') {
+        if ($this->active == 'false' || $this->user_test_active == 'false') {
             $this->markTestSkipped('DevLiveServer ist not active');
         }
 
@@ -652,7 +652,7 @@ class ClientTest extends TestCase
      */
     public function test_has_overwolf()
     {
-        if ($this->active == 'false') {
+        if ($this->active == 'false' || $this->user_test_active == 'false') {
             $this->markTestSkipped('DevLiveServer ist not active');
         }
 
