@@ -29,6 +29,8 @@ class ChannelGroupTest extends TestCase
 
     private string $user;
 
+    private string $user_test_active;
+
     private string $password;
 
     private string $ts3_server_uri;
@@ -53,6 +55,7 @@ class ChannelGroupTest extends TestCase
             $this->user = str_replace('DEV_LIVE_SERVER_QUERY_USER=', '', preg_replace('#\n(?!\n)#', '', $env[5]));
             $this->password = str_replace('DEV_LIVE_SERVER_QUERY_USER_PASSWORD=', '', preg_replace('#\n(?!\n)#', '', $env[6]));
             $this->ts3_unit_test_channel_name = str_replace('DEV_LIVE_SERVER_UNIT_TEST_CHANNEL=', '', preg_replace('#\n(?!\n)#', '', $env[7]));
+            $this->user_test_active = str_replace('DEV_LIVE_SERVER_UNIT_TEST_USER_ACTIVE=', '', preg_replace('#\n(?!\n)#', '', $env[8]));
             $this->ts3_unit_test_userName = str_replace('DEV_LIVE_SERVER_UNIT_TEST_USER=', '', preg_replace('#\n(?!\n)#', '', $env[9]));
         } else {
             $this->active = 'false';
@@ -217,7 +220,7 @@ class ChannelGroupTest extends TestCase
      */
     public function test_channelGroupClientList()
     {
-        if ($this->active == 'false') {
+        if ($this->active == 'false' || $this->user_test_active == 'false') {
             $this->markTestSkipped('DevLiveServer ist not active');
         }
 
