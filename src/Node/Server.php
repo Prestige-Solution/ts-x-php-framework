@@ -2078,6 +2078,47 @@ class Server extends Node
     }
 
     /**
+     * Removes protocol/meta rows from a file transfer init response and returns the row containing ftkey/port.
+     *
+     * @param array $response
+     * @return array
+     * @throws ServerQueryException
+     */
+    protected function normalizeTransferInitResponse(array $response): array
+    {
+        if (isset($response['ftkey']) || isset($response['port'])) {
+            return $response;
+        }
+
+        foreach ($response as $row) {
+            if (! is_array($row)) {
+                continue;
+            }
+
+            if (isset($row['ftkey']) || isset($row['port'])) {
+                return $row;
+            }
+        }
+
+        throw new ServerQueryException('invalid file transfer init response');
+    }
+
+    /**
+     * Initializes a file transfer upload. $clientftfid is an arbitrary ID to identify the file transfer on the client-side.
+     *
+     * @param  int  $clientftfid
+     * @param  int  $cid
+     * @param  string  $name
+     * @param  int  $size
+     * @param  string  $cpw
+     * @param  bool  $overwrite
+     * @param  bool  $resume
+     * @return array
+     * @throws AdapterException
+     * @throws ServerQueryException
+     * @throws TransportException
+     */
+    /**
      * Initializes a file transfer upload. $clientftfid is an arbitrary ID to identify the file transfer on the client-side.
      *
      * @param  int  $clientftfid
@@ -2101,21 +2142,31 @@ class Server extends Node
         bool $overwrite = false,
         bool $resume = false
     ): array {
-        $upload = $this->execute('ftinitupload', ['clientftfid' => $clientftfid, 'cid' => $cid, 'name' => $name, 'cpw' => $cpw, 'size' => $size, 'overwrite' => $overwrite, 'resume' => $resume])
-            ->toList();
+        $response = $this->execute('ftinitupload', [
+            'clientftfid' => $clientftfid,
+            'cid' => $cid,
+            'name' => $name,
+            'cpw' => $cpw,
+            'size' => $size,
+            'overwrite' => $overwrite,
+            'resume' => $resume,
+        ])->toList();
+
+        $upload = $this->normalizeTransferInitResponse($response);
 
         if (array_key_exists('status', $upload) && $upload['status'] != 0x00) {
-            throw new ServerQueryException($upload['msg'], $upload['status']);
+            throw new ServerQueryException((string) $upload['msg'], (int) $upload['status']);
         }
 
         $upload['cid'] = $cid;
         $upload['file'] = $name;
 
-        if (! array_key_exists('ip', $upload) || $upload['ip']->startsWith('0.0.0.0')) {
+        if (! array_key_exists('ip', $upload) || (string) $upload['ip'] === '' || (string) $upload['ip'] === '0.0.0.0') {
             $upload['ip'] = $this->getParent()->getAdapterHost();
-        } else {
+        } elseif ($upload['ip'] instanceof StringHelper) {
             $upload['ip'] = $upload['ip']->section(',');
         }
+
         $upload['host'] = $upload['ip'];
 
         Signal::getInstance()->emit('filetransferUploadInit', $upload['ftkey'], $upload);
@@ -2138,21 +2189,29 @@ class Server extends Node
      */
     public function transferInitDownload(int $clientftfid, int $cid, string $name, string $cpw = '', int $seekpos = 0): array
     {
-        $download = $this->execute('ftinitdownload', ['clientftfid' => $clientftfid, 'cid' => $cid, 'name' => $name, 'cpw' => $cpw, 'seekpos' => $seekpos])
-            ->toList();
+        $response = $this->execute('ftinitdownload', [
+            'clientftfid' => $clientftfid,
+            'cid' => $cid,
+            'name' => $name,
+            'cpw' => $cpw,
+            'seekpos' => $seekpos,
+        ])->toList();
+
+        $download = $this->normalizeTransferInitResponse($response);
 
         if (array_key_exists('status', $download) && $download['status'] != 0x00) {
-            throw new ServerQueryException($download['msg'], $download['status']);
+            throw new ServerQueryException((string) $download['msg'], (int) $download['status']);
         }
 
         $download['cid'] = $cid;
         $download['file'] = $name;
 
-        if (! array_key_exists('ip', $download) || $download['ip']->startsWith('0.0.0.0')) {
+        if (! array_key_exists('ip', $download) || (string) $download['ip'] === '' || (string) $download['ip'] === '0.0.0.0') {
             $download['ip'] = $this->getParent()->getAdapterHost();
-        } else {
+        } elseif ($download['ip'] instanceof StringHelper) {
             $download['ip'] = $download['ip']->section(',');
         }
+
         $download['host'] = $download['ip'];
 
         Signal::getInstance()->emit('filetransferDownloadInit', $download['ftkey'], $download);
@@ -2190,6 +2249,104 @@ class Server extends Node
     }
 
     /**
+     * Builds a valid filetransfer URI from ftinitupload/ftinitdownload response data.
+     *
+     * @param array $transfer
+     * @return string
+     * @throws ServerQueryException
+     */
+    protected function buildFileTransferUri(array $transfer): string
+    {
+        $host = $transfer['host'] ?? $transfer['ip'] ?? $this->getParent()->getAdapterHost();
+        $port = $transfer['port'] ?? null;
+
+        if ($host instanceof StringHelper) {
+            $host = $host->toString();
+        }
+
+        if ($port instanceof StringHelper) {
+            $port = $port->toString();
+        }
+
+        $host = trim((string) $host);
+        $port = is_numeric($port) ? (int) $port : 0;
+
+        if ($host === '' || $host === '0.0.0.0') {
+            $host = $this->getParent()->getAdapterHost();
+        }
+
+        if ($host instanceof StringHelper) {
+            $host = $host->toString();
+        }
+
+        $host = trim((string) $host);
+
+        if ($host === '') {
+            throw new ServerQueryException('invalid file transfer host');
+        }
+
+        if ($port < 1 || $port > 65535) {
+            throw new ServerQueryException('invalid file transfer port: '.json_encode($transfer));
+        }
+
+        return 'filetransfer://'.(str_contains($host, ':') ? '['.$host.']' : $host).':'.$port;
+    }
+
+    /**
+     * Downloads a file from a channel file repository.
+     *
+     * @param int $cid
+     * @param string $name
+     * @param string $cpw
+     * @param int $seekpos
+     * @return StringHelper
+     * @throws AdapterException
+     * @throws FileTransferException
+     * @throws ServerQueryException
+     * @throws TransportException
+     * @throws Exception
+     */
+    public function channelFileDownload(int $cid, string $name, string $cpw = '', int $seekpos = 0): StringHelper
+    {
+        $download = $this->transferInitDownload(rand(0x0000, 0xFFFF), $cid, $name, $cpw, $seekpos);
+        $transfer = TeamSpeak3::factory($this->buildFileTransferUri($download));
+
+        return $transfer->download($download['ftkey'], $download['size']);
+    }
+
+    /**
+     * Uploads a file into a channel file repository.
+     *
+     * @param int $cid
+     * @param string $name
+     * @param string $data
+     * @param string $cpw
+     * @param bool $overwrite
+     * @param bool $resume
+     * @return void
+     * @throws AdapterException
+     * @throws FileTransferException
+     * @throws ServerQueryException
+     * @throws TransportException
+     * @throws Exception
+     */
+    public function channelFileUpload(int $cid, string $name, string $data, string $cpw = '', bool $overwrite = false, bool $resume = false): void
+    {
+        $upload = $this->transferInitUpload(
+            rand(0x0000, 0xFFFF),
+            $cid,
+            $name,
+            strlen($data),
+            $cpw,
+            $overwrite,
+            $resume
+        );
+
+        $transfer = TeamSpeak3::factory($this->buildFileTransferUri($upload));
+        $transfer->upload($upload['ftkey'], $upload['seekpos'], $data);
+    }
+
+    /**
      * Downloads and returns the servers icon file content.
      *
      * @param  string|null  $iconname
@@ -2218,7 +2375,7 @@ class Server extends Node
         }
 
         $download = $this->transferInitDownload(rand(0x0000, 0xFFFF), 0, $name);
-        $transfer = TeamSpeak3::factory('filetransfer://'.(str_contains($download['host'], ':') ? '['.$download['host'].']' : $download['host']).':'.$download['port']);
+        $transfer = TeamSpeak3::factory($this->buildFileTransferUri($download));
 
         return $transfer->download($download['ftkey'], $download['size']);
     }
@@ -2240,7 +2397,7 @@ class Server extends Node
         $size = strlen($data);
 
         $upload = $this->transferInitUpload(rand(0x0000, 0xFFFF), 0, '/icon_'.$crc, $size);
-        $transfer = TeamSpeak3::factory('filetransfer://'.(str_contains($upload['host'], ':') ? '['.$upload['host'].']' : $upload['host']).':'.$upload['port']);
+        $transfer = TeamSpeak3::factory($this->buildFileTransferUri($upload));
 
         $transfer->upload($upload['ftkey'], $upload['seekpos'], $data);
 

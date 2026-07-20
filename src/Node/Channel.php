@@ -333,6 +333,44 @@ class Channel extends Node
     }
 
     /**
+     * Downloads a file from this channel file repository.
+     *
+     * @param string $name
+     * @param string $cpw
+     * @param int $seekpos
+     * @return StringHelper
+     * @throws AdapterException
+     * @throws FileTransferException
+     * @throws ServerQueryException
+     * @throws TransportException
+     * @throws \Exception
+     */
+    public function fileDownload(string $name, string $cpw = '', int $seekpos = 0): StringHelper
+    {
+        return $this->getParent()->channelFileDownload($this->getId(), $name, $cpw, $seekpos);
+    }
+
+    /**
+     * Uploads a file into this channel file repository.
+     *
+     * @param string $name
+     * @param string $data
+     * @param string $cpw
+     * @param bool $overwrite
+     * @param bool $resume
+     * @return void
+     * @throws AdapterException
+     * @throws FileTransferException
+     * @throws ServerQueryException
+     * @throws TransportException
+     * @throws \Exception
+     */
+    public function fileUpload(string $name, string $data, string $cpw = '', bool $overwrite = false, bool $resume = false) :void
+    {
+        $this->getParent()->channelFileUpload($this->getId(), $name, $data, $cpw, $overwrite, $resume);
+    }
+
+    /**
      * Returns the level of the channel.
      *
      * @return int
