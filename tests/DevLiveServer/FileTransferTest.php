@@ -8,7 +8,7 @@ use PlanetTeamSpeak\TeamSpeak3Framework\Exception\ServerQueryException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\TransportException;
 use PlanetTeamSpeak\TeamSpeak3Framework\TeamSpeak3;
 
-class FIleTransferTest extends TestCase
+class FileTransferTest extends TestCase
 {
     /**
      * ATTENTION
