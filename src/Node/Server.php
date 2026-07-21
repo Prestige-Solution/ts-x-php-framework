@@ -2309,9 +2309,10 @@ class Server extends Node
     public function channelFileDownload(int $cid, string $name, string $cpw = '', int $seekpos = 0): StringHelper
     {
         $download = $this->transferInitDownload(rand(0x0000, 0xFFFF), $cid, $name, $cpw, $seekpos);
+        $ftkey = str_replace('\\/', '/', (string) $download['ftkey']);
         $transfer = TeamSpeak3::factory($this->buildFileTransferUri($download));
 
-        return $transfer->download($download['ftkey'], $download['size']);
+        return $transfer->download($ftkey, (int) $download['size']);
     }
 
     /**
@@ -2342,8 +2343,10 @@ class Server extends Node
             $resume
         );
 
+        $ftkey = str_replace('\\/', '/', (string) $upload['ftkey']);
+
         $transfer = TeamSpeak3::factory($this->buildFileTransferUri($upload));
-        $transfer->upload($upload['ftkey'], $upload['seekpos'], $data);
+        $transfer->upload($ftkey, (int) $upload['seekpos'], $data);
     }
 
     /**
