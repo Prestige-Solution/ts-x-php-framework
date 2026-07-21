@@ -22,6 +22,8 @@ class FIleTransferTest extends TestCase
 
     private string $queryPort;
 
+    private string $serverPort;
+
     private string $user;
 
     private string $password;
@@ -39,12 +41,13 @@ class FIleTransferTest extends TestCase
             $this->queryPort = str_replace('DEV_LIVE_SERVER_QUERY_PORT=', '', preg_replace('#\n(?!\n)#', '', $env[4]));
             $this->user = str_replace('DEV_LIVE_SERVER_QUERY_USER=', '', preg_replace('#\n(?!\n)#', '', $env[5]));
             $this->password = str_replace('DEV_LIVE_SERVER_QUERY_USER_PASSWORD=', '', preg_replace('#\n(?!\n)#', '', $env[6]));
+            $this->serverPort = str_replace('DEV_LIVE_SERVER_UNIT_TEST_SERVER_PORT=', '', preg_replace('#\n(?!\n)#', '', $env[12]));
         } else {
             $this->active = 'false';
         }
 
         $this->ts3_server_uri = 'serverquery://'.$this->user.':'.$this->password.'@'.$this->host.':'.$this->queryPort.
-            '/?server_port=9987'.
+            '/?server_port='.$this->serverPort.
             '&no_query_clients=0'.
             '&blocking=0'.
             '&timeout=30';
@@ -65,10 +68,10 @@ class FIleTransferTest extends TestCase
         $ts3_Host = TeamSpeak3::factory($this->ts3_server_uri);
 
         $channel = $ts3_Host->channelGetByName('UnitTest');
-        $channel->fileUpload('/test.txt', 'Hallo Welt', overwrite: true);
+        $channel->fileUpload('/test.txt', 'Hello World', overwrite: true);
         $content = $channel->fileDownload('/test.txt');
 
-        $this->assertEquals('Hallo Welt', $content->toString());
+        $this->assertEquals('Hello World', $content->toString());
 
         $channel->fileDelete('', '/test.txt');
         $ts3_Host->getAdapter()->getTransport()->disconnect();

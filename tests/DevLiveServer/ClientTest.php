@@ -25,6 +25,8 @@ class ClientTest extends TestCase
 
     private string $queryPort;
 
+    private string $serverPort;
+
     private string $user;
 
     private string $password;
@@ -58,12 +60,13 @@ class ClientTest extends TestCase
             $this->user_test_active = str_replace('DEV_LIVE_SERVER_UNIT_TEST_USER_ACTIVE=', '', preg_replace('#\n(?!\n)#', '', $env[8]));
             $this->ts3_unit_test_userName = str_replace('DEV_LIVE_SERVER_UNIT_TEST_USER=', '', preg_replace('#\n(?!\n)#', '', $env[9]));
             $this->ts3_unit_test_userName2 = str_replace('DEV_LIVE_SERVER_UNIT_TEST_USER_EXTEND=', '', preg_replace('#\n(?!\n)#', '', $env[11]));
+            $this->serverPort = str_replace('DEV_LIVE_SERVER_UNIT_TEST_SERVER_PORT=', '', preg_replace('#\n(?!\n)#', '', $env[12]));
         } else {
             $this->active = 'false';
         }
 
         $this->ts3_server_uri = 'serverquery://'.$this->user.':'.$this->password.'@'.$this->host.':'.$this->queryPort.
-            '/?server_port=9987'.
+            '/?server_port='.$this->serverPort.
             '&no_query_clients=0'.
             '&blocking=0'.
             '&timeout=30';

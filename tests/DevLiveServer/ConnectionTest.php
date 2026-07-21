@@ -23,29 +23,34 @@ class ConnectionTest extends TestCase
 
     private string $queryPort;
 
+    private string $serverPort;
+
     private string $user;
 
     private string $password;
 
     private string $ts3_server_uri;
 
+    private string $serverQueryLoginName;
+
     public function setUp(): void
     {
         //proof test active
         if (file_exists('./.env.testing')) {
             $env = file('./.env.testing');
-            //get live server is available
             $this->active = str_replace('DEV_LIVE_SERVER_AVAILABLE=', '', preg_replace('#\n(?!\n)#', '', $env[2]));
             $this->host = str_replace('DEV_LIVE_SERVER_HOST=', '', preg_replace('#\n(?!\n)#', '', $env[3]));
             $this->queryPort = str_replace('DEV_LIVE_SERVER_QUERY_PORT=', '', preg_replace('#\n(?!\n)#', '', $env[4]));
             $this->user = str_replace('DEV_LIVE_SERVER_QUERY_USER=', '', preg_replace('#\n(?!\n)#', '', $env[5]));
             $this->password = str_replace('DEV_LIVE_SERVER_QUERY_USER_PASSWORD=', '', preg_replace('#\n(?!\n)#', '', $env[6]));
+            $this->serverPort = str_replace('DEV_LIVE_SERVER_UNIT_TEST_SERVER_PORT=', '', preg_replace('#\n(?!\n)#', '', $env[12]));
+            $this->serverQueryLoginName = str_replace('DEV_LIVE_SERVER_UNIT_TEST_SERVER_QUERY_LOGIN_NAME=', '', preg_replace('#\n(?!\n)#', '', $env[13]));
         } else {
             $this->active = 'false';
         }
 
         $this->ts3_server_uri = 'serverquery://'.$this->user.':'.$this->password.'@'.$this->host.':'.$this->queryPort.
-            '/?server_port=9987'.
+            '/?server_port='.$this->serverPort.
             '&no_query_clients=0'.
             '&blocking=0'.
             '&timeout=30';
@@ -145,7 +150,7 @@ class ConnectionTest extends TestCase
 
         $ts3_host = TeamSpeak3::factory($this->ts3_server_uri);
         $port = $ts3_host->getParent()->serverSelectedPort();
-        $this->assertEquals(9987, $port);
+        $this->assertEquals($this->serverPort, $port);
 
         $version = $ts3_host->version();
         $this->assertIsArray($version);
@@ -154,13 +159,13 @@ class ConnectionTest extends TestCase
         $this->assertEquals('Linux', $version['platform']);
         $this->assertArrayHasKey('build', $version);
 
-        $serverID = $ts3_host->serverIdGetByPort(9987);
+        $serverID = $ts3_host->serverIdGetByPort($this->serverPort);
         $this->assertIsInt($serverID);
         $this->assertEquals(1, $serverID);
 
         $PortByID = $ts3_host->serverGetPortById($serverID);
         $this->assertIsInt($PortByID);
-        $this->assertEquals(9987, $PortByID);
+        $this->assertEquals($this->serverPort, $PortByID);
 
         $server = $ts3_host->servergetByname('UnitTestServer');
         $this->assertIsArray($server);
@@ -240,8 +245,8 @@ class ConnectionTest extends TestCase
         }
 
         $ts3_host = TeamSpeak3::factory($this->ts3_server_uri);
-        $ts3_host->serverGetByPort(9987)->logAdd('UnitTest', TeamSpeak3::LOGLEVEL_DEBUG);
-        $log = $ts3_host->serverGetByPort(9987)->logView();
+        $ts3_host->serverGetByPort($this->serverPort)->logAdd('UnitTest', TeamSpeak3::LOGLEVEL_DEBUG);
+        $log = $ts3_host->serverGetByPort($this->serverPort)->logView();
         $this->assertIsArray($log);
         $this->assertIsString($log[29]);
         $this->assertStringContainsString('UnitTest', $log[29]);
@@ -270,7 +275,7 @@ class ConnectionTest extends TestCase
 
         foreach ($queryLoginlist as $queryLogin) {
             $this->assertIsString($queryLogin['client_login_name']);
-            $this->assertEquals('ts3-bot-dev', $queryLogin['client_login_name']);
+            $this->assertEquals($this->serverQueryLoginName, $queryLogin['client_login_name']);
         }
 
         $ts3_host->getAdapter()->getTransport()->disconnect();
