@@ -4,6 +4,8 @@ namespace PlanetTeamSpeak\TeamSpeak3Framework\Tests\DevLiveServer;
 
 use PHPUnit\Framework\TestCase;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\FileTransferException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\HelperException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\ServerQueryException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\TransportException;
 use PlanetTeamSpeak\TeamSpeak3Framework\TeamSpeak3;
@@ -29,6 +31,8 @@ class FileTransferTest extends TestCase
     private string $password;
 
     private string $ts3_server_uri;
+
+    private string $testPath = DIRECTORY_SEPARATOR . 'tests\testsources';
 
     public function setUp(): void
     {
@@ -59,7 +63,7 @@ class FileTransferTest extends TestCase
      * @throws TransportException
      * @throws \Exception
      */
-    public function test_can_upload_download(): void
+    public function test_can_file_upload(): void
     {
         if ($this->active == 'false') {
             $this->markTestSkipped('DevLiveServer ist not active');
@@ -69,11 +73,63 @@ class FileTransferTest extends TestCase
 
         $channel = $ts3_Host->channelGetByName('UnitTest');
         $channel->fileUpload('/test.txt', 'Hello World', overwrite: true);
-        $content = $channel->fileDownload('/test.txt');
+        $cFileList = $channel->fileList();
 
+        $this->assertCount(1, $cFileList);
+        $this->assertEquals('test.txt', $cFileList[0]['name']);
+
+        $ts3_Host->getAdapter()->getTransport()->disconnect();
+    }
+
+    /**
+     * @throws FileTransferException
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws AdapterException
+     * @throws HelperException
+     */
+    public function test_can_file_download(): void
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_Host = TeamSpeak3::factory($this->ts3_server_uri);
+
+        $channel = $ts3_Host->channelGetByName('UnitTest');
+        $content = $channel->fileDownload('/test.txt');
+        file_put_contents(getcwd() . $this->testPath .'\test.txt', $content->toString());
+
+        $this->assertFileExists(getcwd() . $this->testPath .'\test.txt');
         $this->assertEquals('Hello World', $content->toString());
 
-        $channel->fileDelete('', '/test.txt');
+        $ts3_Host->getAdapter()->getTransport()->disconnect();
+    }
+
+    /**
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws AdapterException
+     * @throws HelperException
+     */
+    public function test_can_file_delete(): void
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_Host = TeamSpeak3::factory($this->ts3_server_uri);
+        $channel = $ts3_Host->channelGetByName('UnitTest');
+        $cFileList = $channel->fileList();
+
+        if(count($cFileList) > 0)
+        {
+            $channel->fileDelete('', '/test.txt');
+        }
+
+        $cFileList = $channel->fileList();
+        $this->assertCount(0, $cFileList);
+
         $ts3_Host->getAdapter()->getTransport()->disconnect();
     }
 
