@@ -1,0 +1,4 @@
+*
+icons/download*
+!.gitignore
+!/icons/upload*
