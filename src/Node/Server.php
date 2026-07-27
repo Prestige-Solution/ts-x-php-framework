@@ -2419,6 +2419,22 @@ class Server extends Node
     }
 
     /**
+     * @throws AdapterException
+     * @throws ServerQueryException
+     * @throws TransportException
+     */
+    public function iconDelete(string|int $icon): void
+    {
+        $name = (string) $icon;
+
+        if (! str_starts_with($name, 'icon_')) {
+            $name = 'icon_'.$name;
+        }
+
+        $this->channelFileDelete(0, '', '/'.$name);
+    }
+
+    /**
      * Changes the virtual server configuration using given properties.
      *
      * @param  array  $properties
