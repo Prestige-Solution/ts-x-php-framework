@@ -2397,7 +2397,6 @@ class Server extends Node
      */
     public function iconUpload(string $data, bool $overwrite = true): int
     {
-
         if (is_file($data)) {
             $data = file_get_contents($data);
 

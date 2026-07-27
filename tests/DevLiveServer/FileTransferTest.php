@@ -32,7 +32,7 @@ class FileTransferTest extends TestCase
 
     private string $ts3_server_uri;
 
-    private string $testPath = DIRECTORY_SEPARATOR . 'tests\testsources';
+    private string $testPath = DIRECTORY_SEPARATOR.'tests\testsources';
 
     public function setUp(): void
     {
@@ -98,9 +98,9 @@ class FileTransferTest extends TestCase
 
         $channel = $ts3_Host->channelGetByName('UnitTest');
         $content = $channel->fileDownload('/test.txt');
-        file_put_contents(getcwd() . $this->testPath .'\test.txt', $content->toString());
+        file_put_contents(getcwd().$this->testPath.'\test.txt', $content->toString());
 
-        $this->assertFileExists(getcwd() . $this->testPath .'\test.txt');
+        $this->assertFileExists(getcwd().$this->testPath.'\test.txt');
         $this->assertEquals('Hello World', $content->toString());
 
         $ts3_Host->getAdapter()->getTransport()->disconnect();
@@ -122,8 +122,7 @@ class FileTransferTest extends TestCase
         $channel = $ts3_Host->channelGetByName('UnitTest');
         $cFileList = $channel->fileList();
 
-        if(count($cFileList) > 0)
-        {
+        if (count($cFileList) > 0) {
             $channel->fileDelete('', '/test.txt');
         }
 
@@ -147,14 +146,13 @@ class FileTransferTest extends TestCase
         }
 
         $ts3_Host = TeamSpeak3::factory($this->ts3_server_uri);
-        $iconId = $ts3_Host->iconUpload(getcwd() . $this->testPath . '\icons\upload\ChannelAdmin.png');
+        $iconId = $ts3_Host->iconUpload(getcwd().$this->testPath.'\icons\upload\ChannelAdmin.png');
         $iconList = $ts3_Host->iconList();
 
         $this->assertNotEmpty($iconList);
         $this->assertContains('icon_'.$iconId, array_column($iconList, 'name'));
 
         $ts3_Host->getAdapter()->getTransport()->disconnect();
-
     }
 
     /**
@@ -171,7 +169,7 @@ class FileTransferTest extends TestCase
         }
 
         $ts3_Host = TeamSpeak3::factory($this->ts3_server_uri);
-        $ts3_Host->iconUpload(getcwd() . $this->testPath . '\icons\upload\ChannelAdmin.png');
+        $ts3_Host->iconUpload(getcwd().$this->testPath.'\icons\upload\ChannelAdmin.png');
         $iconList = $ts3_Host->iconList();
 
         if ($iconList === []) {
@@ -211,7 +209,7 @@ class FileTransferTest extends TestCase
         }
 
         $ts3_Host = TeamSpeak3::factory($this->ts3_server_uri);
-        $iconID = $ts3_Host->iconUpload(getcwd() . $this->testPath . '\icons\upload\ChannelAdmin.png');
+        $iconID = $ts3_Host->iconUpload(getcwd().$this->testPath.'\icons\upload\ChannelAdmin.png');
 
         $ts3_Host->iconDelete('icon_'.$iconID);
 
@@ -220,5 +218,4 @@ class FileTransferTest extends TestCase
 
         $ts3_Host->getAdapter()->getTransport()->disconnect();
     }
-
 }
