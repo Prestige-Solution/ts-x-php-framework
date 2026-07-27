@@ -2387,22 +2387,33 @@ class Server extends Node
      * Uploads a given icon file content to the server and returns the ID of the icon.
      *
      * @param  string  $data
+     * @param  bool  $overwrite
      * @return int
      * @throws AdapterException
      * @throws FileTransferException
+     * @throws HelperException
      * @throws ServerQueryException
      * @throws TransportException
-     * @throws Exception
      */
-    public function iconUpload(string $data): int
+    public function iconUpload(string $data, bool $overwrite = true): int
     {
+
+        if (is_file($data)) {
+            $data = file_get_contents($data);
+
+            if ($data === false) {
+                throw new ServerQueryException('unable to read icon file');
+            }
+        }
+
         $crc = crc32($data);
         $size = strlen($data);
 
-        $upload = $this->transferInitUpload(rand(0x0000, 0xFFFF), 0, '/icon_'.$crc, $size);
-        $transfer = TeamSpeak3::factory($this->buildFileTransferUri($upload));
+        $upload = $this->transferInitUpload(rand(0x0000, 0xFFFF), 0, '/icon_'.$crc, $size, '', $overwrite);
+        $ftkey = str_replace('\\/', '/', (string) $upload['ftkey']);
 
-        $transfer->upload($upload['ftkey'], $upload['seekpos'], $data);
+        $transfer = TeamSpeak3::factory($this->buildFileTransferUri($upload));
+        $transfer->upload($ftkey, (int) $upload['seekpos'], $data);
 
         return $crc;
     }
