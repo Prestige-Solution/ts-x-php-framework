@@ -133,4 +133,92 @@ class FileTransferTest extends TestCase
         $ts3_Host->getAdapter()->getTransport()->disconnect();
     }
 
+    /**
+     * @throws AdapterException
+     * @throws FileTransferException
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws HelperException
+     */
+    public function test_can_icon_upload(): void
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_Host = TeamSpeak3::factory($this->ts3_server_uri);
+        $iconId = $ts3_Host->iconUpload(getcwd() . $this->testPath . '\icons\upload\ChannelAdmin.png');
+        $iconList = $ts3_Host->iconList();
+
+        $this->assertNotEmpty($iconList);
+        $this->assertContains('icon_'.$iconId, array_column($iconList, 'name'));
+
+        $ts3_Host->getAdapter()->getTransport()->disconnect();
+
+    }
+
+    /**
+     * @throws FileTransferException
+     * @throws AdapterException
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws HelperException
+     */
+    public function test_can_icon_download(): void
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_Host = TeamSpeak3::factory($this->ts3_server_uri);
+        $ts3_Host->iconUpload(getcwd() . $this->testPath . '\icons\upload\ChannelAdmin.png');
+        $iconList = $ts3_Host->iconList();
+
+        if ($iconList === []) {
+            $this->markTestIncomplete('No icons available for download');
+        }
+
+        $downloadPath = getcwd().$this->testPath.DIRECTORY_SEPARATOR.'icons'.DIRECTORY_SEPARATOR.'download';
+
+        foreach ($iconList as $icon) {
+            $this->assertArrayHasKey('name', $icon);
+
+            $content = $ts3_Host->iconDownload($icon['name']);
+
+            $this->assertNotNull($content);
+
+            $targetFile = $downloadPath.DIRECTORY_SEPARATOR.$icon['name'];
+            file_put_contents($targetFile, $content->toString());
+
+            $this->assertFileExists($targetFile);
+            $this->assertGreaterThan(0, filesize($targetFile));
+        }
+
+        $ts3_Host->getAdapter()->getTransport()->disconnect();
+    }
+
+    /**
+     * @throws AdapterException
+     * @throws FileTransferException
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws HelperException
+     */
+    public function test_can_icon_delete(): void
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_Host = TeamSpeak3::factory($this->ts3_server_uri);
+        $iconID = $ts3_Host->iconUpload(getcwd() . $this->testPath . '\icons\upload\ChannelAdmin.png');
+
+        $ts3_Host->iconDelete('icon_'.$iconID);
+
+        $iconList = $ts3_Host->iconList();
+        $this->assertNotContains('icon_'.$iconID, array_column($iconList, 'name'));
+
+        $ts3_Host->getAdapter()->getTransport()->disconnect();
+    }
+
 }
