@@ -6,8 +6,10 @@ use PHPUnit\Framework\TestCase;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\FileTransferException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\HelperException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\NodeException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\ServerQueryException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\TransportException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Node\Server;
 use PlanetTeamSpeak\TeamSpeak3Framework\TeamSpeak3;
 
 class FileTransferTest extends TestCase
@@ -33,6 +35,8 @@ class FileTransferTest extends TestCase
     private string $ts3_server_uri;
 
     private string $testPath = DIRECTORY_SEPARATOR.'tests\testsources';
+
+    private int $sgid;
 
     public function setUp(): void
     {
@@ -185,7 +189,7 @@ class FileTransferTest extends TestCase
 
             $this->assertNotNull($content);
 
-            $targetFile = $downloadPath.DIRECTORY_SEPARATOR.$icon['name'];
+            $targetFile = $downloadPath.DIRECTORY_SEPARATOR.$icon['name'].'.png';
             file_put_contents($targetFile, $content->toString());
 
             $this->assertFileExists($targetFile);
@@ -217,5 +221,106 @@ class FileTransferTest extends TestCase
         $this->assertNotContains('icon_'.$iconID, array_column($iconList, 'name'));
 
         $ts3_Host->getAdapter()->getTransport()->disconnect();
+    }
+
+    /**
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws AdapterException
+     * @throws NodeException
+     * @throws FileTransferException
+     * @throws HelperException
+     */
+    public function test_can_upload_servergroup_icon(): void
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        $this->set_play_test_servergroup($ts3_VirtualServer);
+
+        $iconFile = getcwd().DIRECTORY_SEPARATOR.'tests'.DIRECTORY_SEPARATOR.'testsources'.DIRECTORY_SEPARATOR.'icons'.DIRECTORY_SEPARATOR.'upload'.DIRECTORY_SEPARATOR.'Registered.png';
+        $iconId = $ts3_VirtualServer->iconUpload($iconFile);
+        $serverGroup = $ts3_VirtualServer->serverGroupGetById($this->sgid);
+        $serverGroup->permAssign(['i_icon_id'], $iconId);
+
+        $permissions = $serverGroup->permList(true);
+
+        $this->assertArrayHasKey('i_icon_id', $permissions);
+        $this->assertSame($iconId, (int) $permissions['i_icon_id']['permvalue']);
+
+        $this->unset_play_test_servergroup($ts3_VirtualServer);
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+
+    }
+
+    /**
+     * @throws HelperException
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws AdapterException
+     * @throws NodeException
+     * @throws FileTransferException
+     */
+    public function test_can_download_servergroup_icon(): void
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        $this->set_play_test_servergroup($ts3_VirtualServer);
+
+        $iconFile = getcwd().DIRECTORY_SEPARATOR.'tests'.DIRECTORY_SEPARATOR.'testsources'.DIRECTORY_SEPARATOR.'icons'.DIRECTORY_SEPARATOR.'upload'.DIRECTORY_SEPARATOR.'Registered.png';
+        $this->assertFileExists($iconFile);
+        $this->assertGreaterThan(0, filesize($iconFile));
+
+        $iconId = $ts3_VirtualServer->iconUpload($iconFile);
+        $iconName = 'icon_'.$iconId;
+
+        $serverGroup = $ts3_VirtualServer->serverGroupGetById($this->sgid);
+        $serverGroup->permAssign(['i_icon_id'], $iconId);
+
+        $ts3_VirtualServer->serverGroupListReset();
+        $serverGroup = $ts3_VirtualServer->serverGroupGetById($this->sgid);
+        $content = $serverGroup->iconDownload();
+
+        $this->assertNotNull($content);
+        $this->assertGreaterThan(0, strlen($content->toString()));
+
+        $downloadPath = getcwd().$this->testPath.DIRECTORY_SEPARATOR.'icons'.DIRECTORY_SEPARATOR.'download';
+
+        $targetFile = $downloadPath.DIRECTORY_SEPARATOR.$iconName.'.png';
+        file_put_contents($targetFile, $content->toString());
+
+        $this->assertFileExists($targetFile);
+        $this->assertGreaterThan(0, filesize($targetFile));
+
+        $ts3_VirtualServer->iconDelete($iconId);
+        $this->unset_play_test_servergroup($ts3_VirtualServer);
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $this->assertFalse($ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
+    }
+
+    /**
+     * @throws AdapterException
+     * @throws TransportException
+     * @throws ServerQueryException
+     */
+    private function set_play_test_servergroup(Server $ts3VirtualServer): void
+    {
+        $this->sgid = $ts3VirtualServer->serverGroupCreate('UnitTest', 1);
+    }
+
+    /**
+     * @param  Server  $ts3_VirtualServer
+     * @throws AdapterException
+     * @throws ServerQueryException
+     * @throws TransportException
+     */
+    public function unset_play_test_servergroup(Server $ts3_VirtualServer): void
+    {
+        $ts3_VirtualServer->serverGroupDelete($this->sgid);
     }
 }
