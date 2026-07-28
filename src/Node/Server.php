@@ -2255,7 +2255,7 @@ class Server extends Node
      * @return string
      * @throws ServerQueryException
      */
-    protected function buildFileTransferUri(array $transfer): string
+    public function buildFileTransferUri(array $transfer): string
     {
         $host = $transfer['host'] ?? $transfer['ip'] ?? $this->getParent()->getAdapterHost();
         $port = $transfer['port'] ?? null;
@@ -2378,9 +2378,10 @@ class Server extends Node
         }
 
         $download = $this->transferInitDownload(rand(0x0000, 0xFFFF), 0, $name);
+        $ftkey = str_replace('\\/', '/', (string) $download['ftkey']);
         $transfer = TeamSpeak3::factory($this->buildFileTransferUri($download));
 
-        return $transfer->download($download['ftkey'], $download['size']);
+        return $transfer->download($ftkey, (int) $download['size']);
     }
 
     /**
