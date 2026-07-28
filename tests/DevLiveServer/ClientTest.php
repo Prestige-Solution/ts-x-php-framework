@@ -4,6 +4,7 @@ namespace PlanetTeamSpeak\TeamSpeak3Framework\Tests\DevLiveServer;
 
 use PHPUnit\Framework\TestCase;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\FileTransferException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\HelperException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\NodeException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\ServerQueryException;
@@ -44,6 +45,8 @@ class ClientTest extends TestCase
     private int $test_cid;
 
     private int $cgid;
+
+    private string $testPath = DIRECTORY_SEPARATOR.'tests\testsources';
 
     public function setUp(): void
     {
@@ -665,6 +668,59 @@ class ClientTest extends TestCase
         $this->assertFalse($result);
 
         $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $this->assertFalse($ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
+    }
+
+    /**
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws AdapterException
+     * @throws FileTransferException
+     * @throws HelperException
+     */
+    public function test_can_download_client_icon()
+    {
+        if ($this->user_test_active == 'false' || $this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+
+        $iconFile = getcwd().DIRECTORY_SEPARATOR.'tests'.DIRECTORY_SEPARATOR.'testsources'.DIRECTORY_SEPARATOR.'icons'.DIRECTORY_SEPARATOR.'upload'.DIRECTORY_SEPARATOR.'Voice.png';
+        $this->assertFileExists($iconFile);
+        $this->assertGreaterThan(0, filesize($iconFile));
+
+        $iconId = $ts3_VirtualServer->iconUpload($iconFile);
+        $signedIconId = $iconId > 0x7FFFFFFF ? $iconId - 0x100000000 : $iconId;
+        $iconName = 'icon_'.$iconId;
+
+        $client = $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName);
+        $client->permAssign(['i_icon_id'], $signedIconId);
+
+        $permissions = $client->permList(true);
+
+        $this->assertArrayHasKey('i_icon_id', $permissions);
+        $this->assertSame($signedIconId, (int) $permissions['i_icon_id']['permvalue']);
+
+        $ts3_VirtualServer->clientListReset();
+        $client = $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName);
+        $content = $client->iconDownload();
+
+        $this->assertNotNull($content);
+        $this->assertGreaterThan(0, strlen($content->toString()));
+
+        $downloadPath = getcwd().$this->testPath.DIRECTORY_SEPARATOR.'icons'.DIRECTORY_SEPARATOR.'download';
+        $targetFile = $downloadPath.DIRECTORY_SEPARATOR.$iconName.'.png';
+
+        file_put_contents($targetFile, $content->toString());
+
+        $this->assertFileExists($targetFile);
+        $this->assertGreaterThan(0, filesize($targetFile));
+
+        $client->permRemove(['i_icon_id']);
+        $ts3_VirtualServer->iconDelete($iconId);
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+
         $this->assertFalse($ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
     }
 
