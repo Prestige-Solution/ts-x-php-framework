@@ -770,4 +770,14 @@ class ChannelTest extends TestCase
 
         parent::onNotSuccessfulTest($t);
     }
+
+    /**
+     * @throws AdapterException
+     * @throws TransportException
+     * @throws ServerQueryException
+     */
+    public function dev_reset_test_channel(Server $ts3VirtualServer): void
+    {
+        $ts3VirtualServer->channelGetByName('Play-Test')->delete();
+    }
 }
