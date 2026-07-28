@@ -38,6 +38,10 @@ class FileTransferTest extends TestCase
 
     private int $sgid;
 
+    private string $ts3_unit_test_channel_name;
+
+    private int $test_cid;
+
     public function setUp(): void
     {
         //proof test active
@@ -50,6 +54,7 @@ class FileTransferTest extends TestCase
             $this->user = str_replace('DEV_LIVE_SERVER_QUERY_USER=', '', preg_replace('#\n(?!\n)#', '', $env[5]));
             $this->password = str_replace('DEV_LIVE_SERVER_QUERY_USER_PASSWORD=', '', preg_replace('#\n(?!\n)#', '', $env[6]));
             $this->serverPort = str_replace('DEV_LIVE_SERVER_UNIT_TEST_SERVER_PORT=', '', preg_replace('#\n(?!\n)#', '', $env[12]));
+            $this->ts3_unit_test_channel_name = str_replace('DEV_LIVE_SERVER_UNIT_TEST_CHANNEL=', '', preg_replace('#\n(?!\n)#', '', $env[7]));
         } else {
             $this->active = 'false';
         }
@@ -252,7 +257,6 @@ class FileTransferTest extends TestCase
 
         $this->unset_play_test_servergroup($ts3_VirtualServer);
         $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
-
     }
 
     /**
@@ -304,6 +308,91 @@ class FileTransferTest extends TestCase
     }
 
     /**
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws AdapterException
+     * @throws FileTransferException
+     * @throws HelperException
+     */
+    public function test_can_upload_channel_icon()
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        $cid = $this->set_play_test_channel($ts3_VirtualServer);
+
+        $iconFile = getcwd().DIRECTORY_SEPARATOR.'tests'.DIRECTORY_SEPARATOR.'testsources'.DIRECTORY_SEPARATOR.'icons'.DIRECTORY_SEPARATOR.'upload'.DIRECTORY_SEPARATOR.'Guest.png';
+        $iconId = $ts3_VirtualServer->iconUpload($iconFile);
+        $signedIconId = $iconId > 0x7FFFFFFF ? $iconId - 0x100000000 : $iconId;
+
+        $channel = $ts3_VirtualServer->channelGetById($cid);
+        $channel->permAssign(['i_icon_id'], $signedIconId);
+
+        $permissions = $channel->permList(true);
+
+        $this->assertArrayHasKey('i_icon_id', $permissions);
+        $this->assertSame($signedIconId, (int) $permissions['i_icon_id']['permvalue']);
+
+        $this->unset_play_test_channel($ts3_VirtualServer);
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+    }
+
+    /**
+     * @throws HelperException
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws AdapterException
+     * @throws FileTransferException
+     */
+    public function test_can_download_channel_icon()
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        $cid = $this->set_play_test_channel($ts3_VirtualServer);
+
+        $iconFile = getcwd().DIRECTORY_SEPARATOR.'tests'.DIRECTORY_SEPARATOR.'testsources'.DIRECTORY_SEPARATOR.'icons'.DIRECTORY_SEPARATOR.'upload'.DIRECTORY_SEPARATOR.'Guest.png';
+        $this->assertFileExists($iconFile);
+        $this->assertGreaterThan(0, filesize($iconFile));
+
+        $iconId = $ts3_VirtualServer->iconUpload($iconFile);
+        $signedIconId = $iconId > 0x7FFFFFFF ? $iconId - 0x100000000 : $iconId;
+        $iconName = 'icon_'.$iconId;
+
+        $channel = $ts3_VirtualServer->channelGetById($cid);
+        $channel->permAssign(['i_icon_id'], $signedIconId);
+
+        $permissions = $channel->permList(true);
+
+        $this->assertArrayHasKey('i_icon_id', $permissions);
+        $this->assertSame($signedIconId, (int) $permissions['i_icon_id']['permvalue']);
+
+        $ts3_VirtualServer->channelListReset();
+        $channel = $ts3_VirtualServer->channelGetById($cid);
+        $content = $channel->iconDownload();
+
+        $this->assertNotNull($content);
+        $this->assertGreaterThan(0, strlen($content->toString()));
+
+        $downloadPath = getcwd().$this->testPath.DIRECTORY_SEPARATOR.'icons'.DIRECTORY_SEPARATOR.'download';
+        $targetFile = $downloadPath.DIRECTORY_SEPARATOR.$iconName.'.png';
+
+        file_put_contents($targetFile, $content->toString());
+
+        $this->assertFileExists($targetFile);
+        $this->assertGreaterThan(0, filesize($targetFile));
+
+        $ts3_VirtualServer->iconDelete($iconId);
+        $this->unset_play_test_channel($ts3_VirtualServer);
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $this->assertFalse($ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
+    }
+
+    /**
      * @throws AdapterException
      * @throws TransportException
      * @throws ServerQueryException
@@ -322,5 +411,30 @@ class FileTransferTest extends TestCase
     public function unset_play_test_servergroup(Server $ts3_VirtualServer): void
     {
         $ts3_VirtualServer->serverGroupDelete($this->sgid);
+    }
+
+    /**
+     * @throws AdapterException
+     * @throws TransportException
+     * @throws ServerQueryException
+     */
+    private function set_play_test_channel(Server $ts3VirtualServer): int
+    {
+        $cid = $ts3VirtualServer->channelGetByName($this->ts3_unit_test_channel_name)->getId();
+
+        $createdCID = $ts3VirtualServer->channelCreate(['channel_name' => 'Play-Test', 'channel_flag_permanent' => 1, 'cpid' => $cid]);
+        $this->test_cid = $createdCID;
+
+        return $createdCID;
+    }
+
+    /**
+     * @throws AdapterException
+     * @throws ServerQueryException
+     * @throws HelperException
+     */
+    public function unset_play_test_channel($ts3_VirtualServer): void
+    {
+        $ts3_VirtualServer->channelDelete($this->test_cid, true);
     }
 }
