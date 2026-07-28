@@ -476,9 +476,10 @@ class Client extends Node
         }
 
         $download = $this->getParent()->transferInitDownload(rand(0x0000, 0xFFFF), 0, $this->iconGetName('client_icon_id'));
-        $transfer = TeamSpeak3::factory('filetransfer://'.(str_contains($download['host'], ':') ? '['.$download['host'].']' : $download['host']).':'.$download['port']);
+        $ftkey = str_replace('\\/', '/', (string) $download['ftkey']);
+        $transfer = TeamSpeak3::factory($this->getParent()->buildFileTransferUri($download));
 
-        return $transfer->download($download['ftkey'], $download['size']);
+        return $transfer->download($ftkey, (int) $download['size']);
     }
 
     /**
