@@ -726,6 +726,42 @@ class ClientTest extends TestCase
 
     /**
      * @throws AdapterException
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws FileTransferException
+     * @throws HelperException
+     * @throws \Exception
+     */
+    public function test_can_download_client_avatar()
+    {
+        if ($this->user_test_active == 'false' || $this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        $client = $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName);
+        $content = $client->avatarDownload();
+
+        if ($content === null) {
+            $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+            $this->markTestIncomplete('Test client has no avatar set');
+        }
+
+        $this->assertGreaterThan(0, strlen($content->toString()));
+
+        $downloadPath = getcwd().$this->testPath.DIRECTORY_SEPARATOR.'icons'.DIRECTORY_SEPARATOR.'download';
+        $targetFile = $downloadPath.DIRECTORY_SEPARATOR.'avatar_'.$client['client_database_id'].'.png';
+        file_put_contents($targetFile, $content->toString());
+
+        $this->assertFileExists($targetFile);
+        $this->assertGreaterThan(0, filesize($targetFile));
+
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $this->assertFalse($ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
+    }
+
+    /**
+     * @throws AdapterException
      * @throws ServerQueryException
      * @throws TransportException
      * @throws \Exception
