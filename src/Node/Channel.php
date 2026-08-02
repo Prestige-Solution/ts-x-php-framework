@@ -333,6 +333,44 @@ class Channel extends Node
     }
 
     /**
+     * Downloads a file from this channel file repository.
+     *
+     * @param string $name
+     * @param string $cpw
+     * @param int $seekpos
+     * @return StringHelper
+     * @throws AdapterException
+     * @throws FileTransferException
+     * @throws ServerQueryException
+     * @throws TransportException
+     * @throws \Exception
+     */
+    public function fileDownload(string $name, string $cpw = '', int $seekpos = 0): StringHelper
+    {
+        return $this->getParent()->channelFileDownload($this->getId(), $name, $cpw, $seekpos);
+    }
+
+    /**
+     * Uploads a file into this channel file repository.
+     *
+     * @param string $name
+     * @param string $data
+     * @param string $cpw
+     * @param bool $overwrite
+     * @param bool $resume
+     * @return void
+     * @throws AdapterException
+     * @throws FileTransferException
+     * @throws ServerQueryException
+     * @throws TransportException
+     * @throws \Exception
+     */
+    public function fileUpload(string $name, string $data, string $cpw = '', bool $overwrite = false, bool $resume = false) :void
+    {
+        $this->getParent()->channelFileUpload($this->getId(), $name, $data, $cpw, $overwrite, $resume);
+    }
+
+    /**
      * Returns the level of the channel.
      *
      * @return int
@@ -417,9 +455,10 @@ class Channel extends Node
         }
 
         $download = $this->getParent()->transferInitDownload(rand(0x0000, 0xFFFF), 0, $this->iconGetName('channel_icon_id'));
-        $transfer = TeamSpeak3::factory('filetransfer://'.(str_contains($download['host'], ':') ? '['.$download['host'].']' : $download['host']).':'.$download['port']);
+        $ftkey = str_replace('\\/', '/', (string) $download['ftkey']);
+        $transfer = TeamSpeak3::factory($this->getParent()->buildFileTransferUri($download));
 
-        return $transfer->download($download['ftkey'], $download['size']);
+        return $transfer->download($ftkey, (int) $download['size']);
     }
 
     /**

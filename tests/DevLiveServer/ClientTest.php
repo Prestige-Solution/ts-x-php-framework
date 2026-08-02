@@ -4,6 +4,7 @@ namespace PlanetTeamSpeak\TeamSpeak3Framework\Tests\DevLiveServer;
 
 use PHPUnit\Framework\TestCase;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Exception\FileTransferException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\HelperException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\NodeException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\ServerQueryException;
@@ -25,6 +26,8 @@ class ClientTest extends TestCase
 
     private string $queryPort;
 
+    private string $serverPort;
+
     private string $user;
 
     private string $password;
@@ -43,6 +46,8 @@ class ClientTest extends TestCase
 
     private int $cgid;
 
+    private string $testPath = DIRECTORY_SEPARATOR.'tests\testsources';
+
     public function setUp(): void
     {
         //proof test active
@@ -58,12 +63,13 @@ class ClientTest extends TestCase
             $this->user_test_active = str_replace('DEV_LIVE_SERVER_UNIT_TEST_USER_ACTIVE=', '', preg_replace('#\n(?!\n)#', '', $env[8]));
             $this->ts3_unit_test_userName = str_replace('DEV_LIVE_SERVER_UNIT_TEST_USER=', '', preg_replace('#\n(?!\n)#', '', $env[9]));
             $this->ts3_unit_test_userName2 = str_replace('DEV_LIVE_SERVER_UNIT_TEST_USER_EXTEND=', '', preg_replace('#\n(?!\n)#', '', $env[11]));
+            $this->serverPort = str_replace('DEV_LIVE_SERVER_UNIT_TEST_SERVER_PORT=', '', preg_replace('#\n(?!\n)#', '', $env[12]));
         } else {
             $this->active = 'false';
         }
 
         $this->ts3_server_uri = 'serverquery://'.$this->user.':'.$this->password.'@'.$this->host.':'.$this->queryPort.
-            '/?server_port=9987'.
+            '/?server_port='.$this->serverPort.
             '&no_query_clients=0'.
             '&blocking=0'.
             '&timeout=30';
@@ -660,6 +666,95 @@ class ClientTest extends TestCase
 
         $result = $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName)->hasOverwolf();
         $this->assertFalse($result);
+
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+        $this->assertFalse($ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
+    }
+
+    /**
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws AdapterException
+     * @throws FileTransferException
+     * @throws HelperException
+     */
+    public function test_can_download_client_icon()
+    {
+        if ($this->user_test_active == 'false' || $this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+
+        $iconFile = getcwd().DIRECTORY_SEPARATOR.'tests'.DIRECTORY_SEPARATOR.'testsources'.DIRECTORY_SEPARATOR.'icons'.DIRECTORY_SEPARATOR.'upload'.DIRECTORY_SEPARATOR.'Voice.png';
+        $this->assertFileExists($iconFile);
+        $this->assertGreaterThan(0, filesize($iconFile));
+
+        $iconId = $ts3_VirtualServer->iconUpload($iconFile);
+        $signedIconId = $iconId > 0x7FFFFFFF ? $iconId - 0x100000000 : $iconId;
+        $iconName = 'icon_'.$iconId;
+
+        $client = $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName);
+        $client->permAssign(['i_icon_id'], $signedIconId);
+
+        $permissions = $client->permList(true);
+
+        $this->assertArrayHasKey('i_icon_id', $permissions);
+        $this->assertSame($signedIconId, (int) $permissions['i_icon_id']['permvalue']);
+
+        $ts3_VirtualServer->clientListReset();
+        $client = $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName);
+        $content = $client->iconDownload();
+
+        $this->assertNotNull($content);
+        $this->assertGreaterThan(0, strlen($content->toString()));
+
+        $downloadPath = getcwd().$this->testPath.DIRECTORY_SEPARATOR.'icons'.DIRECTORY_SEPARATOR.'download';
+        $targetFile = $downloadPath.DIRECTORY_SEPARATOR.$iconName.'.png';
+
+        file_put_contents($targetFile, $content->toString());
+
+        $this->assertFileExists($targetFile);
+        $this->assertGreaterThan(0, filesize($targetFile));
+
+        $client->permRemove(['i_icon_id']);
+        $ts3_VirtualServer->iconDelete($iconId);
+        $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+
+        $this->assertFalse($ts3_VirtualServer->getAdapter()->getTransport()->isConnected());
+    }
+
+    /**
+     * @throws AdapterException
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws FileTransferException
+     * @throws HelperException
+     * @throws \Exception
+     */
+    public function test_can_download_client_avatar()
+    {
+        if ($this->user_test_active == 'false' || $this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_VirtualServer = TeamSpeak3::factory($this->ts3_server_uri);
+        $client = $ts3_VirtualServer->clientGetByName($this->ts3_unit_test_userName);
+        $content = $client->avatarDownload();
+
+        if ($content === null) {
+            $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
+            $this->markTestIncomplete('Test client has no avatar set');
+        }
+
+        $this->assertGreaterThan(0, strlen($content->toString()));
+
+        $downloadPath = getcwd().$this->testPath.DIRECTORY_SEPARATOR.'icons'.DIRECTORY_SEPARATOR.'download';
+        $targetFile = $downloadPath.DIRECTORY_SEPARATOR.'avatar_'.$client['client_database_id'].'.png';
+        file_put_contents($targetFile, $content->toString());
+
+        $this->assertFileExists($targetFile);
+        $this->assertGreaterThan(0, filesize($targetFile));
 
         $ts3_VirtualServer->getAdapter()->getTransport()->disconnect();
         $this->assertFalse($ts3_VirtualServer->getAdapter()->getTransport()->isConnected());

@@ -24,6 +24,8 @@ class FoundIssuesOnPublicProjectsTest extends TestCase
 
     private string $queryPort;
 
+    private string $serverPort;
+
     private string $user;
 
     private string $password;
@@ -43,12 +45,13 @@ class FoundIssuesOnPublicProjectsTest extends TestCase
             $this->queryPort = str_replace('DEV_LIVE_SERVER_QUERY_PORT=', '', preg_replace('#\n(?!\n)#', '', $env[4]));
             $this->user = str_replace('DEV_LIVE_SERVER_QUERY_USER=', '', preg_replace('#\n(?!\n)#', '', $env[5]));
             $this->password = str_replace('DEV_LIVE_SERVER_QUERY_USER_PASSWORD=', '', preg_replace('#\n(?!\n)#', '', $env[6]));
+            $this->serverPort = str_replace('DEV_LIVE_SERVER_UNIT_TEST_SERVER_PORT=', '', preg_replace('#\n(?!\n)#', '', $env[12]));
         } else {
             $this->active = 'false';
         }
 
         $this->ts3_server_uri = 'serverquery://'.$this->user.':'.$this->password.'@'.$this->host.':'.$this->queryPort.
-            '/?server_port=9987'.
+            '/?server_port='.$this->serverPort.
             '&no_query_clients=0'.
             '&timeout=30';
     }
