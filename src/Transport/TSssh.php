@@ -70,9 +70,6 @@ class TSssh extends Transport
             '/\x1B\[?=\d*[A-Za-z]/',        // fallback for exotic forms (optional)
         ], '', $data);
 
-        // Remove unnecessary whitespace/CR/LF at the beginning/end
-        $data = trim($data, "\0\t\n\r\x0B");
-
         Signal::getInstance()->emit(strtolower($this->getAdapterType()).'DataRead', $data);
 
         return new StringHelper($data);
@@ -148,7 +145,7 @@ class TSssh extends Transport
     /**
      * Wait until data is available
      */
-    public function waitForReadyRead(int $time = 5): void
+    protected function waitForReadyRead(int $time = 5): void
     {
         if (! $this->isConnected()) {
             return;
@@ -158,14 +155,10 @@ class TSssh extends Transport
         while ((time() - $start) < $time) {
             $data = $this->ssh->read();
             if ($data !== false && $data !== '') {
-                echo 'New data: '.$data.PHP_EOL;
-
                 return;
             }
             usleep(100_000); // 100 ms break
         }
-
-        echo "Timeout: no data within {$time}s".PHP_EOL;
     }
 
     /**
