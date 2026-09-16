@@ -170,13 +170,13 @@ class Char
         } elseif ($h < 0xC2) {
             return -1;
         } elseif ($h <= 0xDF) {
-            if ($length !== 2 || !$this->isContinuationByte(1)) {
+            if ($length !== 2 || ! $this->isContinuationByte(1)) {
                 return -1;
             }
 
             return ($h & 0x1F) << 6 | (ord($this->char[1]) & 0x3F);
         } elseif ($h <= 0xEF) {
-            if ($length !== 3 || !$this->isContinuationByte(1) || !$this->isContinuationByte(2)) {
+            if ($length !== 3 || ! $this->isContinuationByte(1) || ! $this->isContinuationByte(2)) {
                 return -1;
             }
 
@@ -184,9 +184,9 @@ class Char
         } elseif ($h <= 0xF4) {
             if (
                 $length !== 4
-                || !$this->isContinuationByte(1)
-                || !$this->isContinuationByte(2)
-                || !$this->isContinuationByte(3)
+                || ! $this->isContinuationByte(1)
+                || ! $this->isContinuationByte(2)
+                || ! $this->isContinuationByte(3)
             ) {
                 return -1;
             }
@@ -202,7 +202,7 @@ class Char
 
     private function isContinuationByte(int $offset): bool
     {
-        if (!isset($this->char[$offset])) {
+        if (! isset($this->char[$offset])) {
             return false;
         }
 
