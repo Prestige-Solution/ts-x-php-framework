@@ -162,14 +162,19 @@ class Server extends Node
 
         $cid = null;
 
-        // Go backwards through the lines – the last line usually contains the new channel ID.
-        for ($i = count($result) - 1; $i >= 0; $i--) {
-            foreach ($result[$i] as $key => $value) {
-                if (stripos($key, 'cid') !== false) {
-                    // Extract only the leading digit
-                    if (preg_match('/\d+/', $value, $matches)) {
-                        $cid = (int) $matches[0];
-                        break 2;
+        if (isset($result['cid'])) {
+            $cid = (int) $result['cid'];
+        } else {
+            $lines = isset($result[0]) ? $result : [$result];
+            for ($i = count($lines) - 1; $i >= 0; $i--) {
+                if (is_array($lines[$i])) {
+                    foreach ($lines[$i] as $key => $value) {
+                        if (stripos($key, 'cid') !== false) {
+                            if (preg_match('/\d+/', (string) $value, $matches)) {
+                                $cid = (int) $matches[0];
+                                break 2;
+                            }
+                        }
                     }
                 }
             }
