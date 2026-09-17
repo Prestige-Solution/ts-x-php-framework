@@ -181,4 +181,73 @@ class ServerFeatureTest extends TestCase
 
         $this->host->serverSelectById(999);
     }
+
+    /**
+     * Test serverGroupCreate and serverGroupCopy.
+     */
+    public function testServerGroupCreateAndCopy(): void
+    {
+        $sgid = $this->server->serverGroupCreate('TestServerGroup');
+        $this->assertEquals(10, $sgid);
+
+        $copySgid = $this->server->serverGroupCopy(10, 'TestServerGroupCopy');
+        $this->assertEquals(11, $copySgid);
+    }
+
+    /**
+     * Test channelGroupCreate and channelGroupCopy.
+     */
+    public function testChannelGroupCreateAndCopy(): void
+    {
+        $cgid = $this->server->channelGroupCreate('TestChannelGroup');
+        $this->assertEquals(10, $cgid);
+
+        $copyCgid = $this->server->channelGroupCopy(10, 'TestChannelGroupCopy');
+        $this->assertEquals(11, $copyCgid);
+    }
+
+    /**
+     * Test clientInfoDb.
+     */
+    public function testClientInfoDb(): void
+    {
+        $info = $this->server->clientInfoDb(1);
+        $this->assertIsArray($info);
+        $this->assertEquals('1', $info['cldbid']);
+        $this->assertEquals('serveradmin', $info['client_nickname']);
+    }
+
+    /**
+     * Test serverIdGetByPort on Host.
+     */
+    public function testServerIdGetByPort(): void
+    {
+        $sid = $this->host->serverIdGetByPort(9987);
+        $this->assertEquals(1, $sid);
+    }
+
+    /**
+     * Test privilegeKeyCreate on ServerGroup and ChannelGroup.
+     */
+    public function testPrivilegeKeyCreateOnGroups(): void
+    {
+        $serverGroup = $this->server->serverGroupGetById(6);
+        $token1 = $serverGroup->privilegeKeyCreate('Admin Token');
+        $this->assertInstanceOf(\PlanetTeamSpeak\TeamSpeak3Framework\Helper\StringHelper::class, $token1);
+        $this->assertEquals('mock_token_created_123', (string) $token1);
+
+        $channelGroup = $this->server->channelGroupGetById(5);
+        $token2 = $channelGroup->privilegeKeyCreate(1, 'Channel Admin Token');
+        $this->assertInstanceOf(\PlanetTeamSpeak\TeamSpeak3Framework\Helper\StringHelper::class, $token2);
+        $this->assertEquals('mock_token_created_123', (string) $token2);
+    }
+
+    /**
+     * Test selfPermOverview.
+     */
+    public function testSelfPermOverview(): void
+    {
+        $overview = $this->server->selfPermOverview();
+        $this->assertIsArray($overview);
+    }
 }

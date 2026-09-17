@@ -309,7 +309,7 @@ abstract class Node implements RecursiveIterator, ArrayAccess, Countable
 
         // Now include all standard commands
         if ($this instanceof Server) {
-            $standardCommands = ['whoami', 'serverinfo', 'serverinfoserver info'];
+            $standardCommands = ['whoami', 'serverinfo'];
             foreach ($standardCommands as $cmd) {
                 try {
                     $result = $this->{$cmd}(); // Calls the respective function

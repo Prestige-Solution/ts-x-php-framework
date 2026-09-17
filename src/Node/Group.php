@@ -24,12 +24,12 @@ abstract class Group extends Node
     public function message(string $msg): void
     {
         // get all clients in this group
-        $clients = $this->getParent()->channelGroupClientList($this->getId());
+        $clients = $this->clientList();
 
         // get client id from dbid and send a textmessage
         foreach ($clients as $client) {
             try {
-                $targetClientID = $this->getParent()->clientgetbydbid($client['cldbid'])->getId();
+                $targetClientID = $this->getParent()->clientGetByDbid($client['cldbid'])->getId();
                 $this->execute('sendtextmessage', ['msg' => $msg, 'target' => $targetClientID, 'targetmode' => TeamSpeak3::TEXTMSG_CLIENT]);
             } catch (ServerQueryException $e) {
                 /* ERROR_client_invalid_id */

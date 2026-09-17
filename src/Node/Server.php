@@ -798,23 +798,23 @@ class Server extends Node
     {
         $result = $this->execute('clientdbinfo', ['cldbid' => $cldbid])->toList();
 
-        $metaCldbid = null;
-        if (isset($result[0]['cldbid'])) {
-            $metaCldbid = (int) $result[0]['cldbid'];
+        if (isset($result['client_database_id']) || isset($result['client_unique_identifier'])) {
+            if (! isset($result['cldbid'])) {
+                $result['cldbid'] = $cldbid;
+            }
+
+            return $result;
         }
 
-        $filtered = array_values(array_filter($result, static function ($row) {
-            return isset($row['client_database_id']) || isset($row['client_unique_identifier']);
-        }));
-
+        $rows = is_array($result) && isset($result[0]) ? $result : [$result];
         $flat = [];
-        foreach ($filtered as $row) {
-            $flat = array_merge($flat, $row);
+        foreach ($rows as $row) {
+            if (is_array($row)) {
+                $flat = array_merge($flat, $row);
+            }
         }
 
-        if (! isset($flat['cldbid']) && $metaCldbid !== null) {
-            $flat['cldbid'] = $metaCldbid;
-        } elseif (! isset($flat['cldbid'])) {
+        if (! isset($flat['cldbid'])) {
             $flat['cldbid'] = $cldbid;
         }
 
@@ -1313,13 +1313,19 @@ class Server extends Node
 
         $sgid = null;
 
-        for ($i = count($result) - 1; $i >= 0; $i--) {
-            foreach ($result[$i] as $key => $value) {
-                if (stripos($key, 'sgid') !== false) {
-                    // Extract only the leading digit
-                    if (preg_match('/\d+/', $value, $matches)) {
-                        $sgid = (int) $matches[0];
-                        break 2;
+        if (isset($result['sgid'])) {
+            $sgid = (int) $result['sgid'];
+        } else {
+            $lines = isset($result[0]) ? $result : [$result];
+            for ($i = count($lines) - 1; $i >= 0; $i--) {
+                if (is_array($lines[$i])) {
+                    foreach ($lines[$i] as $key => $value) {
+                        if (stripos($key, 'sgid') !== false) {
+                            if (preg_match('/\d+/', (string) $value, $matches)) {
+                                $sgid = (int) $matches[0];
+                                break 2;
+                            }
+                        }
                     }
                 }
             }
@@ -1357,13 +1363,19 @@ class Server extends Node
         // Search for the new sgid in all elements of the result array
         $sgid = null;
 
-        for ($i = count($result) - 1; $i >= 0; $i--) {
-            foreach ($result[$i] as $key => $value) {
-                if (stripos($key, 'sgid') !== false) {
-                    // Extract only the leading digits
-                    if (preg_match('/\d+/', $value, $matches)) {
-                        $sgid = (int) $matches[0];
-                        break 2;
+        if (isset($result['sgid'])) {
+            $sgid = (int) $result['sgid'];
+        } else {
+            $lines = isset($result[0]) ? $result : [$result];
+            for ($i = count($lines) - 1; $i >= 0; $i--) {
+                if (is_array($lines[$i])) {
+                    foreach ($lines[$i] as $key => $value) {
+                        if (stripos($key, 'sgid') !== false) {
+                            if (preg_match('/\d+/', (string) $value, $matches)) {
+                                $sgid = (int) $matches[0];
+                                break 2;
+                            }
+                        }
                     }
                 }
             }
@@ -1763,13 +1775,19 @@ class Server extends Node
 
         $cgid = null;
 
-        for ($i = count($result) - 1; $i >= 0; $i--) {
-            foreach ($result[$i] as $key => $value) {
-                if (stripos($key, 'cgid') !== false) {
-                    // Extract only the leading digit
-                    if (preg_match('/\d+/', $value, $matches)) {
-                        $cgid = (int) $matches[0];
-                        break 2;
+        if (isset($result['cgid'])) {
+            $cgid = (int) $result['cgid'];
+        } else {
+            $lines = isset($result[0]) ? $result : [$result];
+            for ($i = count($lines) - 1; $i >= 0; $i--) {
+                if (is_array($lines[$i])) {
+                    foreach ($lines[$i] as $key => $value) {
+                        if (stripos($key, 'cgid') !== false) {
+                            if (preg_match('/\d+/', (string) $value, $matches)) {
+                                $cgid = (int) $matches[0];
+                                break 2;
+                            }
+                        }
                     }
                 }
             }
@@ -1807,13 +1825,19 @@ class Server extends Node
         // Search for the new scgid in all elements of the result array
         $cgid = null;
 
-        for ($i = count($result) - 1; $i >= 0; $i--) {
-            foreach ($result[$i] as $key => $value) {
-                if (stripos($key, 'scgid') !== false) {
-                    // Extract only the leading digits
-                    if (preg_match('/\d+/', $value, $matches)) {
-                        $cgid = (int) $matches[0];
-                        break 2;
+        if (isset($result['cgid'])) {
+            $cgid = (int) $result['cgid'];
+        } else {
+            $lines = isset($result[0]) ? $result : [$result];
+            for ($i = count($lines) - 1; $i >= 0; $i--) {
+                if (is_array($lines[$i])) {
+                    foreach ($lines[$i] as $key => $value) {
+                        if (stripos($key, 'scgid') !== false || stripos($key, 'cgid') !== false) {
+                            if (preg_match('/\d+/', (string) $value, $matches)) {
+                                $cgid = (int) $matches[0];
+                                break 2;
+                            }
+                        }
                     }
                 }
             }
@@ -2681,7 +2705,7 @@ class Server extends Node
 
         Signal::getInstance()->emit('notifyTokencreated', $this, $token['token']);
 
-        return $token['token'];
+        return is_string($token['token']) ? StringHelper::factory($token['token']) : $token['token'];
     }
 
     /**
@@ -3141,7 +3165,7 @@ class Server extends Node
      */
     public function selfPermOverview(): array
     {
-        return $this->execute('permoverview', ['cldbid' => $this->getParent()->whoamiGet('client_database_id'), 'cid' => $this->getParent()()->whoamiGet('client_channel_id'), 'permid' => 0])
+        return $this->execute('permoverview', ['cldbid' => $this->getParent()->whoamiGet('client_database_id'), 'cid' => $this->getParent()->whoamiGet('client_channel_id'), 'permid' => 0])
             ->toArray();
     }
 
