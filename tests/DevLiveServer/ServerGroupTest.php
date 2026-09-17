@@ -208,6 +208,7 @@ class ServerGroupTest extends TestCase
     /**
      * @throws AdapterException
      * @throws HelperException
+     * @throws NodeException
      * @throws ServerQueryException
      * @throws TransportException
      */
@@ -230,12 +231,20 @@ class ServerGroupTest extends TestCase
     }
 
     /**
+     * @param  Server  $ts3VirtualServer
      * @throws AdapterException
+     * @throws NodeException
      * @throws ServerQueryException
      * @throws TransportException
      */
     private function set_play_test_servergroup(Server $ts3VirtualServer): void
     {
+        try {
+            $existing = $ts3VirtualServer->serverGroupGetByName('UnitTest');
+            $ts3VirtualServer->serverGroupDelete($existing->getId(), true);
+        } catch (ServerQueryException) {
+            // Ignore if group does not exist
+        }
         $this->sgid = $ts3VirtualServer->serverGroupCreate('UnitTest', 1);
     }
 

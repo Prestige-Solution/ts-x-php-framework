@@ -384,15 +384,37 @@ class TeamSpeak3
             'host' => $uri->getHost(),
             'port' => $uri->getPort(),
             'timeout' => (int) $uri->getQueryVar('timeout', 10),
-            'blocking' => 0,
-            'tls' => 0, // TODO maybe unnecessary?
-            'ssh' => 1,
+            'blocking' => (int) $uri->getQueryVar('blocking', 0),
+            'tls' => (int) $uri->getQueryVar('tls', 0),
+            'ssh' => (int) $uri->getQueryVar('ssh', 1),
         ];
 
         self::loadClass($adapter);
 
         $options['username'] = $uri->getUser();
         $options['password'] = $uri->getPass();
+
+        if ($uri->hasQueryVar('fingerprint')) {
+            $options['fingerprint'] = (string) $uri->getQueryVar('fingerprint');
+        }
+        if ($uri->hasQueryVar('simulate_prompt')) {
+            $options['simulate_prompt'] = (bool) $uri->getQueryVar('simulate_prompt');
+        }
+        if ($uri->hasQueryVar('simulate_ansi')) {
+            $options['simulate_ansi'] = (bool) $uri->getQueryVar('simulate_ansi');
+        }
+        if ($uri->hasQueryVar('fail_connect')) {
+            $options['fail_connect'] = (bool) $uri->getQueryVar('fail_connect');
+        }
+        if ($uri->hasQueryVar('fail_login')) {
+            $options['fail_login'] = (bool) $uri->getQueryVar('fail_login');
+        }
+        if ($uri->hasQueryVar('fail_fingerprint')) {
+            $options['fail_fingerprint'] = (bool) $uri->getQueryVar('fail_fingerprint');
+        }
+        if ($uri->hasQueryVar('simulate_host_key')) {
+            $options['simulate_host_key'] = (string) $uri->getQueryVar('simulate_host_key');
+        }
 
         $adapterClass = 'PlanetTeamSpeak\\TeamSpeak3Framework\\'.str_replace(DIRECTORY_SEPARATOR, '\\', $adapter);
         $object = new $adapterClass($options);

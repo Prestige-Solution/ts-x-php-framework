@@ -399,6 +399,12 @@ class FileTransferTest extends TestCase
      */
     private function set_play_test_servergroup(Server $ts3VirtualServer): void
     {
+        try {
+            $existing = $ts3VirtualServer->serverGroupGetByName('UnitTest');
+            $ts3VirtualServer->serverGroupDelete($existing->getId(), true);
+        } catch (ServerQueryException) {
+            // Ignore if group does not exist
+        }
         $this->sgid = $ts3VirtualServer->serverGroupCreate('UnitTest', 1);
     }
 
