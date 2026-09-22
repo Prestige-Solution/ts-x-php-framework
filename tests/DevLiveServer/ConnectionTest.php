@@ -81,11 +81,9 @@ class ConnectionTest extends TestCase
 
         try {
             TeamSpeak3::factory($ts3_server_uri);
-        }catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             $this->assertEquals('Hostkey verification failed: The expected fingerprint does not match the server fingerprint!', $e->getMessage());
         }
-
     }
 
     /**
