@@ -67,6 +67,8 @@ class MockTCP extends TSssh
 
     protected bool $failLogin = false;
 
+    protected bool $failFingerprint = false;
+
     protected bool $simulateDropConnection = false;
 
     public function __construct(array $config = [])
@@ -93,6 +95,9 @@ class MockTCP extends TSssh
         if (isset($config['fail_login'])) {
             $this->failLogin = (bool) $config['fail_login'];
         }
+        if (isset($config['fail_fingerprint'])) {
+            $this->failFingerprint = (bool) $config['fail_fingerprint'];
+        }
     }
 
     public function connect(): void
@@ -103,6 +108,14 @@ class MockTCP extends TSssh
 
         if ($this->failConnect) {
             throw new TransportException("Connection to {$this->config['host']}:{$this->config['port']} failed");
+        }
+
+        if (! empty($this->config['fingerprint'])) {
+            $hostKey = $this->config['simulate_host_key'] ?? 'rsa-sha2-512 AAAAB3NzaC1yc2EAAAADAQABAAABAQC3r7Yh5N1xXj1234567890abcdefghijklmnopqrstuvwxyz';
+            if ($this->failFingerprint || ! empty($this->config['fail_fingerprint'])) {
+                $hostKey = 'rsa-sha2-512 AAAAB3NzaC1yc2EAAAADAQABAAABAAAAA_different_key';
+            }
+            $this->verifyFingerprint($hostKey, (string) $this->config['fingerprint']);
         }
 
         if ($this->failLogin) {

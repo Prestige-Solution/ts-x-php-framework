@@ -23,6 +23,10 @@ class TSssh extends Transport
             'hostkey' => ['rsa-sha2-512', 'rsa-sha2-256', 'ssh-rsa'],
         ]);
 
+        if (! empty($this->config['fingerprint'])) {
+            $this->verifyFingerprint($this->ssh->getServerPublicHostKey(), (string) $this->config['fingerprint']);
+        }
+
         // activate non-blocking mode
         if (isset($this->config['blocking']) && $this->config['blocking'] === 0) {
             $this->stream = $this->ssh->fsock ?? null;
@@ -34,6 +38,58 @@ class TSssh extends Transport
         if (! $this->ssh->login($this->config['username'], $this->config['password'])) {
             throw new TransportException('Login failed: incorrect username or password');
         }
+    }
+
+    /**
+     * Verifies the server host key against the expected fingerprint.
+     *
+     * @param mixed $serverHostKey
+     * @param string $expectedFingerprint
+     * @return bool
+     * @throws TransportException
+     */
+    public function verifyFingerprint(mixed $serverHostKey, string $expectedFingerprint): bool
+    {
+        if ($serverHostKey === false || empty($serverHostKey)) {
+            throw new TransportException('Host key verification failed: The servers host key could not be verified.');
+        }
+
+        // phpseclib3 returns "<format> <base64_blob>" (e.g. "rsa-sha2-512 AAAAB3NzaC1...") or raw key string
+        $keyParts = explode(' ', trim((string) $serverHostKey));
+        $keyBlobBase64 = count($keyParts) > 1 ? $keyParts[1] : $keyParts[0];
+        $rawKeyBlob = base64_decode($keyBlobBase64, true) ?: (string) $serverHostKey;
+
+        // 1. OpenSSH SHA256-Fingerprint (Base64 with and without padding)
+        $rawSha256 = hash('sha256', $rawKeyBlob, true);
+        $b64Fingerprint = base64_encode($rawSha256);
+        $b64Unpadded = rtrim($b64Fingerprint, '=');
+        $openSshFingerprint = 'SHA256:'.$b64Fingerprint;
+        $openSshUnpadded = 'SHA256:'.$b64Unpadded;
+
+        // 2. Hex SHA256-Fingerprint
+        $hexFingerprint = hash('sha256', $rawKeyBlob);
+
+        // 3. Normalized expected
+        $expected = trim($expectedFingerprint);
+        $expectedFixedPlus = str_replace(' ', '+', $expected);
+
+        // 4. Tolerant comparison against all standard formats
+        $isValid = hash_equals($openSshFingerprint, $expected)
+            || hash_equals($openSshUnpadded, $expected)
+            || hash_equals($b64Fingerprint, $expected)
+            || hash_equals($b64Unpadded, $expected)
+            || hash_equals($hexFingerprint, strtolower($expected))
+            || hash_equals('sha256:'.$hexFingerprint, strtolower($expected))
+            || hash_equals($openSshFingerprint, $expectedFixedPlus)
+            || hash_equals($openSshUnpadded, $expectedFixedPlus)
+            || hash_equals($b64Fingerprint, $expectedFixedPlus)
+            || hash_equals($b64Unpadded, $expectedFixedPlus);
+
+        if (! $isValid) {
+            throw new TransportException('Hostkey verification failed: The expected fingerprint does not match the server fingerprint!');
+        }
+
+        return true;
     }
 
     /**

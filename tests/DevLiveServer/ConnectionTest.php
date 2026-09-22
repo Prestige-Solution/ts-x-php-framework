@@ -33,6 +33,8 @@ class ConnectionTest extends TestCase
 
     private string $serverQueryLoginName;
 
+    private string $serverHostKeyFingerPrint;
+
     public function setUp(): void
     {
         //proof test active
@@ -45,6 +47,7 @@ class ConnectionTest extends TestCase
             $this->password = str_replace('DEV_LIVE_SERVER_QUERY_USER_PASSWORD=', '', preg_replace('#\n(?!\n)#', '', $env[6]));
             $this->serverPort = str_replace('DEV_LIVE_SERVER_UNIT_TEST_SERVER_PORT=', '', preg_replace('#\n(?!\n)#', '', $env[12]));
             $this->serverQueryLoginName = str_replace('DEV_LIVE_SERVER_UNIT_TEST_SERVER_QUERY_LOGIN_NAME=', '', preg_replace('#\n(?!\n)#', '', $env[13]));
+            $this->serverHostKeyFingerPrint = str_replace('DEV_LIVE_SERVER_UNIT_TEST_SERVER_HOST_KEY=', '', preg_replace('#\n(?!\n)#', '', $env[14]));
         } else {
             $this->active = 'false';
         }
@@ -53,7 +56,8 @@ class ConnectionTest extends TestCase
             '/?server_port='.$this->serverPort.
             '&no_query_clients=0'.
             '&blocking=0'.
-            '&timeout=30';
+            '&timeout=30'.
+            '&fingerprint='.$this->serverHostKeyFingerPrint;
     }
 
     /**
@@ -63,6 +67,32 @@ class ConnectionTest extends TestCase
      * @throws \Exception
      */
     public function test_can_ssh_connect()
+    {
+        if ($this->active == 'false') {
+            $this->markTestSkipped('DevLiveServer ist not active');
+        }
+
+        $ts3_server_uri = 'serverquery://'.$this->user.':'.$this->password.'@'.$this->host.':'.$this->queryPort.
+            '/?server_port='.$this->serverPort.
+            '&no_query_clients=0'.
+            '&blocking=0'.
+            '&timeout=30'.
+            '&fingerprint=INVALIDFingerPrint';
+
+        try {
+            TeamSpeak3::factory($ts3_server_uri);
+        } catch (\Exception $e) {
+            $this->assertEquals('Hostkey verification failed: The expected fingerprint does not match the server fingerprint!', $e->getMessage());
+        }
+    }
+
+    /**
+     * @throws AdapterException
+     * @throws TransportException
+     * @throws ServerQueryException
+     * @throws HelperException
+     */
+    public function test_can_ssh_connect_failed()
     {
         if ($this->active == 'false') {
             $this->markTestSkipped('DevLiveServer ist not active');

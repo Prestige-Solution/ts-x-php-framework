@@ -233,4 +233,83 @@ class ConnectionFeatureTest extends TestCase
         $this->assertContains('cmd_finished: whoami', $events);
         $this->assertContains('disconnected', $events);
     }
+
+    /**
+     * Test factory connection with matching fingerprint in URI.
+     */
+    public function testFactoryConnectWithMatchingFingerprint(): void
+    {
+        $rawBlob = base64_decode('AAAAB3NzaC1yc2EAAAADAQABAAABAQC3r7Yh5N1xXj1234567890abcdefghijklmnopqrstuvwxyz');
+        $validFingerprint = 'SHA256:'.base64_encode(hash('sha256', $rawBlob, true));
+
+        $uri = 'mock://serveradmin:secret@127.0.0.1:10022/?server_port=9987&fingerprint='.urlencode($validFingerprint);
+        $server = TeamSpeak3::factory($uri);
+
+        $this->assertInstanceOf(Server::class, $server);
+        $this->assertTrue($server->getAdapter()->getTransport()->isConnected());
+        $this->assertEquals($validFingerprint, $server->getAdapter()->getTransport()->getConfig('fingerprint'));
+
+        $server->getAdapter()->getTransport()->disconnect();
+    }
+
+    /**
+     * Test factory connection with raw (unencoded plus) fingerprint in URI.
+     */
+    public function testFactoryConnectWithRawFingerprint(): void
+    {
+        $rawBlob = base64_decode('AAAAB3NzaC1yc2EAAAADAQABAAABAQC3r7Yh5N1xXj1234567890abcdefghijklmnopqrstuvwxyz');
+        $validFingerprint = 'SHA256:'.base64_encode(hash('sha256', $rawBlob, true));
+
+        $uri = 'mock://serveradmin:secret@127.0.0.1:10022/?server_port=9987&fingerprint='.$validFingerprint;
+        $server = TeamSpeak3::factory($uri);
+
+        $this->assertInstanceOf(Server::class, $server);
+        $this->assertTrue($server->getAdapter()->getTransport()->isConnected());
+
+        $server->getAdapter()->getTransport()->disconnect();
+    }
+
+    /**
+     * Test factory connection with Hex fingerprint in URI.
+     */
+    public function testFactoryConnectWithHexFingerprint(): void
+    {
+        $rawBlob = base64_decode('AAAAB3NzaC1yc2EAAAADAQABAAABAQC3r7Yh5N1xXj1234567890abcdefghijklmnopqrstuvwxyz');
+        $hexFingerprint = hash('sha256', $rawBlob);
+
+        $uri = 'mock://serveradmin:secret@127.0.0.1:10022/?server_port=9987&fingerprint='.$hexFingerprint;
+        $server = TeamSpeak3::factory($uri);
+
+        $this->assertInstanceOf(Server::class, $server);
+        $this->assertTrue($server->getAdapter()->getTransport()->isConnected());
+
+        $server->getAdapter()->getTransport()->disconnect();
+    }
+
+    /**
+     * Test factory connection with mismatched fingerprint throws TransportException.
+     */
+    public function testFactoryConnectWithMismatchedFingerprintThrowsException(): void
+    {
+        $this->expectException(TransportException::class);
+        $this->expectExceptionMessage('Hostkey verification failed: The expected fingerprint does not match the server fingerprint!');
+
+        $uri = 'mock://serveradmin:secret@127.0.0.1:10022/?server_port=9987&fingerprint=SHA256:invalidfingerprint';
+        TeamSpeak3::factory($uri);
+    }
+
+    /**
+     * Test factory connection with fail_fingerprint flag throws TransportException.
+     */
+    public function testFactoryConnectWithFailFingerprintFlagThrowsException(): void
+    {
+        $this->expectException(TransportException::class);
+        $this->expectExceptionMessage('Hostkey verification failed: The expected fingerprint does not match the server fingerprint!');
+
+        $rawBlob = base64_decode('AAAAB3NzaC1yc2EAAAADAQABAAABAQC3r7Yh5N1xXj1234567890abcdefghijklmnopqrstuvwxyz');
+        $validFingerprint = 'SHA256:'.base64_encode(hash('sha256', $rawBlob, true));
+
+        $uri = 'mock://serveradmin:secret@127.0.0.1:10022/?server_port=9987&fingerprint='.urlencode($validFingerprint).'&fail_fingerprint=1';
+        TeamSpeak3::factory($uri);
+    }
 }

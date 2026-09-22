@@ -589,4 +589,16 @@ class UriTest extends TestCase
         $result = $this->callProtectedStatic('stripslashesRecursive', [$input]);
         $this->assertEquals($expected, $result);
     }
+
+    /**
+     * @throws HelperException
+     */
+    public function testQueryVarWithUrlEncodedSpecialChars(): void
+    {
+        $uri = new Uri('serverquery://user:password@127.0.0.1:10022/?server_port=9987&fingerprint=SHA256%3ADta1vhZkN87oWmXT6jgjXfFRvvLHxtxoOCr%2BtUR%2F7XY%3D');
+
+        $this->assertTrue($uri->hasQueryVar('fingerprint'));
+        $this->assertEquals('SHA256:Dta1vhZkN87oWmXT6jgjXfFRvvLHxtxoOCr+tUR/7XY=', (string) $uri->getQueryVar('fingerprint'));
+        $this->assertEquals('SHA256:Dta1vhZkN87oWmXT6jgjXfFRvvLHxtxoOCr+tUR/7XY=', $uri->getQuery()['fingerprint']);
+    }
 }
