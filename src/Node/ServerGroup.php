@@ -6,6 +6,7 @@ use PlanetTeamSpeak\TeamSpeak3Framework\Exception\AdapterException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\NodeException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\ServerQueryException;
 use PlanetTeamSpeak\TeamSpeak3Framework\Exception\TransportException;
+use PlanetTeamSpeak\TeamSpeak3Framework\Helper\StringHelper;
 use PlanetTeamSpeak\TeamSpeak3Framework\TeamSpeak3;
 
 /**
@@ -178,10 +179,10 @@ class ServerGroup extends Group
      * @throws ServerQueryException
      * @throws TransportException
      */
-    public function privilegeKeyCreate(string $description = null, string $customset = null): string
+    public function privilegeKeyCreate(string $description = null, string $customset = null): StringHelper
     {
         return $this->getParent()
-            ->privilegeKeyCreate($this->getId(), TeamSpeak3::TOKEN_SERVERGROUP, 0, $description, $customset);
+            ->privilegeKeyCreate($this->getId(), 0, TeamSpeak3::TOKEN_SERVERGROUP, $description, $customset);
     }
 
     /**

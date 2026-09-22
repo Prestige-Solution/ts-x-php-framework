@@ -154,7 +154,7 @@ class ChannelGroup extends Group
      */
     public function privilegeKeyCreate(int $cid, string $description = null, string $customset = null): StringHelper
     {
-        return $this->getParent()->privilegeKeyCreate($this->getId(), TeamSpeak3::TOKEN_CHANNELGROUP, $cid, $description, $customset);
+        return $this->getParent()->privilegeKeyCreate($this->getId(), $cid, TeamSpeak3::TOKEN_CHANNELGROUP, $description, $customset);
     }
 
     /**

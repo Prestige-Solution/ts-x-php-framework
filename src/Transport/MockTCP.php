@@ -348,13 +348,29 @@ class MockTCP extends TSssh
             case 'servernotifyunregister':
             case 'servergroupaddclient':
             case 'servergroupdelclient':
-            case 'servergroupadd':
             case 'servergroupdel':
-            case 'channelgroupadd':
             case 'channelgroupdel':
             case 'privilegekeydelete':
             case 'privilegekeyuse':
                 return self::S_ERROR_OK;
+
+            case 'servergroupadd':
+                return "sgid=10\n".self::S_ERROR_OK;
+
+            case 'servergroupcopy':
+                return "sgid=11\n".self::S_ERROR_OK;
+
+            case 'channelgroupadd':
+                return "cgid=10\n".self::S_ERROR_OK;
+
+            case 'channelgroupcopy':
+                return "cgid=11\n".self::S_ERROR_OK;
+
+            case 'clientdbinfo':
+                return "cldbid=1 client_database_id=1 client_unique_identifier=mock_admin_uid client_nickname=serveradmin\n".self::S_ERROR_OK;
+
+            case 'permoverview':
+                return "permid=1 permvalue=100 permskip=0 permnegated=0\n".self::S_ERROR_OK;
 
             case 'serveridgetbyport':
             case 'serveridgetbyname':

@@ -193,7 +193,19 @@ class Host extends Node
     {
         $sid = $this->execute('serveridgetbyport', ['virtualserver_port' => $port])->toList();
 
-        return $sid[1]['server_id'];
+        if (isset($sid['server_id'])) {
+            return (int) $sid['server_id'];
+        }
+
+        if (isset($sid[0]['server_id'])) {
+            return (int) $sid[0]['server_id'];
+        }
+
+        if (isset($sid[1]['server_id'])) {
+            return (int) $sid[1]['server_id'];
+        }
+
+        return 0;
     }
 
     /**
@@ -761,9 +773,10 @@ class Host extends Node
 
         if ($this->predefined_query_name) {
             $clients = $this->request('clientlist -uid')->toList();
+            $clientRows = isset($clients['clid']) ? [$clients] : (is_array($clients) ? $clients : []);
 
-            foreach ($clients as $client) {
-                if ($client['client_nickname'] === $this->predefined_query_name) {
+            foreach ($clientRows as $client) {
+                if (is_array($client) && isset($client['client_nickname']) && $client['client_nickname'] === $this->predefined_query_name) {
                     // Kick old query with same nickname
                     $this->execute('clientkick', [
                         'clid'      => $client['clid'],
@@ -779,7 +792,11 @@ class Host extends Node
             ]);
         }
 
-        $crypt = new Crypt($username);
+        $cryptKey = substr($username, 0, 56);
+        if ($cryptKey === '') {
+            $cryptKey = 'serveradmin';
+        }
+        $crypt = new Crypt($cryptKey);
         $this->setStorage('_login_user', $username);
         $this->setStorage('_login_pass', $crypt->encrypt($password));
 
