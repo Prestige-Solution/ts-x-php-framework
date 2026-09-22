@@ -68,6 +68,10 @@ class Signal
      */
     public function getCallbackHash(mixed $callback): string
     {
+        if ($callback instanceof \Closure) {
+            return spl_object_hash($callback);
+        }
+
         if (! is_callable($callback, true, $callable_name)) {
             throw new SignalException('invalid callback specified');
         }

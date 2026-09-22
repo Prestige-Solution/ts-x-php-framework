@@ -76,11 +76,15 @@ class Host extends Node
         if ($this->version === null) {
             $raw = $this->request('version')->toList();
 
-            // Find the first array that contains real data
-            foreach ($raw as $item) {
-                if (is_array($item) && isset($item['version'])) {
-                    $this->version = $item;
-                    break;
+            if (isset($raw['version'])) {
+                $this->version = $raw;
+            } elseif (is_array($raw)) {
+                // Find the first array that contains real data
+                foreach ($raw as $item) {
+                    if (is_array($item) && isset($item['version'])) {
+                        $this->version = $item;
+                        break;
+                    }
                 }
             }
 
@@ -889,8 +893,12 @@ class Host extends Node
         // Execute server request
         $response = $this->request('whoami')->toList();
 
-        // response[1] contains the actual data
-        $data = $response[1] ?? [];
+        // Check if single-row associative array or nested list
+        if (isset($response['client_id']) || isset($response['virtualserver_id']) || isset($response['client_nickname'])) {
+            $data = $response;
+        } else {
+            $data = $response[1] ?? ($response[0] ?? []);
+        }
 
         // Automatically convert StringHelper to strings
         foreach ($data as $key => $val) {
